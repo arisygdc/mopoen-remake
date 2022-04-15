@@ -1,7 +1,11 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"mopoen-remake/controller"
 
-func New(server *gin.Engine) {
-	apiV1Route(server.Group("/api/v1"))
+	"github.com/gin-gonic/gin"
+)
+
+func New(server *gin.Engine, controller controller.Controller) {
+	apiV1Route(server.Group("/api/v1"), controller)
 }
