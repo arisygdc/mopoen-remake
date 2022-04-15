@@ -10,13 +10,13 @@ import (
 type Controller struct {
 	Sensor     sensorcontroller.ISensorController
 	Location   locationcontroller.ILocationController
-	monitoring monitoringcontroller.IMonitoringController
+	Monitoring monitoringcontroller.IMonitoringController
 }
 
 func New(service svc.IServices) Controller {
 	return Controller{
 		Sensor:     sensorcontroller.New(service),
 		Location:   locationcontroller.New(service),
-		monitoring: monitoringcontroller.New(service),
+		Monitoring: monitoringcontroller.New(service),
 	}
 }
