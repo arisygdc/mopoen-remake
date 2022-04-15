@@ -1,0 +1,11 @@
+version: 1
+packages:
+  - path: "database/postgres/"
+    name: "postgres"
+    engine: "postgresql"
+    schema: "database/postgres/migration/"
+    queries: "database/postgres/query"
+    emit_json_tags: true
+    output_db_file_name: "postgres.go"
+    output_models_file_name: "models.go"
+    output_querier_file_name: "query.go"
