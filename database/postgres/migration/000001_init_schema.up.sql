@@ -38,5 +38,5 @@ CREATE TABLE monitoring_terdaftar (
 CREATE TABLE monitoring_data (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     monitoring_terdaftar uuid NOT NULL,
-    value INT NOT NULL
+    value FLOAT NOT NULL
 );

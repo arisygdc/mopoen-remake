@@ -11,10 +11,7 @@ type ILocationController interface {
 	CreateKabupaten(ctx *gin.Context)
 	CreateKecamatan(ctx *gin.Context)
 	CreateDesa(ctx *gin.Context)
-	DeleteProvinsi(ctx *gin.Context)
-	DeleteKabupaten(ctx *gin.Context)
-	DeleteKecamatan(ctx *gin.Context)
-	DeleteDesa(ctx *gin.Context)
+	DeleteLocation(ctx *gin.Context)
 }
 
 type Controller struct {

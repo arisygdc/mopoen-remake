@@ -29,7 +29,7 @@ type Kecamatan struct {
 type MonitoringDatum struct {
 	ID                  int64     `json:"id"`
 	MonitoringTerdaftar uuid.UUID `json:"monitoring_terdaftar"`
-	Value               int32     `json:"value"`
+	Value               float64   `json:"value"`
 }
 
 type MonitoringTerdaftar struct {
