@@ -7,17 +7,24 @@ import (
 )
 
 type ILocationController interface {
-	CreateProvinsi(ctx *gin.Context)
-	CreateKabupaten(ctx *gin.Context)
-	CreateKecamatan(ctx *gin.Context)
-	CreateDesa(ctx *gin.Context)
+	CreateLocation(ctx *gin.Context)
 	DeleteLocation(ctx *gin.Context)
 }
 
 type Controller struct {
-	service svc.IServices
+	service   svc.IServices
+	provinsi  string
+	kabupaten string
+	kecamatan string
+	desa      string
 }
 
 func New(service svc.IServices) Controller {
-	return Controller{service: service}
+	return Controller{
+		service:   service,
+		provinsi:  "provinsi",
+		kabupaten: "kabupaten",
+		kecamatan: "kecamatan",
+		desa:      "desa",
+	}
 }

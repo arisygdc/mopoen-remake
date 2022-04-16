@@ -1,5 +1,13 @@
 package request
 
+type UriParamTipeLocation struct {
+	Tipe string `uri:"tipe" binding:"required,min=4"`
+}
+
+type DeleteLocation struct {
+	Id int32 `json:"id" binding:"required"`
+}
+
 type PostProvinsi struct {
 	Nama string `json:"nama"`
 }
@@ -17,12 +25,4 @@ type PostKecamatan struct {
 type PostDesa struct {
 	Kecamatan_id int32  `json:"kecamatan_id"`
 	Nama         string `json:"nama"`
-}
-
-type DeleteLocationType struct {
-	Type string `form:"type"`
-}
-
-type DeleteLocation struct {
-	Id int32 `json:"id"`
 }

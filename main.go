@@ -19,9 +19,8 @@ func main() {
 	if err != nil {
 		log.Fatal()
 	}
-	controller.New(service)
 
 	s := server.New(env)
-	router.New(s.Engine)
+	router.New(s.Engine, controller.New(service))
 	s.Run()
 }

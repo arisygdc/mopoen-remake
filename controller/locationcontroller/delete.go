@@ -4,13 +4,14 @@ import (
 	"errors"
 	"mopoen-remake/controller/request"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (ctr Controller) DeleteLocation(ctx *gin.Context) {
-	queryParam := request.DeleteLocationType{}
-	if err := ctx.ShouldBindQuery(&queryParam); err != nil {
+	uriParam := request.UriParamTipeLocation{}
+	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
 		})
@@ -26,14 +27,14 @@ func (ctr Controller) DeleteLocation(ctx *gin.Context) {
 	}
 
 	var err error
-	switch queryParam.Type {
-	case "provinsi":
+	switch strings.ToLower(uriParam.Tipe) {
+	case ctr.provinsi:
 		err = ctr.service.DeleteProvinsi(ctx, req.Id)
-	case "kabupaten":
+	case ctr.kabupaten:
 		err = ctr.service.DeleteKabupaten(ctx, req.Id)
-	case "kecamatan":
+	case ctr.kecamatan:
 		err = ctr.service.DeleteKecamatan(ctx, req.Id)
-	case "desa":
+	case ctr.desa:
 		err = ctr.service.DeleteDesa(ctx, req.Id)
 	default:
 		err = errors.New("tipe lokasi tidak tersedia")
@@ -47,6 +48,6 @@ func (ctr Controller) DeleteLocation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": queryParam.Type + " berhasil dibuat",
+		"message": uriParam.Tipe + " berhasil dibuat",
 	})
 }
