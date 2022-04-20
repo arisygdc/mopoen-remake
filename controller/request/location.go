@@ -1,10 +1,10 @@
 package request
 
-type UriParamTipeLocation struct {
+type UriParamTipeLokasi struct {
 	Tipe string `uri:"tipe" binding:"required,min=4"`
 }
 
-type DeleteLocation struct {
+type DeleteLokasi struct {
 	Id int32 `json:"id" binding:"required,min=1"`
 }
 

@@ -95,3 +95,192 @@ func (q *Queries) DeleteProvinsi(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteProvinsi, id)
 	return err
 }
+
+const getAllDesa = `-- name: GetAllDesa :many
+SELECT id, kecamatan_id, nama FROM desa
+`
+
+func (q *Queries) GetAllDesa(ctx context.Context) ([]Desa, error) {
+	rows, err := q.db.QueryContext(ctx, getAllDesa)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Desa
+	for rows.Next() {
+		var i Desa
+		if err := rows.Scan(&i.ID, &i.KecamatanID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllKabupaten = `-- name: GetAllKabupaten :many
+SELECT id, provinsi_id, nama FROM kabupaten
+`
+
+func (q *Queries) GetAllKabupaten(ctx context.Context) ([]Kabupaten, error) {
+	rows, err := q.db.QueryContext(ctx, getAllKabupaten)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Kabupaten
+	for rows.Next() {
+		var i Kabupaten
+		if err := rows.Scan(&i.ID, &i.ProvinsiID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllKecamatan = `-- name: GetAllKecamatan :many
+SELECT id, kabupaten_id, nama FROM kecamatan
+`
+
+func (q *Queries) GetAllKecamatan(ctx context.Context) ([]Kecamatan, error) {
+	rows, err := q.db.QueryContext(ctx, getAllKecamatan)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Kecamatan
+	for rows.Next() {
+		var i Kecamatan
+		if err := rows.Scan(&i.ID, &i.KabupatenID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllProvinsi = `-- name: GetAllProvinsi :many
+SELECT id, nama FROM provinsi
+`
+
+func (q *Queries) GetAllProvinsi(ctx context.Context) ([]Provinsi, error) {
+	rows, err := q.db.QueryContext(ctx, getAllProvinsi)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Provinsi
+	for rows.Next() {
+		var i Provinsi
+		if err := rows.Scan(&i.ID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getDesaBy = `-- name: GetDesaBy :many
+SELECT id, kecamatan_id, nama FROM desa WHERE kecamatan_id = $1
+`
+
+func (q *Queries) GetDesaBy(ctx context.Context, kecamatanID int32) ([]Desa, error) {
+	rows, err := q.db.QueryContext(ctx, getDesaBy, kecamatanID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Desa
+	for rows.Next() {
+		var i Desa
+		if err := rows.Scan(&i.ID, &i.KecamatanID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getKabupatenBy = `-- name: GetKabupatenBy :many
+SELECT id, provinsi_id, nama FROM kabupaten WHERE provinsi_id = $1
+`
+
+func (q *Queries) GetKabupatenBy(ctx context.Context, provinsiID int32) ([]Kabupaten, error) {
+	rows, err := q.db.QueryContext(ctx, getKabupatenBy, provinsiID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Kabupaten
+	for rows.Next() {
+		var i Kabupaten
+		if err := rows.Scan(&i.ID, &i.ProvinsiID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getKecamatanBy = `-- name: GetKecamatanBy :many
+SELECT id, kabupaten_id, nama FROM kecamatan WHERE kabupaten_id = $1
+`
+
+func (q *Queries) GetKecamatanBy(ctx context.Context, kabupatenID int32) ([]Kecamatan, error) {
+	rows, err := q.db.QueryContext(ctx, getKecamatanBy, kabupatenID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Kecamatan
+	for rows.Next() {
+		var i Kecamatan
+		if err := rows.Scan(&i.ID, &i.KabupatenID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

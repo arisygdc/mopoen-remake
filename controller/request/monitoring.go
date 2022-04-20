@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type PostDaftarMonitoring struct {
 	TipeSensor  int32  `json:"tipe_sensor" binding:"required,min=1"`
-	Location_id int32  `json:"location_id" binding:"required,min=1"`
+	Location_id int32  `json:"lokasi_id" binding:"required,min=1"`
 	Nama        string `json:"nama" binding:"required,min=4"`
 	Keterangan  string `json:"keterangan"`
 }

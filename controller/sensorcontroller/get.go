@@ -1,6 +1,7 @@
 package sensorcontroller
 
 import (
+	"mopoen-remake/controller/request"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,15 +22,15 @@ func (ctr Controller) GetAll(ctx *gin.Context) {
 }
 
 func (ctr Controller) Get(ctx *gin.Context) {
-	var idSensor int32
-	if err := ctx.ShouldBindQuery(&idSensor); err != nil {
+	var idSensor request.GetSensor
+	if err := ctx.ShouldBindUri(&idSensor); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
 		})
 		return
 	}
 
-	sensors, err := ctr.service.GetAllTipeSensor(ctx)
+	tipeSensor, err := ctr.service.GetTipeSensor(ctx, idSensor.Id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
@@ -38,6 +39,6 @@ func (ctr Controller) Get(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": sensors,
+		"data": tipeSensor,
 	})
 }

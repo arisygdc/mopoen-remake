@@ -6,6 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New(server *gin.Engine, controller controller.Controller) {
+func New(server gin.IRouter, controller controller.Controller) {
 	apiV1Route(server.Group("/api/v1"), controller)
 }

@@ -1,4 +1,4 @@
-package pgrepo
+package pgservice
 
 import (
 	"context"
@@ -16,17 +16,17 @@ type postgre struct {
 	Queries *postgres.Queries
 }
 
-func NewPostgres(env config.Environment) (pgConn postgre, err error) {
+func NewPostgres(env config.Environment) (postgre, error) {
 	SQLConn, err := sql.Open(env.DBDriver, env.DBSource)
 	if err != nil {
-		return
+		return postgre{}, err
 	}
 
-	pgConn = postgre{
+	pgConn := postgre{
 		SQLConn: SQLConn,
 		Queries: postgres.New(SQLConn),
 	}
-	return
+	return pgConn, nil
 }
 
 func (db postgre) CreateTipeSensor(ctx context.Context, tipe string, satuan string) error {
@@ -42,11 +42,72 @@ func (db postgre) GetTipeSensor(ctx context.Context, id int32) (servicemodel.Tip
 
 func (db postgre) GetAllTipeSensor(ctx context.Context) ([]servicemodel.TipeSensor, error) {
 	sensors, err := db.Queries.GetTipeSensors(ctx)
-	var sensorsConverted []servicemodel.TipeSensor
+	if err != nil {
+		return nil, err
+	}
+
+	sensorsConverted := make([]servicemodel.TipeSensor, len(sensors))
 	for i, v := range sensors {
 		sensorsConverted[i] = servicemodel.TipeSensor(v)
 	}
-	return sensorsConverted, err
+
+	return sensorsConverted, nil
+}
+
+func (db postgre) GetAllProvinsi(ctx context.Context) ([]servicemodel.Provinsi, error) {
+	prov, err := db.Queries.GetAllProvinsi(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	provinsiConverted := make([]servicemodel.Provinsi, len(prov))
+	for i, v := range prov {
+		provinsiConverted[i] = servicemodel.Provinsi(v)
+	}
+
+	return provinsiConverted, nil
+}
+
+func (db postgre) GetAllKabupaten(ctx context.Context) ([]servicemodel.Kabupaten, error) {
+	kab, err := db.Queries.GetAllKabupaten(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	kabupatenConverted := make([]servicemodel.Kabupaten, len(kab))
+	for i, v := range kab {
+		kabupatenConverted[i] = servicemodel.Kabupaten(v)
+	}
+
+	return kabupatenConverted, nil
+}
+
+func (db postgre) GetAllKecamatan(ctx context.Context) ([]servicemodel.Kecamatan, error) {
+	kec, err := db.Queries.GetAllKecamatan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	kecamatanConverted := make([]servicemodel.Kecamatan, len(kec))
+	for i, v := range kec {
+		kecamatanConverted[i] = servicemodel.Kecamatan(v)
+	}
+
+	return kecamatanConverted, nil
+}
+
+func (db postgre) GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error) {
+	des, err := db.Queries.GetAllDesa(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	DesaConverted := make([]servicemodel.Desa, len(des))
+	for i, v := range des {
+		DesaConverted[i] = servicemodel.Desa(v)
+	}
+
+	return DesaConverted, nil
 }
 
 func (db postgre) DeleteTipeSensor(ctx context.Context, id int32) error {
@@ -107,4 +168,54 @@ func (db postgre) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.
 	}
 
 	return db.Queries.CreateMonitoringValue(ctx, param)
+}
+
+func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.LocationDepends, error) {
+	var locationBy []servicemodel.LocationDepends
+	switch tipe {
+	case "kabupaten":
+		val, Qerr := db.Queries.GetKabupatenBy(ctx, depends)
+		if Qerr != nil {
+			return nil, Qerr
+		}
+
+		locationBy = make([]servicemodel.LocationDepends, len(val))
+		for i, val := range val {
+			locationBy[i] = servicemodel.LocationDepends{
+				ID:   val.ID,
+				Nama: val.Nama,
+			}
+		}
+
+	case "kecamatan":
+		val, Qerr := db.Queries.GetKecamatanBy(ctx, depends)
+		if Qerr != nil {
+			return nil, Qerr
+		}
+
+		locationBy = make([]servicemodel.LocationDepends, len(val))
+		for i, val := range val {
+			locationBy[i] = servicemodel.LocationDepends{
+				ID:   val.ID,
+				Nama: val.Nama,
+			}
+		}
+
+	case "desa":
+		val, Qerr := db.Queries.GetDesaBy(ctx, depends)
+		if Qerr != nil {
+			return nil, Qerr
+		}
+
+		locationBy = make([]servicemodel.LocationDepends, len(val))
+		for i, val := range val {
+			locationBy[i] = servicemodel.LocationDepends{
+				ID:   val.ID,
+				Nama: val.Nama,
+			}
+		}
+
+	}
+
+	return locationBy, nil
 }

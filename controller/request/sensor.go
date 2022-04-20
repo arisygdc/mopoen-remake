@@ -8,3 +8,7 @@ type PostSensor struct {
 type DeleteSensor struct {
 	Id int32 `json:"sensor_id" binding:"required,min=1"`
 }
+
+type GetSensor struct {
+	Id int32 `uri:"id"`
+}

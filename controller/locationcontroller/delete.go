@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (ctr Controller) DeleteLocation(ctx *gin.Context) {
-	uriParam := request.UriParamTipeLocation{}
+func (ctr Controller) DeleteLokasi(ctx *gin.Context) {
+	uriParam := request.UriParamTipeLokasi{}
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
@@ -18,7 +18,7 @@ func (ctr Controller) DeleteLocation(ctx *gin.Context) {
 		return
 	}
 
-	req := request.DeleteLocation{}
+	req := request.DeleteLokasi{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
@@ -28,13 +28,13 @@ func (ctr Controller) DeleteLocation(ctx *gin.Context) {
 
 	var err error
 	switch strings.ToLower(uriParam.Tipe) {
-	case ctr.provinsi:
+	case Provinsi:
 		err = ctr.service.DeleteProvinsi(ctx, req.Id)
-	case ctr.kabupaten:
+	case Kabupaten:
 		err = ctr.service.DeleteKabupaten(ctx, req.Id)
-	case ctr.kecamatan:
+	case Kecamatan:
 		err = ctr.service.DeleteKecamatan(ctx, req.Id)
-	case ctr.desa:
+	case Desa:
 		err = ctr.service.DeleteDesa(ctx, req.Id)
 	default:
 		err = errors.New("tipe lokasi tidak tersedia")

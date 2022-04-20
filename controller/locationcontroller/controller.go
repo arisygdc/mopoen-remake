@@ -6,25 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var Provinsi = "provinsi"
+var Kabupaten = "kabupaten"
+var Kecamatan = "kecamatan"
+var Desa = "desa"
+
 type ILocationController interface {
-	CreateLocation(ctx *gin.Context)
-	DeleteLocation(ctx *gin.Context)
+	CreateLokasi(ctx *gin.Context)
+	DeleteLokasi(ctx *gin.Context)
+	GetAllLokasi(ctx *gin.Context)
 }
 
 type Controller struct {
-	service   svc.IServices
-	provinsi  string
-	kabupaten string
-	kecamatan string
-	desa      string
+	service svc.IServices
 }
 
 func New(service svc.IServices) Controller {
 	return Controller{
-		service:   service,
-		provinsi:  "provinsi",
-		kabupaten: "kabupaten",
-		kecamatan: "kecamatan",
-		desa:      "desa",
+		service: service,
 	}
 }
