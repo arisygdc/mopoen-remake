@@ -9,6 +9,7 @@ import (
 type IMonitoringController interface {
 	CreateDaftar(ctx *gin.Context)
 	CreateValue(ctx *gin.Context)
+	Get(ctx *gin.Context)
 }
 
 type Controller struct {

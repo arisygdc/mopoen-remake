@@ -219,3 +219,17 @@ func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) (
 
 	return locationBy, nil
 }
+
+func (db postgre) GetMonitoringTerdaftar(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
+	mtd, err := db.Queries.GetMonitoringTerdaftar(ctx, lokasi_id)
+	if err != nil {
+		return nil, err
+	}
+
+	converted := make([]servicemodel.MonitoringTerdaftar, len(mtd))
+	for i, v := range mtd {
+		converted[i] = servicemodel.MonitoringTerdaftar(v)
+	}
+
+	return converted, nil
+}

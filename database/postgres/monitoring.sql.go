@@ -47,3 +47,36 @@ func (q *Queries) CreateMonitoringValue(ctx context.Context, arg CreateMonitorin
 	_, err := q.db.ExecContext(ctx, createMonitoringValue, arg.MonitoringTerdaftar, arg.Value)
 	return err
 }
+
+const getMonitoringTerdaftar = `-- name: GetMonitoringTerdaftar :many
+SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE lokasi_id = $1
+`
+
+func (q *Queries) GetMonitoringTerdaftar(ctx context.Context, lokasiID int32) ([]MonitoringTerdaftar, error) {
+	rows, err := q.db.QueryContext(ctx, getMonitoringTerdaftar, lokasiID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MonitoringTerdaftar
+	for rows.Next() {
+		var i MonitoringTerdaftar
+		if err := rows.Scan(
+			&i.ID,
+			&i.TipeSensorID,
+			&i.LokasiID,
+			&i.Nama,
+			&i.Keterangan,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

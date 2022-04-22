@@ -13,7 +13,8 @@ func apiV1Route(route gin.IRouter, controller controller.Controller) {
 	route.GET("/sensors", controller.Sensor.GetAll)
 	route.POST("/lokasi/:tipe", controller.Location.CreateLokasi)
 	route.DELETE("/lokasi/:tipe", controller.Location.DeleteLokasi)
+	route.GET("/lokasi/:tipe", controller.Location.GetAllLokasi)
 	route.POST("/monitoring/daftar", controller.Monitoring.CreateDaftar)
 	route.POST("/monitoring/value", controller.Monitoring.CreateValue)
-	route.GET("/lokasi/:tipe", controller.Location.GetAllLokasi)
+	route.GET("/monitoring", controller.Monitoring.Get)
 }
