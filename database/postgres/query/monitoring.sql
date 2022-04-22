@@ -4,5 +4,11 @@ INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, nama, keteranga
 -- name: CreateMonitoringValue :exec
 INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES ($1, $2);
 
--- name: GetMonitoringTerdaftar :many
+-- name: GetMonitoringTerdaftarByLokasi :many
 SELECT * FROM monitoring_terdaftar WHERE lokasi_id = $1;
+
+-- name: GetMonitoringData :many
+SELECT (value) FROM monitoring_data WHERE monitoring_terdaftar = $1;
+
+-- name: GetMonitoringTerdaftar :one
+SELECT * FROM monitoring_terdaftar WHERE id = $1;

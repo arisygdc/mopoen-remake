@@ -32,7 +32,9 @@ type IServices interface {
 	GetAllKecamatan(ctx context.Context) ([]servicemodel.Kecamatan, error)
 	GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error)
 	GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.LocationDepends, error)
-	GetMonitoringTerdaftar(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error)
+	GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.MonitoringTerdaftar, error)
+	GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error)
+	GetMonitoringData(ctx context.Context, id string) ([]float64, error)
 }
 
 func New(env config.Environment) (IServices, error) {

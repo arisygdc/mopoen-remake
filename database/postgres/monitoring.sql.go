@@ -48,12 +48,56 @@ func (q *Queries) CreateMonitoringValue(ctx context.Context, arg CreateMonitorin
 	return err
 }
 
-const getMonitoringTerdaftar = `-- name: GetMonitoringTerdaftar :many
+const getMonitoringData = `-- name: GetMonitoringData :many
+SELECT (value) FROM monitoring_data WHERE monitoring_terdaftar = $1
+`
+
+func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uuid.UUID) ([]float64, error) {
+	rows, err := q.db.QueryContext(ctx, getMonitoringData, monitoringTerdaftar)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []float64
+	for rows.Next() {
+		var value float64
+		if err := rows.Scan(&value); err != nil {
+			return nil, err
+		}
+		items = append(items, value)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMonitoringTerdaftar = `-- name: GetMonitoringTerdaftar :one
+SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE id = $1
+`
+
+func (q *Queries) GetMonitoringTerdaftar(ctx context.Context, id uuid.UUID) (MonitoringTerdaftar, error) {
+	row := q.db.QueryRowContext(ctx, getMonitoringTerdaftar, id)
+	var i MonitoringTerdaftar
+	err := row.Scan(
+		&i.ID,
+		&i.TipeSensorID,
+		&i.LokasiID,
+		&i.Nama,
+		&i.Keterangan,
+	)
+	return i, err
+}
+
+const getMonitoringTerdaftarByLokasi = `-- name: GetMonitoringTerdaftarByLokasi :many
 SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE lokasi_id = $1
 `
 
-func (q *Queries) GetMonitoringTerdaftar(ctx context.Context, lokasiID int32) ([]MonitoringTerdaftar, error) {
-	rows, err := q.db.QueryContext(ctx, getMonitoringTerdaftar, lokasiID)
+func (q *Queries) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasiID int32) ([]MonitoringTerdaftar, error) {
+	rows, err := q.db.QueryContext(ctx, getMonitoringTerdaftarByLokasi, lokasiID)
 	if err != nil {
 		return nil, err
 	}

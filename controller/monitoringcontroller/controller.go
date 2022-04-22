@@ -10,6 +10,7 @@ type IMonitoringController interface {
 	CreateDaftar(ctx *gin.Context)
 	CreateValue(ctx *gin.Context)
 	GetTerdaftar(ctx *gin.Context)
+	GetData(ctx *gin.Context)
 }
 
 type Controller struct {

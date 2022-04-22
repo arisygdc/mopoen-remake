@@ -220,8 +220,8 @@ func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) (
 	return locationBy, nil
 }
 
-func (db postgre) GetMonitoringTerdaftar(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
-	mtd, err := db.Queries.GetMonitoringTerdaftar(ctx, lokasi_id)
+func (db postgre) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
+	mtd, err := db.Queries.GetMonitoringTerdaftarByLokasi(ctx, lokasi_id)
 	if err != nil {
 		return nil, err
 	}
@@ -232,4 +232,22 @@ func (db postgre) GetMonitoringTerdaftar(ctx context.Context, lokasi_id int32) (
 	}
 
 	return converted, nil
+}
+
+func (db postgre) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.MonitoringTerdaftar, error) {
+	idMon, err := uuid.Parse(id)
+	if err != nil {
+		return servicemodel.MonitoringTerdaftar{}, err
+	}
+
+	d, err := db.Queries.GetMonitoringTerdaftar(ctx, idMon)
+	return servicemodel.MonitoringTerdaftar(d), err
+}
+
+func (db postgre) GetMonitoringData(ctx context.Context, id string) ([]float64, error) {
+	idMon, err := uuid.Parse(id)
+	if err != nil {
+		return []float64{}, err
+	}
+	return db.Queries.GetMonitoringData(ctx, idMon)
 }
