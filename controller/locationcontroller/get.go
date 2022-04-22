@@ -12,6 +12,8 @@ import (
 
 func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
 	uriParam := request.UriParamTipeLokasi{}
+	var lokasi interface{}
+	var err error
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
@@ -19,47 +21,36 @@ func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
 		return
 	}
 
-	Q, ok := ctx.GetQuery("depends")
-	queryParam, err := strconv.Atoi(Q)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
-		return
-	}
+	if uriParam.Tipe == Provinsi {
+		lokasi, err = ctr.service.GetAllProvinsi(ctx)
+	} else {
 
-	uriParam.Tipe = strings.ToLower(uriParam.Tipe)
-	var lokasi interface{}
+		Q, ok := ctx.GetQuery("depends")
+		if ok {
+			queryParam, convErr := strconv.Atoi(Q)
+			if convErr != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"error": err,
+				})
+				return
+			}
+			uriParam.Tipe = strings.ToLower(uriParam.Tipe)
+			lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
+		} else {
+			switch uriParam.Tipe {
+			case Kabupaten:
+				lokasi, err = ctr.service.GetAllKabupaten(ctx)
 
-	switch uriParam.Tipe {
-	case Provinsi:
-		if !ok {
-			lokasi, err = ctr.service.GetAllProvinsi(ctx)
+			case Kecamatan:
+				lokasi, err = ctr.service.GetAllKecamatan(ctx)
+
+			case Desa:
+				lokasi, err = ctr.service.GetAllDesa(ctx)
+
+			default:
+				err = errors.New("tipe lokasi tidak tersedia")
+			}
 		}
-
-	case Kabupaten:
-		if !ok {
-			lokasi, err = ctr.service.GetAllKabupaten(ctx)
-		}
-
-		lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
-
-	case Kecamatan:
-		if !ok {
-			lokasi, err = ctr.service.GetAllKecamatan(ctx)
-		}
-
-		lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
-
-	case Desa:
-		if !ok {
-			lokasi, err = ctr.service.GetAllDesa(ctx)
-		}
-
-		lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
-
-	default:
-		err = errors.New("tipe lokasi tidak tersedia")
 	}
 
 	if err != nil {
