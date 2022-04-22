@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (ctr Controller) Get(ctx *gin.Context) {
+func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 	Q, ok := ctx.GetQuery("lokasi")
 	queryParam, convErr := strconv.Atoi(Q)
 	if !ok || convErr != nil {

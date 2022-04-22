@@ -16,5 +16,5 @@ func apiV1Route(route gin.IRouter, controller controller.Controller) {
 	route.GET("/lokasi/:tipe", controller.Location.GetAllLokasi)
 	route.POST("/monitoring/daftar", controller.Monitoring.CreateDaftar)
 	route.POST("/monitoring/value", controller.Monitoring.CreateValue)
-	route.GET("/monitoring", controller.Monitoring.Get)
+	route.GET("/monitoring/terdaftar", controller.Monitoring.GetTerdaftar)
 }
