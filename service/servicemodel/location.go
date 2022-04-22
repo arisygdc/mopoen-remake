@@ -23,7 +23,7 @@ type Desa struct {
 	Nama        string `json:"nama"`
 }
 
-type LocationDepends struct {
+type Lokasi struct {
 	ID   int32  `json:"id"`
 	Nama string `json:"nama"`
 }

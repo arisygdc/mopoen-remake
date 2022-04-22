@@ -170,8 +170,8 @@ func (db postgre) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.
 	return db.Queries.CreateMonitoringValue(ctx, param)
 }
 
-func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.LocationDepends, error) {
-	var locationBy []servicemodel.LocationDepends
+func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error) {
+	var locationBy []servicemodel.Lokasi
 	switch tipe {
 	case "kabupaten":
 		val, Qerr := db.Queries.GetKabupatenBy(ctx, depends)
@@ -179,9 +179,9 @@ func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) (
 			return nil, Qerr
 		}
 
-		locationBy = make([]servicemodel.LocationDepends, len(val))
+		locationBy = make([]servicemodel.Lokasi, len(val))
 		for i, val := range val {
-			locationBy[i] = servicemodel.LocationDepends{
+			locationBy[i] = servicemodel.Lokasi{
 				ID:   val.ID,
 				Nama: val.Nama,
 			}
@@ -193,9 +193,9 @@ func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) (
 			return nil, Qerr
 		}
 
-		locationBy = make([]servicemodel.LocationDepends, len(val))
+		locationBy = make([]servicemodel.Lokasi, len(val))
 		for i, val := range val {
-			locationBy[i] = servicemodel.LocationDepends{
+			locationBy[i] = servicemodel.Lokasi{
 				ID:   val.ID,
 				Nama: val.Nama,
 			}
@@ -207,9 +207,9 @@ func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) (
 			return nil, Qerr
 		}
 
-		locationBy = make([]servicemodel.LocationDepends, len(val))
+		locationBy = make([]servicemodel.Lokasi, len(val))
 		for i, val := range val {
-			locationBy[i] = servicemodel.LocationDepends{
+			locationBy[i] = servicemodel.Lokasi{
 				ID:   val.ID,
 				Nama: val.Nama,
 			}
