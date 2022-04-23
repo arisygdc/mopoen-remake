@@ -1,0 +1,85 @@
+package pgservice
+
+import (
+	"context"
+	"mopoen-remake/database/postgres"
+	"mopoen-remake/service/servicemodel"
+
+	"github.com/google/uuid"
+)
+
+func (db postgre) DaftarMonitoring(ctx context.Context, daftarMonitoringParam servicemodel.DaftarMonitoring) error {
+	param := postgres.CreateMonitoringTerdaftarParams{
+		ID:           uuid.New(),
+		TipeSensorID: daftarMonitoringParam.TipeSensor,
+		LokasiID:     daftarMonitoringParam.Location_id,
+		Nama:         daftarMonitoringParam.Nama,
+		Keterangan:   daftarMonitoringParam.Keterangan,
+	}
+
+	return db.Queries.CreateMonitoringTerdaftar(ctx, param)
+}
+
+func (db postgre) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64) error {
+	param := postgres.CreateMonitoringValueParams{
+		MonitoringTerdaftar: monitoring_id,
+		Value:               value,
+	}
+
+	return db.Queries.CreateMonitoringValue(ctx, param)
+}
+
+func (db postgre) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
+	mtd, err := db.Queries.GetMonitoringTerdaftarByLokasi(ctx, lokasi_id)
+	if err != nil {
+		return nil, err
+	}
+
+	converted := make([]servicemodel.MonitoringTerdaftar, len(mtd))
+	for i, v := range mtd {
+		converted[i] = servicemodel.MonitoringTerdaftar(v)
+	}
+
+	return converted, nil
+}
+
+func (db postgre) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error) {
+	idMon, err := uuid.Parse(id)
+	monTdServiceModel := servicemodel.DetailMonitoringTerdaftar{}
+	if err != nil {
+		return servicemodel.DetailMonitoringTerdaftar{}, err
+	}
+
+	monTd, err := db.Queries.GetMonitoringTerdaftar(ctx, idMon)
+	if err != nil {
+		return monTdServiceModel, err
+	}
+
+	tipeSensor, err := db.Queries.GetTipeSensor(ctx, monTd.LokasiID)
+	if err != nil {
+		return monTdServiceModel, err
+	}
+
+	lokasi, err := db.Queries.FetchLokasi(ctx, monTd.LokasiID)
+	if err != nil {
+		return monTdServiceModel, err
+	}
+
+	monTdServiceModel = servicemodel.DetailMonitoringTerdaftar{
+		ID:         monTd.ID,
+		TipeSensor: servicemodel.TipeSensor(tipeSensor),
+		LokasiID:   servicemodel.FetchLokasi(lokasi),
+		Nama:       monTd.Nama,
+		Keterangan: monTd.Keterangan,
+	}
+
+	return monTdServiceModel, err
+}
+
+func (db postgre) GetMonitoringData(ctx context.Context, id string) ([]float64, error) {
+	idMon, err := uuid.Parse(id)
+	if err != nil {
+		return []float64{}, err
+	}
+	return db.Queries.GetMonitoringData(ctx, idMon)
+}
