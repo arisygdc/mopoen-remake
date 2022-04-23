@@ -27,3 +27,10 @@ type Lokasi struct {
 	ID   int32  `json:"id"`
 	Nama string `json:"nama"`
 }
+
+type FetchLokasi struct {
+	Desa      string `json:"desa"`
+	Kecamatan string `json:"kecamatan"`
+	Kabupaten string `json:"kabupaten"`
+	Provinsi  string `json:"provinsi"`
+}

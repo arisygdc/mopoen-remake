@@ -16,3 +16,11 @@ type MonitoringTerdaftar struct {
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
 }
+
+type DetailMonitoringTerdaftar struct {
+	ID         uuid.UUID   `json:"id"`
+	TipeSensor TipeSensor  `json:"tipe_sensor"`
+	LokasiID   FetchLokasi `json:"lokasi"`
+	Nama       string      `json:"nama"`
+	Keterangan string      `json:"keterangan"`
+}

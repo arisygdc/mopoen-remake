@@ -234,14 +234,37 @@ func (db postgre) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id 
 	return converted, nil
 }
 
-func (db postgre) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.MonitoringTerdaftar, error) {
+func (db postgre) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error) {
 	idMon, err := uuid.Parse(id)
+	monTdServiceModel := servicemodel.DetailMonitoringTerdaftar{}
 	if err != nil {
-		return servicemodel.MonitoringTerdaftar{}, err
+		return servicemodel.DetailMonitoringTerdaftar{}, err
 	}
 
-	d, err := db.Queries.GetMonitoringTerdaftar(ctx, idMon)
-	return servicemodel.MonitoringTerdaftar(d), err
+	monTd, err := db.Queries.GetMonitoringTerdaftar(ctx, idMon)
+	if err != nil {
+		return monTdServiceModel, err
+	}
+
+	tipeSensor, err := db.Queries.GetTipeSensor(ctx, monTd.LokasiID)
+	if err != nil {
+		return monTdServiceModel, err
+	}
+
+	lokasi, err := db.Queries.FetchLokasi(ctx, monTd.LokasiID)
+	if err != nil {
+		return monTdServiceModel, err
+	}
+
+	monTdServiceModel = servicemodel.DetailMonitoringTerdaftar{
+		ID:         monTd.ID,
+		TipeSensor: servicemodel.TipeSensor(tipeSensor),
+		LokasiID:   servicemodel.FetchLokasi(lokasi),
+		Nama:       monTd.Nama,
+		Keterangan: monTd.Keterangan,
+	}
+
+	return monTdServiceModel, err
 }
 
 func (db postgre) GetMonitoringData(ctx context.Context, id string) ([]float64, error) {

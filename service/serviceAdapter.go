@@ -32,7 +32,7 @@ type IServices interface {
 	GetAllKecamatan(ctx context.Context) ([]servicemodel.Kecamatan, error)
 	GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error)
 	GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error)
-	GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.MonitoringTerdaftar, error)
+	GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error)
 	GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error)
 	GetMonitoringData(ctx context.Context, id string) ([]float64, error)
 }

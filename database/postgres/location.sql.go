@@ -96,6 +96,34 @@ func (q *Queries) DeleteProvinsi(ctx context.Context, id int32) error {
 	return err
 }
 
+const fetchLokasi = `-- name: FetchLokasi :one
+SELECT d.nama AS desa, kc.nama AS kecamatan, kb.nama AS kabupaten, p.nama AS provinsi
+FROM desa d
+INNER JOIN kecamatan kc ON d.kecamatan_id = kc.id
+INNER JOIN kabupaten kb ON kc.kabupaten_id = kb.id
+INNER JOIN provinsi p ON kb.provinsi_id = p.id
+WHERE d.id = $1
+`
+
+type FetchLokasiRow struct {
+	Desa      string `json:"desa"`
+	Kecamatan string `json:"kecamatan"`
+	Kabupaten string `json:"kabupaten"`
+	Provinsi  string `json:"provinsi"`
+}
+
+func (q *Queries) FetchLokasi(ctx context.Context, id int32) (FetchLokasiRow, error) {
+	row := q.db.QueryRowContext(ctx, fetchLokasi, id)
+	var i FetchLokasiRow
+	err := row.Scan(
+		&i.Desa,
+		&i.Kecamatan,
+		&i.Kabupaten,
+		&i.Provinsi,
+	)
+	return i, err
+}
+
 const getAllDesa = `-- name: GetAllDesa :many
 SELECT id, kecamatan_id, nama FROM desa
 `

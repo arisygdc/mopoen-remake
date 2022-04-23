@@ -42,3 +42,11 @@ SELECT * FROM kecamatan WHERE kabupaten_id = $1;
 
 -- name: GetDesaBy :many
 SELECT * FROM desa WHERE kecamatan_id = $1;
+
+-- name: FetchLokasi :one
+SELECT d.nama AS desa, kc.nama AS kecamatan, kb.nama AS kabupaten, p.nama AS provinsi
+FROM desa d
+INNER JOIN kecamatan kc ON d.kecamatan_id = kc.id
+INNER JOIN kabupaten kb ON kc.kabupaten_id = kb.id
+INNER JOIN provinsi p ON kb.provinsi_id = p.id
+WHERE d.id = $1;
