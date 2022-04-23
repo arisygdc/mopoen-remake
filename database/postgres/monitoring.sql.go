@@ -7,6 +7,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -87,22 +88,27 @@ func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg Get
 }
 
 const getMonitoringData = `-- name: GetMonitoringData :many
-SELECT (value) FROM monitoring_data WHERE monitoring_terdaftar = $1
+SELECT value, dibuat_pada FROM monitoring_data WHERE monitoring_terdaftar = $1
 `
 
-func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uuid.UUID) ([]float64, error) {
+type GetMonitoringDataRow struct {
+	Value      float64   `json:"value"`
+	DibuatPada time.Time `json:"dibuat_pada"`
+}
+
+func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uuid.UUID) ([]GetMonitoringDataRow, error) {
 	rows, err := q.db.QueryContext(ctx, getMonitoringData, monitoringTerdaftar)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []float64
+	var items []GetMonitoringDataRow
 	for rows.Next() {
-		var value float64
-		if err := rows.Scan(&value); err != nil {
+		var i GetMonitoringDataRow
+		if err := rows.Scan(&i.Value, &i.DibuatPada); err != nil {
 			return nil, err
 		}
-		items = append(items, value)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

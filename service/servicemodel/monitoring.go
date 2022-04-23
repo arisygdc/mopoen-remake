@@ -1,6 +1,10 @@
 package servicemodel
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type DaftarMonitoring struct {
 	TipeSensor  int32  `json:"tipe_sensor"`
@@ -23,4 +27,9 @@ type DetailMonitoringTerdaftar struct {
 	LokasiID   FetchLokasi `json:"lokasi"`
 	Nama       string      `json:"nama"`
 	Keterangan string      `json:"keterangan"`
+}
+
+type MonitoringData struct {
+	Value      float64   `json:"value"`
+	DibuatPada time.Time `json:"dibuat_pada"`
 }

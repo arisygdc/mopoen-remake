@@ -34,7 +34,7 @@ type IServices interface {
 	GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error)
 	GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error)
 	GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error)
-	GetMonitoringData(ctx context.Context, id string) ([]float64, error)
+	GetMonitoringData(ctx context.Context, id string) ([]servicemodel.MonitoringData, error)
 	GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error)
 }
 

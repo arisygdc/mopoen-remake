@@ -1,3 +1,5 @@
+SET timezone TO 'Asia/Jakarta';
+
 CREATE TABLE tipe_sensor (
     id SERIAL NOT NULL PRIMARY KEY,
     tipe VARCHAR(50) NOT NULL,
@@ -38,7 +40,8 @@ CREATE TABLE monitoring_terdaftar (
 CREATE TABLE monitoring_data (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     monitoring_terdaftar uuid NOT NULL,
-    value FLOAT NOT NULL
+    value FLOAT NOT NULL,
+    dibuat_pada TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Relation table

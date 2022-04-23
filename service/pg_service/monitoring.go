@@ -76,12 +76,22 @@ func (db postgre) GetMonitoringTerdaftar(ctx context.Context, id string) (servic
 	return monTdServiceModel, err
 }
 
-func (db postgre) GetMonitoringData(ctx context.Context, id string) ([]float64, error) {
+func (db postgre) GetMonitoringData(ctx context.Context, id string) ([]servicemodel.MonitoringData, error) {
 	idMon, err := uuid.Parse(id)
+	var monData []servicemodel.MonitoringData
 	if err != nil {
-		return []float64{}, err
+		return monData, err
 	}
-	return db.Queries.GetMonitoringData(ctx, idMon)
+	row, err := db.Queries.GetMonitoringData(ctx, idMon)
+	if err != nil {
+		return monData, err
+	}
+
+	monData = make([]servicemodel.MonitoringData, len(row))
+	for i, v := range row {
+		monData[i] = servicemodel.MonitoringData(v)
+	}
+	return monData, err
 }
 
 func (db postgre) GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
