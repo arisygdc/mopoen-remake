@@ -115,11 +115,14 @@ func (db postgre) GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.An
 	var analisa servicemodel.AnalisaMonitoring
 	total, err := db.Queries.CountDataMonitoring(ctx, id)
 	if err != nil {
-		return servicemodel.AnalisaMonitoring{}, err
+		return analisa, err
 	}
 
-	// this query return error when filter value is null
-	average, _ := db.Queries.AverageDataMonitoring(ctx, id)
+	average, err := db.Queries.AverageDataMonitoring(ctx, id)
+	if err != nil {
+		return analisa, err
+	}
+
 	analisa = servicemodel.AnalisaMonitoring{
 		Overall: servicemodel.ResultMonitoring{
 			Total:   total.All,

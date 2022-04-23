@@ -26,10 +26,10 @@ COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00.1' AND '06:00:00') AS
 FROM monitoring_data WHERE monitoring_terdaftar = $1;
 
 -- name: AverageDataMonitoring :one
-SELECT AVG(value)::FLOAT AS all,
-AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00.1' AND '15:00:00')::FLOAT AS morning,
-AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00.1' AND '15:00:00')::FLOAT AS noon,
-AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00.1' AND '18:00:00')::FLOAT AS afternoon,
-AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00.1' AND '24:00:00')::FLOAT AS night,
-AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00.1' AND '06:00:00')::FLOAT AS midnight
+SELECT COALESCE(AVG(value), 0)::FLOAT AS all,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00.1' AND '15:00:00'), 0)::FLOAT AS morning,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00.1' AND '15:00:00'), 0)::FLOAT AS noon,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00.1' AND '18:00:00'), 0)::FLOAT AS afternoon,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00.1' AND '24:00:00'), 0)::FLOAT AS night,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00.1' AND '06:00:00'), 0)::FLOAT AS midnight
 FROM monitoring_data WHERE monitoring_terdaftar = $1;
