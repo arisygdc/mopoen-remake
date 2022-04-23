@@ -83,3 +83,20 @@ func (db postgre) GetMonitoringData(ctx context.Context, id string) ([]float64, 
 	}
 	return db.Queries.GetMonitoringData(ctx, idMon)
 }
+
+func (db postgre) GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
+	rows, err := db.Queries.GetMonTerdaftarFilterLokAndSensor(ctx, postgres.GetMonTerdaftarFilterLokAndSensorParams{
+		LokasiID:     lokasi_id,
+		TipeSensorID: sensor_id,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	convert := make([]servicemodel.MonitoringTerdaftar, len(rows))
+	for i, v := range rows {
+		convert[i] = servicemodel.MonitoringTerdaftar(v)
+	}
+	return convert, err
+}

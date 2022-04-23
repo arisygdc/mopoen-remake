@@ -12,3 +12,6 @@ SELECT (value) FROM monitoring_data WHERE monitoring_terdaftar = $1;
 
 -- name: GetMonitoringTerdaftar :one
 SELECT * FROM monitoring_terdaftar WHERE id = $1;
+
+-- name: GetMonTerdaftarFilterLokAndSensor :many
+SELECT * FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2;

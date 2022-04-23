@@ -48,6 +48,44 @@ func (q *Queries) CreateMonitoringValue(ctx context.Context, arg CreateMonitorin
 	return err
 }
 
+const getMonTerdaftarFilterLokAndSensor = `-- name: GetMonTerdaftarFilterLokAndSensor :many
+SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2
+`
+
+type GetMonTerdaftarFilterLokAndSensorParams struct {
+	TipeSensorID int32 `json:"tipe_sensor_id"`
+	LokasiID     int32 `json:"lokasi_id"`
+}
+
+func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg GetMonTerdaftarFilterLokAndSensorParams) ([]MonitoringTerdaftar, error) {
+	rows, err := q.db.QueryContext(ctx, getMonTerdaftarFilterLokAndSensor, arg.TipeSensorID, arg.LokasiID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MonitoringTerdaftar
+	for rows.Next() {
+		var i MonitoringTerdaftar
+		if err := rows.Scan(
+			&i.ID,
+			&i.TipeSensorID,
+			&i.LokasiID,
+			&i.Nama,
+			&i.Keterangan,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMonitoringData = `-- name: GetMonitoringData :many
 SELECT (value) FROM monitoring_data WHERE monitoring_terdaftar = $1
 `

@@ -12,20 +12,37 @@ var ErrTerdaftarQParam = errors.New("query param tidak valid")
 
 func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 	QLok, okLok := ctx.GetQuery("lokasi")
+	QSensor, okSensor := ctx.GetQuery("sensor")
 	QUUID, okUUID := ctx.GetQuery("uuid")
-	queryParam, err := strconv.Atoi(QLok)
+	var err error
 
-	if okLok && okUUID {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": ErrTerdaftarQParam,
-		})
+	if okLok && okUUID || okSensor && okUUID {
+		err = ErrTerdaftarQParam
 	}
 
-	if okLok && err == nil {
-		mtd, qErr := ctr.service.GetMonitoringTerdaftarByLokasi(ctx, int32(queryParam))
+	lok_id, _ := strconv.Atoi(QLok)
+	sensor_id, _ := strconv.Atoi(QSensor)
+
+	if okLok && okSensor && lok_id > 0 && sensor_id > 0 {
+		mtd, qErr := ctr.service.GetMonTerdaftarFilterLokasiAndSensor(ctx, int32(lok_id), int32(sensor_id))
 		if qErr != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": err,
+				"error": qErr,
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": mtd,
+		})
+		return
+	}
+
+	if okLok && lok_id > 0 {
+		mtd, qErr := ctr.service.GetMonitoringTerdaftarByLokasi(ctx, int32(lok_id))
+		if qErr != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error": qErr,
 			})
 			return
 		}
@@ -40,7 +57,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 		mtd, qErr := ctr.service.GetMonitoringTerdaftar(ctx, QUUID)
 		if qErr != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": err,
+				"error": qErr,
 			})
 			return
 		}
@@ -52,7 +69,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusBadRequest, gin.H{
-		"error": ErrTerdaftarQParam,
+		"error": err,
 	})
 
 }
