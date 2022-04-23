@@ -11,6 +11,7 @@ type IMonitoringController interface {
 	CreateValue(ctx *gin.Context)
 	GetTerdaftar(ctx *gin.Context)
 	GetData(ctx *gin.Context)
+	GetAnalisa(ctx *gin.Context)
 }
 
 type Controller struct {

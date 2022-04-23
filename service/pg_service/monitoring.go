@@ -110,3 +110,41 @@ func (db postgre) GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, loka
 	}
 	return convert, err
 }
+
+func (db postgre) GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.AnalisaMonitoring, error) {
+	var analisa servicemodel.AnalisaMonitoring
+	total, err := db.Queries.CountDataMonitoring(ctx, id)
+	if err != nil {
+		return servicemodel.AnalisaMonitoring{}, err
+	}
+
+	// this query return error when filter value is null
+	average, _ := db.Queries.AverageDataMonitoring(ctx, id)
+	analisa = servicemodel.AnalisaMonitoring{
+		Overall: servicemodel.ResultMonitoring{
+			Total:   total.All,
+			Average: average.All,
+		},
+		Morning: servicemodel.ResultMonitoring{
+			Total:   total.Morning,
+			Average: average.Morning,
+		},
+		Afternoon: servicemodel.ResultMonitoring{
+			Total:   total.Afternoon,
+			Average: average.Afternoon,
+		},
+		Noon: servicemodel.ResultMonitoring{
+			Total:   total.Noon,
+			Average: average.Noon,
+		},
+		Night: servicemodel.ResultMonitoring{
+			Total:   total.Night,
+			Average: average.Night,
+		},
+		Midnight: servicemodel.ResultMonitoring{
+			Total:   total.Midnight,
+			Average: average.Midnight,
+		},
+	}
+	return analisa, nil
+}

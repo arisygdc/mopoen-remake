@@ -36,6 +36,7 @@ type IServices interface {
 	GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error)
 	GetMonitoringData(ctx context.Context, id string) ([]servicemodel.MonitoringData, error)
 	GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error)
+	GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.AnalisaMonitoring, error)
 }
 
 func New(env config.Environment) (IServices, error) {
