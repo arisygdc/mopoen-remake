@@ -6,10 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var Provinsi = "provinsi"
-var Kabupaten = "kabupaten"
-var Kecamatan = "kecamatan"
-var Desa = "desa"
+const (
+	Provinsi  = "provinsi"
+	Kabupaten = "kabupaten"
+	Kecamatan = "kecamatan"
+	Desa      = "desa"
+)
 
 type ILocationController interface {
 	CreateLokasi(ctx *gin.Context)

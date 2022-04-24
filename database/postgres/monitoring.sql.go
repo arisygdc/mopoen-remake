@@ -7,9 +7,76 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
+
+const averageDataMonitoring = `-- name: AverageDataMonitoring :one
+SELECT COALESCE(AVG(value), 0)::FLOAT AS all,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00.1' AND '15:00:00'), 0)::FLOAT AS morning,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00.1' AND '15:00:00'), 0)::FLOAT AS noon,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00.1' AND '18:00:00'), 0)::FLOAT AS afternoon,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00.1' AND '24:00:00'), 0)::FLOAT AS night,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00.1' AND '06:00:00'), 0)::FLOAT AS midnight
+FROM monitoring_data WHERE monitoring_terdaftar = $1
+`
+
+type AverageDataMonitoringRow struct {
+	All       float64 `json:"all"`
+	Morning   float64 `json:"morning"`
+	Noon      float64 `json:"noon"`
+	Afternoon float64 `json:"afternoon"`
+	Night     float64 `json:"night"`
+	Midnight  float64 `json:"midnight"`
+}
+
+func (q *Queries) AverageDataMonitoring(ctx context.Context, monitoringTerdaftar uuid.UUID) (AverageDataMonitoringRow, error) {
+	row := q.db.QueryRowContext(ctx, averageDataMonitoring, monitoringTerdaftar)
+	var i AverageDataMonitoringRow
+	err := row.Scan(
+		&i.All,
+		&i.Morning,
+		&i.Noon,
+		&i.Afternoon,
+		&i.Night,
+		&i.Midnight,
+	)
+	return i, err
+}
+
+const countDataMonitoring = `-- name: CountDataMonitoring :one
+SELECT COUNT(1) AS all, 
+COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00.1' AND '15:00:00') AS morning,
+COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00.1' AND '15:00:00') AS noon,
+COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00.1' AND '18:00:00') AS afternoon,
+COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00.1' AND '24:00:00') AS night,
+COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00.1' AND '06:00:00') AS midnight
+FROM monitoring_data WHERE monitoring_terdaftar = $1
+`
+
+type CountDataMonitoringRow struct {
+	All       int64 `json:"all"`
+	Morning   int64 `json:"morning"`
+	Noon      int64 `json:"noon"`
+	Afternoon int64 `json:"afternoon"`
+	Night     int64 `json:"night"`
+	Midnight  int64 `json:"midnight"`
+}
+
+func (q *Queries) CountDataMonitoring(ctx context.Context, monitoringTerdaftar uuid.UUID) (CountDataMonitoringRow, error) {
+	row := q.db.QueryRowContext(ctx, countDataMonitoring, monitoringTerdaftar)
+	var i CountDataMonitoringRow
+	err := row.Scan(
+		&i.All,
+		&i.Morning,
+		&i.Noon,
+		&i.Afternoon,
+		&i.Night,
+		&i.Midnight,
+	)
+	return i, err
+}
 
 const createMonitoringTerdaftar = `-- name: CreateMonitoringTerdaftar :exec
 INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, nama, keterangan) VALUES ($1, $2, $3, $4, $5)
@@ -87,22 +154,27 @@ func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg Get
 }
 
 const getMonitoringData = `-- name: GetMonitoringData :many
-SELECT (value) FROM monitoring_data WHERE monitoring_terdaftar = $1
+SELECT value, dibuat_pada FROM monitoring_data WHERE monitoring_terdaftar = $1
 `
 
-func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uuid.UUID) ([]float64, error) {
+type GetMonitoringDataRow struct {
+	Value      float64   `json:"value"`
+	DibuatPada time.Time `json:"dibuat_pada"`
+}
+
+func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uuid.UUID) ([]GetMonitoringDataRow, error) {
 	rows, err := q.db.QueryContext(ctx, getMonitoringData, monitoringTerdaftar)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []float64
+	var items []GetMonitoringDataRow
 	for rows.Next() {
-		var value float64
-		if err := rows.Scan(&value); err != nil {
+		var i GetMonitoringDataRow
+		if err := rows.Scan(&i.Value, &i.DibuatPada); err != nil {
 			return nil, err
 		}
-		items = append(items, value)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

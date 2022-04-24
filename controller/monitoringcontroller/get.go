@@ -6,9 +6,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
-var ErrTerdaftarQParam = errors.New("query param tidak valid")
+var ErrQParam = errors.New("query param tidak valid")
 
 func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 	QLok, okLok := ctx.GetQuery("lokasi")
@@ -17,7 +18,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 	var err error
 
 	if okLok && okUUID || okSensor && okUUID {
-		err = ErrTerdaftarQParam
+		err = ErrQParam
 	}
 
 	lok_id, _ := strconv.Atoi(QLok)
@@ -78,7 +79,7 @@ func (ctr Controller) GetData(ctx *gin.Context) {
 	Q, ok := ctx.GetQuery("uuid")
 	if !ok || len(Q) != 36 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "uuid tidak valid",
+			"error": ErrQParam,
 		})
 		return
 	}
@@ -93,5 +94,34 @@ func (ctr Controller) GetData(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": md,
+	})
+}
+
+func (ctr Controller) GetAnalisa(ctx *gin.Context) {
+	Q, ok := ctx.GetQuery("uuid")
+	if !ok || len(Q) != 36 {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": ErrQParam,
+		})
+		return
+	}
+
+	id, err := uuid.Parse(Q)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": ErrQParam,
+		})
+		return
+	}
+	rowAnalisa, err := ctr.service.GetAnalisa(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": rowAnalisa,
 	})
 }

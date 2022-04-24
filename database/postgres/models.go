@@ -5,6 +5,8 @@
 package postgres
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -30,6 +32,7 @@ type MonitoringDatum struct {
 	ID                  int64     `json:"id"`
 	MonitoringTerdaftar uuid.UUID `json:"monitoring_terdaftar"`
 	Value               float64   `json:"value"`
+	DibuatPada          time.Time `json:"dibuat_pada"`
 }
 
 type MonitoringTerdaftar struct {
