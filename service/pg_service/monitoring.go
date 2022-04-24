@@ -55,7 +55,7 @@ func (db postgre) GetMonitoringTerdaftar(ctx context.Context, id string) (servic
 		return monTdServiceModel, err
 	}
 
-	tipeSensor, err := db.Queries.GetTipeSensor(ctx, monTd.LokasiID)
+	tipeSensor, err := db.Queries.GetTipeSensor(ctx, monTd.TipeSensorID)
 	if err != nil {
 		return monTdServiceModel, err
 	}
