@@ -108,10 +108,6 @@ func (db postgre) GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error) {
 	return DesaConverted, nil
 }
 
-func (db postgre) DeleteDesa(ctx context.Context, desa_id int32) error {
-	return db.Queries.DeleteDesa(ctx, desa_id)
-}
-
 func (db postgre) DeleteTipeSensor(ctx context.Context, id int32) error {
 	return db.Queries.DeleteTipeSensor(ctx, id)
 }
@@ -135,16 +131,20 @@ func (db postgre) CreateDesa(ctx context.Context, kecamatan_id int32, desa strin
 	return db.Queries.CreateDesa(ctx, param)
 }
 
-func (db postgre) DeleteProvinsi(ctx context.Context, provinsi_id int32) error {
+func (db postgre) DeleteProvinsi(ctx context.Context, provinsi_id int32) (string, error) {
 	return db.Queries.DeleteProvinsi(ctx, provinsi_id)
 }
 
-func (db postgre) DeleteKabupaten(ctx context.Context, kabupaten_id int32) error {
+func (db postgre) DeleteKabupaten(ctx context.Context, kabupaten_id int32) (string, error) {
 	return db.Queries.DeleteKabupaten(ctx, kabupaten_id)
 }
 
-func (db postgre) DeleteKecamatan(ctx context.Context, kecamatan_id int32) error {
+func (db postgre) DeleteKecamatan(ctx context.Context, kecamatan_id int32) (string, error) {
 	return db.Queries.DeleteKecamatan(ctx, kecamatan_id)
+}
+
+func (db postgre) DeleteDesa(ctx context.Context, desa_id int32) (string, error) {
+	return db.Queries.DeleteDesa(ctx, desa_id)
 }
 
 func (db postgre) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error) {

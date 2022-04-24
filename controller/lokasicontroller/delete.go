@@ -33,11 +33,11 @@ func (ctr Controller) DeleteLokasi(ctx *gin.Context) {
 	case Provinsi:
 		nama, err = ctr.service.DeleteProvinsi(ctx, req.Id)
 	case Kabupaten:
-		err = ctr.service.DeleteKabupaten(ctx, req.Id)
+		nama, err = ctr.service.DeleteKabupaten(ctx, req.Id)
 	case Kecamatan:
-		err = ctr.service.DeleteKecamatan(ctx, req.Id)
+		nama, err = ctr.service.DeleteKecamatan(ctx, req.Id)
 	case Desa:
-		err = ctr.service.DeleteDesa(ctx, req.Id)
+		nama, err = ctr.service.DeleteDesa(ctx, req.Id)
 	default:
 		err = errors.New("tipe lokasi tidak tersedia")
 	}
