@@ -1,4 +1,4 @@
-package locationcontroller
+package lokasicontroller
 
 import (
 	"errors"

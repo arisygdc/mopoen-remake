@@ -1,7 +1,8 @@
-package locationcontroller
+package lokasicontroller
 
 import (
 	"errors"
+	"fmt"
 	"mopoen-remake/controller/request"
 	"net/http"
 	"strings"
@@ -27,9 +28,10 @@ func (ctr Controller) DeleteLokasi(ctx *gin.Context) {
 	}
 
 	var err error
+	var nama string
 	switch strings.ToLower(uriParam.Tipe) {
 	case Provinsi:
-		err = ctr.service.DeleteProvinsi(ctx, req.Id)
+		nama, err = ctr.service.DeleteProvinsi(ctx, req.Id)
 	case Kabupaten:
 		err = ctr.service.DeleteKabupaten(ctx, req.Id)
 	case Kecamatan:
@@ -48,6 +50,6 @@ func (ctr Controller) DeleteLokasi(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": uriParam.Tipe + " berhasil dibuat",
+		"message": fmt.Sprintf("%s %s deleted", uriParam.Tipe, nama),
 	})
 }
