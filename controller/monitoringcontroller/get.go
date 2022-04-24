@@ -2,7 +2,6 @@ package monitoringcontroller
 
 import (
 	"errors"
-	"log"
 	"mopoen-remake/controller/request"
 	"net/http"
 	"strconv"
@@ -66,7 +65,6 @@ func (ctr Controller) GetTerdaftarByUUID(ctx *gin.Context) {
 	}
 
 	mtd, qErr := ctr.service.GetMonitoringTerdaftar(ctx, uriParam.ID)
-	log.Println(mtd)
 	if qErr != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": qErr.Error(),
@@ -80,15 +78,15 @@ func (ctr Controller) GetTerdaftarByUUID(ctx *gin.Context) {
 }
 
 func (ctr Controller) GetData(ctx *gin.Context) {
-	Q, ok := ctx.GetQuery("uuid")
-	if !ok || len(Q) != 36 {
+	var uriParam request.GetUUID
+	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": ErrQParam,
+			"message": err,
 		})
 		return
 	}
 
-	md, err := ctr.service.GetMonitoringData(ctx, Q)
+	md, err := ctr.service.GetMonitoringData(ctx, uriParam.ID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -102,21 +100,22 @@ func (ctr Controller) GetData(ctx *gin.Context) {
 }
 
 func (ctr Controller) GetAnalisa(ctx *gin.Context) {
-	Q, ok := ctx.GetQuery("uuid")
-	if !ok || len(Q) != 36 {
+	var uriParam request.GetUUID
+	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": ErrQParam,
+			"message": err,
 		})
 		return
 	}
 
-	id, err := uuid.Parse(Q)
+	id, err := uuid.Parse(uriParam.ID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": ErrQParam,
 		})
 		return
 	}
+
 	rowAnalisa, err := ctr.service.GetAnalisa(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
