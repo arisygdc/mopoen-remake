@@ -2,6 +2,7 @@ package locationcontroller
 
 import (
 	"errors"
+	"fmt"
 	"mopoen-remake/controller/request"
 	"net/http"
 	"strings"
@@ -13,12 +14,13 @@ func (ctr Controller) CreateLokasi(ctx *gin.Context) {
 	uriParam := request.UriParamTipeLokasi{}
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
 
 	uriParam.Tipe = strings.ToLower(uriParam.Tipe)
+	var nama string
 	var err error
 
 	switch uriParam.Tipe {
@@ -27,28 +29,32 @@ func (ctr Controller) CreateLokasi(ctx *gin.Context) {
 		if err := ctx.ShouldBindJSON(&req); err != nil {
 			break
 		}
-		err = ctr.service.CreateProvinsi(ctx, req.Nama)
+		nama = req.Nama
+		err = ctr.service.CreateProvinsi(ctx, nama)
 
 	case Kabupaten:
 		req := request.PostKabupaten{}
 		if err = ctx.ShouldBindJSON(&req); err != nil {
 			break
 		}
-		err = ctr.service.CreateKabupaten(ctx, req.Provinsi_id, req.Nama)
+		nama = req.Nama
+		err = ctr.service.CreateKabupaten(ctx, req.Provinsi_id, nama)
 
 	case Kecamatan:
 		req := request.PostKecamatan{}
 		if err := ctx.ShouldBindJSON(&req); err != nil {
 			break
 		}
-		err = ctr.service.CreateKecamatan(ctx, req.Kabupaten_id, req.Nama)
+		nama = req.Nama
+		err = ctr.service.CreateKecamatan(ctx, req.Kabupaten_id, nama)
 
 	case Desa:
 		req := request.PostDesa{}
 		if err := ctx.ShouldBindJSON(&req); err != nil {
 			break
 		}
-		err = ctr.service.CreateDesa(ctx, req.Kecamatan_id, req.Nama)
+		nama = req.Nama
+		err = ctr.service.CreateDesa(ctx, req.Kecamatan_id, nama)
 
 	default:
 		err = errors.New("tipe lokasi tidak tersedia")
@@ -56,12 +62,12 @@ func (ctr Controller) CreateLokasi(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{
-		"message": uriParam.Tipe + " created",
+		"message": fmt.Sprintf("%s %s created", uriParam.Tipe, nama),
 	})
 }

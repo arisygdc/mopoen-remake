@@ -28,7 +28,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 		mtd, qErr := ctr.service.GetMonTerdaftarFilterLokasiAndSensor(ctx, int32(lok_id), int32(sensor_id))
 		if qErr != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": qErr,
+				"message": qErr.Error(),
 			})
 			return
 		}
@@ -43,7 +43,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 		mtd, qErr := ctr.service.GetMonitoringTerdaftarByLokasi(ctx, int32(lok_id))
 		if qErr != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": qErr,
+				"message": qErr.Error(),
 			})
 			return
 		}
@@ -58,7 +58,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 		mtd, qErr := ctr.service.GetMonitoringTerdaftar(ctx, QUUID)
 		if qErr != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": qErr,
+				"message": qErr.Error(),
 			})
 			return
 		}
@@ -70,7 +70,7 @@ func (ctr Controller) GetTerdaftar(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusBadRequest, gin.H{
-		"error": err,
+		"message": err.Error(),
 	})
 
 }
@@ -79,7 +79,7 @@ func (ctr Controller) GetData(ctx *gin.Context) {
 	Q, ok := ctx.GetQuery("uuid")
 	if !ok || len(Q) != 36 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": ErrQParam,
+			"message": ErrQParam,
 		})
 		return
 	}
@@ -87,7 +87,7 @@ func (ctr Controller) GetData(ctx *gin.Context) {
 	md, err := ctr.service.GetMonitoringData(ctx, Q)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -101,7 +101,7 @@ func (ctr Controller) GetAnalisa(ctx *gin.Context) {
 	Q, ok := ctx.GetQuery("uuid")
 	if !ok || len(Q) != 36 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": ErrQParam,
+			"message": ErrQParam,
 		})
 		return
 	}
@@ -109,14 +109,14 @@ func (ctr Controller) GetAnalisa(ctx *gin.Context) {
 	id, err := uuid.Parse(Q)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": ErrQParam,
+			"message": ErrQParam,
 		})
 		return
 	}
 	rowAnalisa, err := ctr.service.GetAnalisa(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}

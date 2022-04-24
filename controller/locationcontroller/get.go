@@ -16,7 +16,7 @@ func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
 	var err error
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -30,7 +30,7 @@ func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
 			queryParam, convErr := strconv.Atoi(Q)
 			if convErr != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{
-					"error": err,
+					"message": err.Error(),
 				})
 				return
 			}
@@ -55,7 +55,7 @@ func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
