@@ -1,5 +1,3 @@
-SET timezone TO 'Asia/Jakarta';
-
 CREATE TABLE tipe_sensor (
     id SERIAL NOT NULL PRIMARY KEY,
     tipe VARCHAR(50) NOT NULL,
