@@ -10,6 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	PostgreDriver = "postgres"
+)
+
 var ErrDBDriverNotFound = errors.New("database driver not found")
 
 type IServices interface {
@@ -40,8 +44,8 @@ type IServices interface {
 }
 
 func New(env config.Environment) (IServices, error) {
-	if env.DBDriver == "postgres" {
-		return pgservice.NewPostgres(env)
+	if env.DBDriver == PostgreDriver {
+		return pgservice.NewPostgres(env.DBDriver, env.DBSource)
 	}
 	return nil, ErrDBDriverNotFound
 }

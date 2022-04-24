@@ -3,7 +3,6 @@ package pgservice
 import (
 	"context"
 	"database/sql"
-	"mopoen-remake/config"
 	"mopoen-remake/database/postgres"
 	"mopoen-remake/service/servicemodel"
 
@@ -15,8 +14,8 @@ type postgre struct {
 	Queries *postgres.Queries
 }
 
-func NewPostgres(env config.Environment) (postgre, error) {
-	SQLConn, err := sql.Open(env.DBDriver, env.DBSource)
+func NewPostgres(driver string, source string) (postgre, error) {
+	SQLConn, err := sql.Open(driver, source)
 	if err != nil {
 		return postgre{}, err
 	}
