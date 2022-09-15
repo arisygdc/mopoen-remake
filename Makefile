@@ -26,5 +26,5 @@ migrateup:
 
 migratedown:
 	migrate -path database/postgres/migration/ -database "postgresql://postgres:qwer1234@localhost:5432/mopoen?sslmode=disable" -verbose down
-  
+
 .PHONY: installpg uninstallpg startpg stoppg execdb createmigrate migrateup migratedown
