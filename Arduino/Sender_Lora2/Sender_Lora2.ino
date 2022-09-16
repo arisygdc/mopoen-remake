@@ -15,7 +15,8 @@
 #define ss 10
 #define rst 9
 #define dio0 8
- 
+#define timeSecond 1000
+
 float counter = 0;
  
 void setup() 
@@ -41,11 +42,11 @@ void loop()
   Serial.println(counter);
  
   LoRa.beginPacket();   //Send LoRa packet to receiver
-  LoRa.print("hello ");
-  LoRa.print(counter);
+  LoRa.print("cf0633d290c88dd347265ca490e9ae39: " + counter);
+  // LoRa.print(counter);
   LoRa.endPacket();
  
   counter+=1.5;
  
-  delay(1000);
+  delay(timeSecond * );
 }
