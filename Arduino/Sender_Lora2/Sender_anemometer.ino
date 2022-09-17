@@ -28,7 +28,7 @@ int timetoSleep = 1;               // minutes
 unsigned long sleepTime = 15;      // minutes
 unsigned long timeNow;
 int countThing = 0;
-int GPIO_pulse = 2; // Arduino = D2
+int GPIO_pulse = 2; // Arduino pin 2
 float rpm, rps;     // frequencies
 float radius = 0.1; // meters - measure of the lenght of each the anemometer wing
 float velocity_ms;  //m/s
