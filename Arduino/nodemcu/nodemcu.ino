@@ -2,12 +2,13 @@
 #include <ESP8266HTTPClient.h>
 #include <SPI.h>
 
-#define SERVER_IP "192.168.1.77:8080"
+#define SERVER_IP "192.168.1.2:8080"
 #define METHOD_POST "POST"
 
 #ifndef STASSID
-#define STASSID "rumah krishna"
-#define STAPSK  "ciumdong"
+#define STASSID "SSID"
+#define STAPSK  "pwd"
+#endif
 
 struct HTTP_RESULT {
   int code;
@@ -28,15 +29,18 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // String data = "";
-  // while(Serial.available()>0){
-  //   data += char(Serial.read());
-    
-  // }
+  String data = "";
+  String id_sensor = "";
+  String valStr = "";
+  while(Serial.available()>0){
+    data += char(Serial.read());
+    id_sensor = data.substring(0, 35);
+    valStr = data.substring(37, data.length());
+  }
 
   if ((WiFi.status() == WL_CONNECTED)) {
-    String valueSensorJson = "{\"id_sensor\": 4,\"data\": 76}"; //-> test with static value
-    getResponse = HTTPsend(METHOD_POST, "http://" SERVER_IP "/api/v1/sensor/data", valueSensorJson);
+    String valueSensorJson = "{\"id_sensor\": " + id_sensor + ",\"data\": " + valStr + "}"; //-> test with static value
+    HTTP_RESULT getResponse = HTTPsend(METHOD_POST, "http://" SERVER_IP "/api/v1/sensor/data", valueSensorJson);
     Serial.printf("[HTTP] POST SETUP DEVICE... code: %d\n", getResponse.code);
   }
 
