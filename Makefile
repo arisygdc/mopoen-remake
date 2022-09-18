@@ -4,7 +4,7 @@ installpg:
 	-e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=qwer1234 \
 	-e TZ=Asia/Jakarta -e PGTZ=Asia/Jakarta \
 	-e POSTGRES_DB=mopoen \
-	postgres:12-alpine3.14
+	postgres:14.5-alpine3.16
 
 uninstallpg:
 	docker container rm mopoen-remake-db
