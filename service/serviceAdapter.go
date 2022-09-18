@@ -25,10 +25,10 @@ type IServices interface {
 	CreateKabupaten(ctx context.Context, provinsi_id int32, kabupaten string) error
 	CreateKecamatan(ctx context.Context, kabupaten_id int32, kecamatan string) error
 	CreateDesa(ctx context.Context, kecamatan_id int32, desa string) error
-	DeleteProvinsi(ctx context.Context, provinsi_id int32) error
-	DeleteKabupaten(ctx context.Context, kabupaten_id int32) error
-	DeleteKecamatan(ctx context.Context, kecamatan_id int32) error
-	DeleteDesa(ctx context.Context, desa_id int32) error
+	DeleteProvinsi(ctx context.Context, provinsi_id int32) (string, error)
+	DeleteKabupaten(ctx context.Context, kabupaten_id int32) (string, error)
+	DeleteKecamatan(ctx context.Context, kecamatan_id int32) (string, error)
+	DeleteDesa(ctx context.Context, desa_id int32) (string, error)
 	DaftarMonitoring(ctx context.Context, daftarMonitoringParam servicemodel.DaftarMonitoring) error
 	CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64) error
 	GetAllProvinsi(ctx context.Context) ([]servicemodel.Provinsi, error)

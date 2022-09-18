@@ -15,3 +15,7 @@ type PostMonitoringValue struct {
 type GetMonitoringTerdaftar struct {
 	Lokasi int32 `json:"lokasi_id" binding:"required,min=1"`
 }
+
+type GetUUID struct {
+	ID string `uri:"uuid" binding:"required,min=36,max=36"`
+}

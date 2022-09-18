@@ -13,14 +13,14 @@ func (ctr Controller) CreateDaftar(ctx *gin.Context) {
 	req := request.PostDaftarMonitoring{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
 
 	if err := ctr.service.DaftarMonitoring(ctx, servicemodel.DaftarMonitoring(req)); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -34,7 +34,7 @@ func (ctr Controller) CreateValue(ctx *gin.Context) {
 	req := request.PostMonitoringValue{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -42,14 +42,14 @@ func (ctr Controller) CreateValue(ctx *gin.Context) {
 	id, err := uuid.Parse(req.KodeMonitoring)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
 
 	if err := ctr.service.CreateMonitoringValue(ctx, id, req.Value); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}

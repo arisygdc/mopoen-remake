@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"mopoen-remake/controller/locationcontroller"
+	"mopoen-remake/controller/lokasicontroller"
 	"mopoen-remake/controller/monitoringcontroller"
 	"mopoen-remake/controller/sensorcontroller"
 	svc "mopoen-remake/service"
@@ -9,14 +9,14 @@ import (
 
 type Controller struct {
 	Sensor     sensorcontroller.ISensorController
-	Location   locationcontroller.ILocationController
+	Location   lokasicontroller.ILocationController
 	Monitoring monitoringcontroller.IMonitoringController
 }
 
 func New(service svc.IServices) Controller {
 	return Controller{
 		Sensor:     sensorcontroller.New(service),
-		Location:   locationcontroller.New(service),
+		Location:   lokasicontroller.New(service),
 		Monitoring: monitoringcontroller.New(service),
 	}
 }

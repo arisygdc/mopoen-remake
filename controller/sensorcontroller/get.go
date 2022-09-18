@@ -11,7 +11,7 @@ func (ctr Controller) GetAll(ctx *gin.Context) {
 	sensors, err := ctr.service.GetAllTipeSensor(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -25,7 +25,7 @@ func (ctr Controller) Get(ctx *gin.Context) {
 	var idSensor request.GetSensor
 	if err := ctx.ShouldBindUri(&idSensor); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -33,7 +33,7 @@ func (ctr Controller) Get(ctx *gin.Context) {
 	tipeSensor, err := ctr.service.GetTipeSensor(ctx, idSensor.Id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}

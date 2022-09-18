@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func apiV1Route(route gin.IRouter, controller controller.Controller) {
+func apiV1Route(route gin.IRoutes, controller controller.Controller) {
 	route.POST("/sensor", controller.Sensor.Create)
 	route.DELETE("/sensor", controller.Sensor.Delete)
 	route.GET("/sensor/:id", controller.Sensor.Get)
@@ -15,8 +15,8 @@ func apiV1Route(route gin.IRouter, controller controller.Controller) {
 	route.DELETE("/lokasi/:tipe", controller.Location.DeleteLokasi)
 	route.GET("/lokasi/:tipe", controller.Location.GetAllLokasi)
 	route.POST("/monitoring/daftar", controller.Monitoring.CreateDaftar)
-	route.POST("/monitoring/value", controller.Monitoring.CreateValue)
 	route.GET("/monitoring/terdaftar", controller.Monitoring.GetTerdaftar)
-	route.GET("/monitoring/value", controller.Monitoring.GetData)
-	route.GET("/monitoring/analisa", controller.Monitoring.GetAnalisa)
+	route.GET("/monitoring/terdaftar/:uuid", controller.Monitoring.GetTerdaftarByUUID)
+	route.GET("/monitoring/value/:uuid", controller.Monitoring.GetData)
+	route.GET("/monitoring/analisa/:uuid", controller.Monitoring.GetAnalisa)
 }
