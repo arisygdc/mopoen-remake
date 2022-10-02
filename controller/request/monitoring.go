@@ -9,7 +9,7 @@ type PostDaftarMonitoring struct {
 
 type PostMonitoringValue struct {
 	KodeMonitoring string  `json:"kode_monitoring" binding:"required,min=36,max=36"`
-	Value          float64 `json:"value" binding:"required,min=1"`
+	Value          float64 `json:"value" binding:"required"`
 }
 
 type GetMonitoringTerdaftar struct {
