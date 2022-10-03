@@ -21,6 +21,9 @@ func main() {
 	}
 
 	s := server.New(env)
-	router.New(s.Engine, controller.New(service))
+	router.New(
+		s.Engine,
+		controller.New(service),
+	)
 	s.Run()
 }
