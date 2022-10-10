@@ -1,6 +1,7 @@
 package sensorcontroller
 
 import (
+	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
 	"net/http"
 
@@ -10,15 +11,11 @@ import (
 func (ctr Controller) GetAll(ctx *gin.Context) {
 	sensors, err := ctr.service.GetAllTipeSensor(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": sensors,
-	})
+	helper.RespStatusOk(ctx, sensors)
 }
 
 func (ctr Controller) Get(ctx *gin.Context) {
@@ -32,13 +29,9 @@ func (ctr Controller) Get(ctx *gin.Context) {
 
 	tipeSensor, err := ctr.service.GetTipeSensor(ctx, idSensor.Id)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		helper.RespCatchSqlErr(ctx, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": tipeSensor,
-	})
+	helper.RespStatusOk(ctx, tipeSensor)
 }

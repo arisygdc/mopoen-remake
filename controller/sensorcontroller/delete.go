@@ -8,7 +8,7 @@ import (
 )
 
 func (ctr Controller) Delete(ctx *gin.Context) {
-	req := request.DeleteSensor{}
+	var req request.DeleteSensor
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err,

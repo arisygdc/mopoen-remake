@@ -1,9 +1,10 @@
 package lokasicontroller
 
 import (
+	"database/sql"
 	"errors"
+	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
-	"net/http"
 	"strconv"
 	"strings"
 
@@ -11,31 +12,23 @@ import (
 )
 
 func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
-	uriParam := request.UriParamTipeLokasi{}
+	var uriParam request.UriParamTipeLokasi
 	var lokasi interface{}
 	var err error
+
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
-	if uriParam.Tipe == Provinsi {
-		lokasi, err = ctr.service.GetAllProvinsi(ctx)
-	} else {
-
+	if uriParam.Tipe != Provinsi {
 		Q, ok := ctx.GetQuery("depends")
 		if ok {
 			queryParam, convErr := strconv.Atoi(Q)
-			if convErr != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{
-					"message": err.Error(),
-				})
-				return
+			if convErr == nil {
+				uriParam.Tipe = strings.ToLower(uriParam.Tipe)
+				lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
 			}
-			uriParam.Tipe = strings.ToLower(uriParam.Tipe)
-			lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
 		} else {
 			switch uriParam.Tipe {
 			case Kabupaten:
@@ -51,15 +44,22 @@ func (ctr Controller) GetAllLokasi(ctx *gin.Context) {
 				err = errors.New("tipe lokasi tidak tersedia")
 			}
 		}
+
+	} else {
+		lokasi, err = ctr.service.GetAllProvinsi(ctx)
 	}
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		switch err {
+		case sql.ErrNoRows:
+			helper.RespNotFound(ctx, err.Error())
+		case sql.ErrConnDone:
+			helper.RespInternalErr(ctx, err.Error())
+		default:
+			helper.RespBadRequest(ctx, err.Error())
+		}
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": lokasi,
-	})
+
+	helper.RespStatusOk(ctx, lokasi)
 }
