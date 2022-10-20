@@ -2,8 +2,12 @@ package pgservice
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/csv"
+	"fmt"
 	"mopoen-remake/database/postgres"
 	"mopoen-remake/service/servicemodel"
+	"os"
 
 	"github.com/google/uuid"
 )
@@ -150,4 +154,53 @@ func (db postgre) GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.An
 		},
 	}
 	return analisa, nil
+}
+
+func (db postgre) ExtractToCSV(ctx context.Context, id uuid.UUID) (string, error) {
+	row, err := db.Queries.GetMonitoringData(ctx, id)
+
+	if err != nil {
+		return "", err
+	}
+
+	hParam1 := []byte(row[len(row)].DibuatPada.String())
+	hParam2 := []byte(row[0].DibuatPada.String())
+
+	hParam := append(hParam1, hParam2...)
+
+	hClass := sha1.New()
+	hClass.Write(hParam)
+
+	hSum := hClass.Sum(nil)
+
+	pwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	filename := fmt.Sprintf("%s/generated_files/%s-%s.csv", pwd, id.String(), string(hSum))
+	file, err := os.Open(filename)
+
+	switch err {
+	case os.ErrNotExist:
+		file, err = os.Create(filename)
+		if err != nil {
+			return "", err
+		}
+
+		writer := csv.NewWriter(file)
+
+		for _, v := range row {
+			value := fmt.Sprintf("%f", v.Value)
+			convert := []string{v.DibuatPada.String(), value}
+			writer.Write(convert)
+		}
+		writer.Flush()
+	case os.ErrPermission:
+		panic(err)
+	}
+
+	defer file.Close()
+
+	return filename, nil
 }

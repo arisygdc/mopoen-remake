@@ -2,9 +2,11 @@ package monitoringcontroller
 
 import (
 	"errors"
+	"io"
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -98,4 +100,33 @@ func (ctr Controller) GetAnalisa(ctx *gin.Context) {
 	}
 
 	helper.RespStatusOk(ctx, rowAnalisa)
+}
+
+func (ctr Controller) GetExport(ctx *gin.Context) {
+	var uriParam request.GetUUID
+	if err := ctx.ShouldBindUri(&uriParam); err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+
+	id, err := uuid.Parse(uriParam.ID)
+	if err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+
+	filename, err := ctr.service.ExtractToCSV(ctx, id)
+	if err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+
+	file, err := os.Open(filename)
+	if err != nil {
+		helper.RespInternalErr(ctx, err.Error())
+		return
+	}
+
+	defer file.Close()
+	io.Copy(file, ctx.Request.Body)
 }

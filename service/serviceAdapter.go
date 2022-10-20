@@ -17,30 +17,31 @@ const (
 var ErrDBDriverNotFound = errors.New("database driver not found")
 
 type IServices interface {
-	CreateTipeSensor(ctx context.Context, tipe string, satuan string) error
-	GetTipeSensor(ctx context.Context, id int32) (servicemodel.TipeSensor, error)
-	GetAllTipeSensor(ctx context.Context) ([]servicemodel.TipeSensor, error)
-	DeleteTipeSensor(ctx context.Context, id int32) error
-	CreateProvinsi(ctx context.Context, provinsi string) error
-	CreateKabupaten(ctx context.Context, provinsi_id int32, kabupaten string) error
-	CreateKecamatan(ctx context.Context, kabupaten_id int32, kecamatan string) error
-	CreateDesa(ctx context.Context, kecamatan_id int32, desa string) error
-	DeleteProvinsi(ctx context.Context, provinsi_id int32) (string, error)
-	DeleteKabupaten(ctx context.Context, kabupaten_id int32) (string, error)
-	DeleteKecamatan(ctx context.Context, kecamatan_id int32) (string, error)
-	DeleteDesa(ctx context.Context, desa_id int32) (string, error)
-	DaftarMonitoring(ctx context.Context, daftarMonitoringParam servicemodel.DaftarMonitoring) error
-	CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64) error
-	GetAllProvinsi(ctx context.Context) ([]servicemodel.Provinsi, error)
-	GetAllKabupaten(ctx context.Context) ([]servicemodel.Kabupaten, error)
-	GetAllKecamatan(ctx context.Context) ([]servicemodel.Kecamatan, error)
-	GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error)
-	GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error)
-	GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error)
-	GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error)
-	GetMonitoringData(ctx context.Context, id string) ([]servicemodel.MonitoringData, error)
-	GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error)
-	GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.AnalisaMonitoring, error)
+	CreateTipeSensor(context.Context, string, string) error
+	GetTipeSensor(context.Context, int32) (servicemodel.TipeSensor, error)
+	GetAllTipeSensor(context.Context) ([]servicemodel.TipeSensor, error)
+	DeleteTipeSensor(context.Context, int32) error
+	CreateProvinsi(context.Context, string) error
+	CreateKabupaten(context.Context, int32, string) error
+	CreateKecamatan(context.Context, int32, string) error
+	CreateDesa(context.Context, int32, string) error
+	DeleteProvinsi(context.Context, int32) (string, error)
+	DeleteKabupaten(context.Context, int32) (string, error)
+	DeleteKecamatan(context.Context, int32) (string, error)
+	DeleteDesa(context.Context, int32) (string, error)
+	DaftarMonitoring(context.Context, servicemodel.DaftarMonitoring) error
+	CreateMonitoringValue(context.Context, uuid.UUID, float64) error
+	GetAllProvinsi(context.Context) ([]servicemodel.Provinsi, error)
+	GetAllKabupaten(context.Context) ([]servicemodel.Kabupaten, error)
+	GetAllKecamatan(context.Context) ([]servicemodel.Kecamatan, error)
+	GetAllDesa(context.Context) ([]servicemodel.Desa, error)
+	GetLokasiBy(context.Context, string, int32) ([]servicemodel.Lokasi, error)
+	GetMonitoringTerdaftar(context.Context, string) (servicemodel.DetailMonitoringTerdaftar, error)
+	GetMonitoringTerdaftarByLokasi(context.Context, int32) ([]servicemodel.MonitoringTerdaftar, error)
+	GetMonitoringData(context.Context, string) ([]servicemodel.MonitoringData, error)
+	GetMonTerdaftarFilterLokasiAndSensor(context.Context, int32, int32) ([]servicemodel.MonitoringTerdaftar, error)
+	GetAnalisa(context.Context, uuid.UUID) (servicemodel.AnalisaMonitoring, error)
+	ExtractToCSV(context.Context, uuid.UUID) (string, error)
 }
 
 func New(env config.Environment) (IServices, error) {
