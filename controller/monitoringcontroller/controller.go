@@ -13,6 +13,7 @@ type IMonitoringController interface {
 	GetData(ctx *gin.Context)
 	GetAnalisa(ctx *gin.Context)
 	GetTerdaftarByUUID(ctx *gin.Context)
+	GetExport(ctx *gin.Context)
 }
 
 type Controller struct {

@@ -19,4 +19,5 @@ func apiV1Route(route gin.IRoutes, controller controller.Controller) {
 	route.GET("/monitoring/terdaftar/:uuid", controller.Monitoring.GetTerdaftarByUUID)
 	route.GET("/monitoring/value/:uuid", controller.Monitoring.GetData)
 	route.GET("/monitoring/analisa/:uuid", controller.Monitoring.GetAnalisa)
+	route.GET("/monitoring/csv/:uuid", controller.Monitoring.GetExport)
 }
