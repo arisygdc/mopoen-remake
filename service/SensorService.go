@@ -15,18 +15,18 @@ func NewSensorService(repo repository.Repository) SensorService {
 	return SensorService{repo: repo}
 }
 
-func (db SensorService) CreateTipeSensor(ctx context.Context, tipe string, satuan string) error {
+func (ss SensorService) CreateTipeSensor(ctx context.Context, tipe string, satuan string) error {
 	param := postgres.InsertTipeSensorParams{Tipe: tipe, Satuan: satuan}
-	return db.repo.InsertTipeSensor(ctx, param)
+	return ss.repo.InsertTipeSensor(ctx, param)
 }
 
-func (db SensorService) GetTipeSensor(ctx context.Context, id int32) (servicemodel.TipeSensor, error) {
-	sensor, err := db.repo.GetTipeSensor(ctx, id)
+func (ss SensorService) GetTipeSensor(ctx context.Context, id int32) (servicemodel.TipeSensor, error) {
+	sensor, err := ss.repo.GetTipeSensor(ctx, id)
 	return servicemodel.TipeSensor(sensor), err
 }
 
-func (db SensorService) GetAllTipeSensor(ctx context.Context) ([]servicemodel.TipeSensor, error) {
-	sensors, err := db.repo.GetTipeSensors(ctx)
+func (ss SensorService) GetAllTipeSensor(ctx context.Context) ([]servicemodel.TipeSensor, error) {
+	sensors, err := ss.repo.GetTipeSensors(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +39,6 @@ func (db SensorService) GetAllTipeSensor(ctx context.Context) ([]servicemodel.Ti
 	return sensorsConverted, nil
 }
 
-func (db SensorService) DeleteTipeSensor(ctx context.Context, id int32) error {
-	return db.repo.DeleteTipeSensor(ctx, id)
+func (ss SensorService) DeleteTipeSensor(ctx context.Context, id int32) error {
+	return ss.repo.DeleteTipeSensor(ctx, id)
 }

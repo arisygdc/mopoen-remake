@@ -16,11 +16,11 @@ func NewSensorGatewayService(repo repository.Repository) SensorGatewayService {
 	return SensorGatewayService{repo: repo}
 }
 
-func (db SensorGatewayService) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64) error {
+func (sgs SensorGatewayService) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64) error {
 	param := postgres.CreateMonitoringValueParams{
 		MonitoringTerdaftar: monitoring_id,
 		Value:               value,
 	}
 
-	return db.repo.CreateMonitoringValue(ctx, param)
+	return sgs.repo.CreateMonitoringValue(ctx, param)
 }

@@ -15,8 +15,8 @@ func NewLokasiService(repo repository.Repository) LokasiService {
 	return LokasiService{repo: repo}
 }
 
-func (db LokasiService) GetAllProvinsi(ctx context.Context) ([]servicemodel.Provinsi, error) {
-	prov, err := db.repo.GetAllProvinsi(ctx)
+func (ls LokasiService) GetAllProvinsi(ctx context.Context) ([]servicemodel.Provinsi, error) {
+	prov, err := ls.repo.GetAllProvinsi(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func (db LokasiService) GetAllProvinsi(ctx context.Context) ([]servicemodel.Prov
 	return provinsiConverted, nil
 }
 
-func (db LokasiService) GetAllKabupaten(ctx context.Context) ([]servicemodel.Kabupaten, error) {
-	kab, err := db.repo.GetAllKabupaten(ctx)
+func (ls LokasiService) GetAllKabupaten(ctx context.Context) ([]servicemodel.Kabupaten, error) {
+	kab, err := ls.repo.GetAllKabupaten(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +43,8 @@ func (db LokasiService) GetAllKabupaten(ctx context.Context) ([]servicemodel.Kab
 	return kabupatenConverted, nil
 }
 
-func (db LokasiService) GetAllKecamatan(ctx context.Context) ([]servicemodel.Kecamatan, error) {
-	kec, err := db.repo.GetAllKecamatan(ctx)
+func (ls LokasiService) GetAllKecamatan(ctx context.Context) ([]servicemodel.Kecamatan, error) {
+	kec, err := ls.repo.GetAllKecamatan(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +57,8 @@ func (db LokasiService) GetAllKecamatan(ctx context.Context) ([]servicemodel.Kec
 	return kecamatanConverted, nil
 }
 
-func (db LokasiService) GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error) {
-	des, err := db.repo.GetAllDesa(ctx)
+func (ls LokasiService) GetAllDesa(ctx context.Context) ([]servicemodel.Desa, error) {
+	des, err := ls.repo.GetAllDesa(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -71,46 +71,46 @@ func (db LokasiService) GetAllDesa(ctx context.Context) ([]servicemodel.Desa, er
 	return DesaConverted, nil
 }
 
-func (db LokasiService) CreateProvinsi(ctx context.Context, provinsi string) error {
-	return db.repo.CreateProvinsi(ctx, provinsi)
+func (ls LokasiService) CreateProvinsi(ctx context.Context, provinsi string) error {
+	return ls.repo.CreateProvinsi(ctx, provinsi)
 }
 
-func (db LokasiService) CreateKabupaten(ctx context.Context, provinsi_id int32, kabupaten string) error {
+func (ls LokasiService) CreateKabupaten(ctx context.Context, provinsi_id int32, kabupaten string) error {
 	param := postgres.CreateKabupatenParams{ProvinsiID: provinsi_id, Nama: kabupaten}
-	return db.repo.CreateKabupaten(ctx, param)
+	return ls.repo.CreateKabupaten(ctx, param)
 }
 
-func (db LokasiService) CreateKecamatan(ctx context.Context, kabupaten_id int32, kecamatan string) error {
+func (ls LokasiService) CreateKecamatan(ctx context.Context, kabupaten_id int32, kecamatan string) error {
 	param := postgres.CreateKecamatanParams{KabupatenID: kabupaten_id, Nama: kecamatan}
-	return db.repo.CreateKecamatan(ctx, param)
+	return ls.repo.CreateKecamatan(ctx, param)
 }
 
-func (db LokasiService) CreateDesa(ctx context.Context, kecamatan_id int32, desa string) error {
+func (ls LokasiService) CreateDesa(ctx context.Context, kecamatan_id int32, desa string) error {
 	param := postgres.CreateDesaParams{KecamatanID: kecamatan_id, Nama: desa}
-	return db.repo.CreateDesa(ctx, param)
+	return ls.repo.CreateDesa(ctx, param)
 }
 
-func (db LokasiService) DeleteProvinsi(ctx context.Context, provinsi_id int32) (string, error) {
-	return db.repo.DeleteProvinsi(ctx, provinsi_id)
+func (ls LokasiService) DeleteProvinsi(ctx context.Context, provinsi_id int32) (string, error) {
+	return ls.repo.DeleteProvinsi(ctx, provinsi_id)
 }
 
-func (db LokasiService) DeleteKabupaten(ctx context.Context, kabupaten_id int32) (string, error) {
-	return db.repo.DeleteKabupaten(ctx, kabupaten_id)
+func (ls LokasiService) DeleteKabupaten(ctx context.Context, kabupaten_id int32) (string, error) {
+	return ls.repo.DeleteKabupaten(ctx, kabupaten_id)
 }
 
-func (db LokasiService) DeleteKecamatan(ctx context.Context, kecamatan_id int32) (string, error) {
-	return db.repo.DeleteKecamatan(ctx, kecamatan_id)
+func (ls LokasiService) DeleteKecamatan(ctx context.Context, kecamatan_id int32) (string, error) {
+	return ls.repo.DeleteKecamatan(ctx, kecamatan_id)
 }
 
-func (db LokasiService) DeleteDesa(ctx context.Context, desa_id int32) (string, error) {
-	return db.repo.DeleteDesa(ctx, desa_id)
+func (ls LokasiService) DeleteDesa(ctx context.Context, desa_id int32) (string, error) {
+	return ls.repo.DeleteDesa(ctx, desa_id)
 }
 
-func (db LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error) {
+func (ls LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error) {
 	var locationBy []servicemodel.Lokasi
 	switch tipe {
 	case servicemodel.LokKabupaten:
-		val, Qerr := db.repo.GetKabupatenBy(ctx, depends)
+		val, Qerr := ls.repo.GetKabupatenBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
 		}
@@ -124,7 +124,7 @@ func (db LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends in
 		}
 
 	case servicemodel.LokKecamatan:
-		val, Qerr := db.repo.GetKecamatanBy(ctx, depends)
+		val, Qerr := ls.repo.GetKecamatanBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
 		}
@@ -138,7 +138,7 @@ func (db LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends in
 		}
 
 	case servicemodel.LokDesa:
-		val, Qerr := db.repo.GetDesaBy(ctx, depends)
+		val, Qerr := ls.repo.GetDesaBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
 		}

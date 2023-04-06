@@ -23,7 +23,7 @@ func NewMonitoringService(repo repository.Repository) MonitoringService {
 	}
 }
 
-func (db MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitoringParam servicemodel.DaftarMonitoring) error {
+func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitoringParam servicemodel.DaftarMonitoring) error {
 	param := postgres.CreateMonitoringTerdaftarParams{
 		ID:           uuid.New(),
 		TipeSensorID: daftarMonitoringParam.TipeSensor,
@@ -32,11 +32,11 @@ func (db MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 		Keterangan:   daftarMonitoringParam.Keterangan,
 	}
 
-	return db.repo.CreateMonitoringTerdaftar(ctx, param)
+	return ls.repo.CreateMonitoringTerdaftar(ctx, param)
 }
 
-func (db MonitoringService) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
-	mtd, err := db.repo.GetMonitoringTerdaftarByLokasi(ctx, lokasi_id)
+func (ls MonitoringService) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
+	mtd, err := ls.repo.GetMonitoringTerdaftarByLokasi(ctx, lokasi_id)
 	if err != nil {
 		return nil, err
 	}
@@ -49,24 +49,24 @@ func (db MonitoringService) GetMonitoringTerdaftarByLokasi(ctx context.Context, 
 	return converted, nil
 }
 
-func (db MonitoringService) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error) {
+func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error) {
 	idMon, err := uuid.Parse(id)
 	monTdServiceModel := servicemodel.DetailMonitoringTerdaftar{}
 	if err != nil {
 		return servicemodel.DetailMonitoringTerdaftar{}, err
 	}
 
-	monTd, err := db.repo.GetMonitoringTerdaftar(ctx, idMon)
+	monTd, err := ls.repo.GetMonitoringTerdaftar(ctx, idMon)
 	if err != nil {
 		return monTdServiceModel, err
 	}
 
-	tipeSensor, err := db.repo.GetTipeSensor(ctx, monTd.TipeSensorID)
+	tipeSensor, err := ls.repo.GetTipeSensor(ctx, monTd.TipeSensorID)
 	if err != nil {
 		return monTdServiceModel, err
 	}
 
-	lokasi, err := db.repo.FetchLokasi(ctx, monTd.LokasiID)
+	lokasi, err := ls.repo.FetchLokasi(ctx, monTd.LokasiID)
 	if err != nil {
 		return monTdServiceModel, err
 	}
@@ -82,13 +82,13 @@ func (db MonitoringService) GetMonitoringTerdaftar(ctx context.Context, id strin
 	return monTdServiceModel, err
 }
 
-func (db MonitoringService) GetMonitoringData(ctx context.Context, id string) ([]servicemodel.MonitoringData, error) {
+func (ls MonitoringService) GetMonitoringData(ctx context.Context, id string) ([]servicemodel.MonitoringData, error) {
 	idMon, err := uuid.Parse(id)
 	var monData []servicemodel.MonitoringData
 	if err != nil {
 		return monData, err
 	}
-	row, err := db.repo.GetMonitoringData(ctx, idMon)
+	row, err := ls.repo.GetMonitoringData(ctx, idMon)
 	if err != nil {
 		return monData, err
 	}
@@ -100,8 +100,8 @@ func (db MonitoringService) GetMonitoringData(ctx context.Context, id string) ([
 	return monData, err
 }
 
-func (db MonitoringService) GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
-	rows, err := db.repo.GetMonTerdaftarFilterLokAndSensor(ctx, postgres.GetMonTerdaftarFilterLokAndSensorParams{
+func (ls MonitoringService) GetMonTerdaftarFilterLokasiAndSensor(ctx context.Context, lokasi_id int32, sensor_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
+	rows, err := ls.repo.GetMonTerdaftarFilterLokAndSensor(ctx, postgres.GetMonTerdaftarFilterLokAndSensorParams{
 		LokasiID:     lokasi_id,
 		TipeSensorID: sensor_id,
 	})
@@ -117,14 +117,14 @@ func (db MonitoringService) GetMonTerdaftarFilterLokasiAndSensor(ctx context.Con
 	return convert, err
 }
 
-func (db MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.AnalisaMonitoring, error) {
+func (ls MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servicemodel.AnalisaMonitoring, error) {
 	var analisa servicemodel.AnalisaMonitoring
-	total, err := db.repo.CountDataMonitoring(ctx, id)
+	total, err := ls.repo.CountDataMonitoring(ctx, id)
 	if err != nil {
 		return analisa, err
 	}
 
-	average, err := db.repo.AverageDataMonitoring(ctx, id)
+	average, err := ls.repo.AverageDataMonitoring(ctx, id)
 	if err != nil {
 		return analisa, err
 	}
@@ -158,8 +158,8 @@ func (db MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servi
 	return analisa, nil
 }
 
-func (db MonitoringService) ExtractToCSV(ctx context.Context, id uuid.UUID) (string, error) {
-	row, err := db.repo.GetMonitoringData(ctx, id)
+func (ls MonitoringService) ExtractToCSV(ctx context.Context, id uuid.UUID) (string, error) {
+	row, err := ls.repo.GetMonitoringData(ctx, id)
 
 	if err != nil {
 		return "", err
