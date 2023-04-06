@@ -109,7 +109,7 @@ func (db LokasiService) DeleteDesa(ctx context.Context, desa_id int32) (string, 
 func (db LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error) {
 	var locationBy []servicemodel.Lokasi
 	switch tipe {
-	case "kabupaten":
+	case servicemodel.LokKabupaten:
 		val, Qerr := db.repo.GetKabupatenBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
@@ -123,7 +123,7 @@ func (db LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends in
 			}
 		}
 
-	case "kecamatan":
+	case servicemodel.LokKecamatan:
 		val, Qerr := db.repo.GetKecamatanBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
@@ -137,7 +137,7 @@ func (db LokasiService) GetLokasiBy(ctx context.Context, tipe string, depends in
 			}
 		}
 
-	case "desa":
+	case servicemodel.LokDesa:
 		val, Qerr := db.repo.GetDesaBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr

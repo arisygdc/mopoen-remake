@@ -1,5 +1,11 @@
 package servicemodel
 
+const (
+	LokKabupaten = "kabupaten"
+	LokKecamatan = "kecamatan"
+	LokDesa      = "desa"
+)
+
 type Provinsi struct {
 	ID   int32  `json:"id"`
 	Nama string `json:"nama"`
