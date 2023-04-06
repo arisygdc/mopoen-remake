@@ -1,6 +1,7 @@
 package servicemodel
 
 const (
+	LokProvinsi  = "provinsi"
 	LokKabupaten = "kabupaten"
 	LokKecamatan = "kecamatan"
 	LokDesa      = "desa"
