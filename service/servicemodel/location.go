@@ -1,10 +1,12 @@
 package servicemodel
 
+type LokasiType string
+
 const (
-	LokProvinsi  = "provinsi"
-	LokKabupaten = "kabupaten"
-	LokKecamatan = "kecamatan"
-	LokDesa      = "desa"
+	LokProvinsi  LokasiType = "provinsi"
+	LokKabupaten LokasiType = "kabupaten"
+	LokKecamatan LokasiType = "kecamatan"
+	LokDesa      LokasiType = "desa"
 )
 
 type Provinsi struct {
