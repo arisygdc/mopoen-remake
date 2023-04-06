@@ -7,11 +7,11 @@ import (
 
 type SensorInterface interface {
 	// param: context context.Context, tipe string, satuan string
-	CreateTipeSensor(ctx context.Context, tipe string, satuan string) error
+	CreateTipeSensor(context.Context, string, string) error
 	// param: context context.Context, tipe_sensor_id int32
-	GetTipeSensor(ctx context.Context, id int32) (servicemodel.TipeSensor, error)
+	GetTipeSensor(context.Context, int32) (servicemodel.TipeSensor, error)
 	// param: context context.Context, tipe_sensor_id int32
-	DeleteTipeSensor(ctx context.Context, id int32) error
+	DeleteTipeSensor(context.Context, int32) error
 	// return list of tipe sensor
-	GetAllTipeSensor(ctx context.Context) ([]servicemodel.TipeSensor, error)
+	GetAllTipeSensor(context.Context) ([]servicemodel.TipeSensor, error)
 }

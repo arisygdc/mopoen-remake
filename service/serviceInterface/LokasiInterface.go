@@ -15,18 +15,18 @@ type LokasiInterface interface {
 	// param: context, provinsi id int32, kabupaten name string
 	CreateKabupaten(context.Context, int32, string) error
 	// param: context, kabupaten id int32, kecamatan name string
-	CreateKecamatan(ctx context.Context, kabupaten_id int32, kecamatan string) error
+	CreateKecamatan(context.Context, int32, string) error
 	// param: context, kecamatan id int32, desa name string
-	CreateDesa(ctx context.Context, kecamatan_id int32, desa string) error
+	CreateDesa(context.Context, int32, string) error
 	// param: context, provinsi id int32
-	DeleteProvinsi(ctx context.Context, provinsi_id int32) (string, error)
+	DeleteProvinsi(context.Context, int32) (string, error)
 	// param: context, kabupaten id int32
-	DeleteKabupaten(ctx context.Context, kabupaten_id int32) (string, error)
+	DeleteKabupaten(context.Context, int32) (string, error)
 	// param: context, kecamatan id int32
-	DeleteKecamatan(ctx context.Context, kecamatan_id int32) (string, error)
+	DeleteKecamatan(context.Context, int32) (string, error)
 	// param: context, desa id int32
-	DeleteDesa(ctx context.Context, desa_id int32) (string, error)
+	DeleteDesa(context.Context, int32) (string, error)
 	// param: context, tipe string, depends int32
 	// depends is enum of provinsi, kabupaten, kecamatan, or desa
-	GetLokasiBy(ctx context.Context, tipe string, depends int32) ([]servicemodel.Lokasi, error)
+	GetLokasiBy(context.Context, string, int32) ([]servicemodel.Lokasi, error)
 }
