@@ -47,6 +47,14 @@ func RespInternalErr(ctx *gin.Context, msg string) {
 		})
 }
 
+func RespCreated(ctx *gin.Context, msg string) {
+	RestPonse(ctx,
+		http.StatusCreated,
+		gin.H{
+			"message": msg,
+		})
+}
+
 func RestPonse(ctx *gin.Context, code int, param interface{}) {
 	ctx.JSON(code, param)
 }
