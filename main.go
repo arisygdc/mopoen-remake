@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"mopoen-remake/config"
+	"mopoen-remake/repository"
 	"mopoen-remake/server"
 )
 
@@ -12,7 +13,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	repo, err := repository.NewRepository(env.DBDriver, env.DBSource)
+
 	s := server.New(env)
-	s.ExposeRoute()
+	s.ExposeRoute(repo)
 	s.Run()
 }

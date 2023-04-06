@@ -3,7 +3,7 @@ package frontend
 import (
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
-	svc "mopoen-remake/service"
+	ifS "mopoen-remake/service/serviceInterface"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,10 +17,10 @@ type ISensorController interface {
 }
 
 type SensorController struct {
-	service svc.IServices
+	service ifS.SensorInterface
 }
 
-func NewSensorController(service svc.IServices) SensorController {
+func NewSensorController(service ifS.SensorInterface) SensorController {
 	return SensorController{service: service}
 }
 

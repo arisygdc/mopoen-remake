@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
-	svc "mopoen-remake/service"
+	ifL "mopoen-remake/service/serviceInterface"
 	"net/http"
 	"strconv"
 	"strings"
@@ -21,14 +21,14 @@ const (
 	Desa      = "desa"
 )
 
-func NewLokasiController(service svc.IServices) LokasiController {
+func NewLokasiController(service ifL.LokasiInterface) LokasiController {
 	return LokasiController{
 		service: service,
 	}
 }
 
 type LokasiController struct {
-	service svc.IServices
+	service ifL.LokasiInterface
 }
 
 func (ctr LokasiController) CreateLokasi(ctx *gin.Context) {

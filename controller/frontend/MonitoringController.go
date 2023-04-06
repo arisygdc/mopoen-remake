@@ -5,7 +5,7 @@ import (
 	"io"
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
-	svc "mopoen-remake/service"
+	ifM "mopoen-remake/service/serviceInterface"
 	"mopoen-remake/service/servicemodel"
 	"net/http"
 	"os"
@@ -15,12 +15,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewMonitoringController(service svc.IServices) MonitoringController {
+func NewMonitoringController(service ifM.MonitoringInterface) MonitoringController {
 	return MonitoringController{service: service}
 }
 
 type MonitoringController struct {
-	service svc.IServices
+	service ifM.MonitoringInterface
 }
 
 var ErrQParam = errors.New("query param tidak valid")
@@ -159,25 +159,4 @@ func (ctr MonitoringController) DaftarMonitoring(ctx *gin.Context) {
 	}
 
 	helper.RespStatusOkWithMessage(ctx, req.Nama+" created")
-}
-
-func (ctr MonitoringController) CreateValue(ctx *gin.Context) {
-	req := request.PostMonitoringValue{}
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		helper.RespBadRequest(ctx, err.Error())
-		return
-	}
-
-	id, err := uuid.Parse(req.KodeMonitoring)
-	if err != nil {
-		helper.RespBadRequest(ctx, err.Error())
-		return
-	}
-
-	if err := ctr.service.CreateMonitoringValue(ctx, id, req.Value); err != nil {
-		helper.RespCatchSqlErr(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, gin.H{})
 }

@@ -4,6 +4,7 @@ import (
 	"mopoen-remake/config"
 	"mopoen-remake/controller/frontend"
 	"mopoen-remake/controller/sensorgateway"
+	"mopoen-remake/repository"
 	"mopoen-remake/server/middleware"
 	svc "mopoen-remake/service"
 
@@ -28,16 +29,15 @@ func New(env config.Environment) (server Server) {
 	return
 }
 
-func (svr Server) ExposeRoute() error {
-	router := svr.Engine
-	service, err := svc.New(svr.env)
-	if err != nil {
-		return err
-	}
+func (svr Server) ExposeRoute(repo repository.Repository) error {
 
-	lokasiController := frontend.NewLokasiController(service)
-	sensorController := frontend.NewSensorController(service)
-	monitoringController := frontend.NewMonitoringController(service)
+	router := svr.Engine
+	lokasiSvc := svc.NewLokasiService(repo)
+	lokasiController := frontend.NewLokasiController(lokasiSvc)
+	sensorSvc := svc.NewSensorService(repo)
+	sensorController := frontend.NewSensorController(sensorSvc)
+	monitoringSvc := svc.NewMonitoringService(repo)
+	monitoringController := frontend.NewMonitoringController(monitoringSvc)
 
 	ruoterApiV1 := router.Group("/api/v1").Use(middleware.Bearear())
 	ruoterApiV1.POST("/sensor", sensorController.CreateNewTipeSensor)
@@ -54,7 +54,8 @@ func (svr Server) ExposeRoute() error {
 	ruoterApiV1.GET("/monitoring/analisa/:uuid", monitoringController.GetAnalisa)
 	ruoterApiV1.GET("/monitoring/csv/:uuid", monitoringController.ExportAndDownload)
 
-	sensorG := sensorgateway.New(service)
+	sensorGSvc := svc.NewSensorGatewayService(repo)
+	sensorG := sensorgateway.NewSensorGatewayController(sensorGSvc)
 	sensorGRoute := router.Group("/api/sensor")
 	sensorGRoute.POST("/value", sensorG.SaveDataFromSensor)
 	return nil
