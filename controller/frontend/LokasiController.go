@@ -7,7 +7,7 @@ import (
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/controller/request"
 	ifL "mopoen-remake/service/serviceInterface"
-	"net/http"
+	"mopoen-remake/service/servicemodel"
 	"strconv"
 	"strings"
 
@@ -31,110 +31,74 @@ type LokasiController struct {
 	service ifL.LokasiInterface
 }
 
-func (ctr LokasiController) CreateLokasi(ctx *gin.Context) {
-	uriParam := request.UriParamTipeLokasi{}
+func (ctr LokasiController) CreateLokasiDepends(ctx *gin.Context) {
+	uriParam := request.UriParamLokasiDepends{}
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+
+	req := request.PostNamaLokasi{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
 	uriParam.Tipe = strings.ToLower(uriParam.Tipe)
-	var nama string
-	var err error
+	tipe := servicemodel.LokasiType(uriParam.Tipe)
 
-	switch uriParam.Tipe {
-	case Provinsi:
-		req := request.PostProvinsi{}
-		if err := ctx.ShouldBindJSON(&req); err != nil {
-			break
+	if tipe == servicemodel.LokKabupaten || tipe == servicemodel.LokKecamatan || tipe == servicemodel.LokDesa {
+		err := ctr.service.CreateLokasi(ctx, tipe, req.Nama, uriParam.Depends)
+		if err != nil {
+			helper.RespBadRequest(ctx, err.Error())
+			return
 		}
-		nama = req.Nama
-		err = ctr.service.CreateProvinsi(ctx, nama)
-
-	case Kabupaten:
-		req := request.PostKabupaten{}
-		if err = ctx.ShouldBindJSON(&req); err != nil {
-			break
-		}
-		nama = req.Nama
-		err = ctr.service.CreateKabupaten(ctx, req.Provinsi_id, nama)
-
-	case Kecamatan:
-		req := request.PostKecamatan{}
-		if err := ctx.ShouldBindJSON(&req); err != nil {
-			break
-		}
-		nama = req.Nama
-		err = ctr.service.CreateKecamatan(ctx, req.Kabupaten_id, nama)
-
-	case Desa:
-		req := request.PostDesa{}
-		if err := ctx.ShouldBindJSON(&req); err != nil {
-			break
-		}
-		nama = req.Nama
-		err = ctr.service.CreateDesa(ctx, req.Kecamatan_id, nama)
-
-	default:
-		err = errors.New("tipe lokasi tidak tersedia")
-	}
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		helper.RespCreated(ctx, fmt.Sprintf("%s %s created", uriParam.Tipe, req.Nama))
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": fmt.Sprintf("%s %s created", uriParam.Tipe, nama),
-	})
+	helper.RespNotFound(ctx, "tipe lokasi tidak ditemukan")
+}
+
+func (ctr LokasiController) CreateLokasiProvinsi(ctx *gin.Context) {
+	req := request.PostNamaLokasi{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+
+	err := ctr.service.CreateLokasi(ctx, servicemodel.LokProvinsi, req.Nama)
+	if err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+
+	helper.RespCreated(ctx, fmt.Sprintf("%s %s created", Provinsi, req.Nama))
 }
 
 func (ctr LokasiController) DeleteLokasi(ctx *gin.Context) {
 	uriParam := request.UriParamTipeLokasi{}
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
 	req := request.DeleteLokasi{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
 	var err error
 	var nama string
-	switch strings.ToLower(uriParam.Tipe) {
-	case Provinsi:
-		nama, err = ctr.service.DeleteProvinsi(ctx, req.Id)
-	case Kabupaten:
-		nama, err = ctr.service.DeleteKabupaten(ctx, req.Id)
-	case Kecamatan:
-		nama, err = ctr.service.DeleteKecamatan(ctx, req.Id)
-	case Desa:
-		nama, err = ctr.service.DeleteDesa(ctx, req.Id)
-	default:
-		err = errors.New("tipe lokasi tidak tersedia")
-	}
+	nama, err = ctr.service.DeleteLokasi(ctx, servicemodel.LokasiType(uriParam.Tipe), req.Id)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": fmt.Sprintf("%s %s deleted", uriParam.Tipe, nama),
-	})
+	helper.RespStatusOk(ctx, fmt.Sprintf("%s %s deleted", uriParam.Tipe, nama))
 }
 
 // GetAllLokasi get all lokasi filtered by tipe
@@ -154,7 +118,7 @@ func (ctr LokasiController) GetAllLokasiWithType(ctx *gin.Context) {
 			queryParam, convErr := strconv.Atoi(Q)
 			if convErr == nil {
 				uriParam.Tipe = strings.ToLower(uriParam.Tipe)
-				lokasi, err = ctr.service.GetLokasiBy(ctx, uriParam.Tipe, int32(queryParam))
+				lokasi, err = ctr.service.GetLokasiBy(ctx, servicemodel.LokasiType(uriParam.Tipe), int32(queryParam))
 			}
 		} else {
 			switch uriParam.Tipe {

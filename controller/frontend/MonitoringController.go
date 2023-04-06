@@ -42,9 +42,7 @@ func (ctr MonitoringController) GetTerdaftar(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"data": mtd,
-		})
+		ctx.JSON(http.StatusOK, gin.H{"data": mtd})
 		return
 	}
 
