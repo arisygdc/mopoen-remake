@@ -2,7 +2,7 @@ package sensorgateway
 
 import (
 	"mopoen-remake/controller/helper"
-	"mopoen-remake/controller/request"
+	"mopoen-remake/request"
 	ifSG "mopoen-remake/service/serviceInterface"
 	"net/http"
 
