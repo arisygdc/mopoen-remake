@@ -19,12 +19,12 @@ execpg:
 	docker exec -it mopoen-remake-db psql -U postgres
 
 createmigrate:
-	migrate create -ext sql -dir database/postgres/migration -seq init_schema
+	migrate create -ext sql -dir repository/postgres/migration -seq init_schema
 
 migrateup:
-	migrate -path database/postgres/migration/ -database "postgresql://postgres:qwer1234@localhost:5432/mopoen?sslmode=disable" -verbose up
+	migrate -path repository/postgres/migration/ -database "postgresql://postgres:qwer1234@localhost:5432/mopoen?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path database/postgres/migration/ -database "postgresql://postgres:qwer1234@localhost:5432/mopoen?sslmode=disable" -verbose down
+	migrate -path repository/postgres/migration/ -database "postgresql://postgres:qwer1234@localhost:5432/mopoen?sslmode=disable" -verbose down
 
 .PHONY: installpg uninstallpg startpg stoppg execdb createmigrate migrateup migratedown
