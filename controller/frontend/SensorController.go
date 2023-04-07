@@ -2,19 +2,12 @@ package frontend
 
 import (
 	"mopoen-remake/controller/helper"
-	"mopoen-remake/controller/request"
+	"mopoen-remake/request"
 	ifS "mopoen-remake/service/serviceInterface"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
-
-type ISensorController interface {
-	Create(ctx *gin.Context)
-	Delete(ctx *gin.Context)
-	Get(ctx *gin.Context)
-	GetAll(ctx *gin.Context)
-}
 
 type SensorController struct {
 	service ifS.SensorInterface
@@ -27,23 +20,17 @@ func NewSensorController(service ifS.SensorInterface) SensorController {
 func (ctr SensorController) CreateNewTipeSensor(ctx *gin.Context) {
 	req := request.PostSensor{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
 	err := ctr.service.CreateTipeSensor(ctx, req.Tipe, req.Satuan)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
+		helper.RespInternalErr(ctx, err.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "created",
-	})
+	helper.RespCreated(ctx, "Berhasil menambahkan tipe sensor baru")
 }
 
 func (ctr SensorController) GetAllTipeSensor(ctx *gin.Context) {
@@ -60,9 +47,7 @@ func (ctr SensorController) GetAllTipeSensor(ctx *gin.Context) {
 func (ctr SensorController) GetTipeSensorByID(ctx *gin.Context) {
 	var idSensor request.GetSensor
 	if err := ctx.ShouldBindUri(&idSensor); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
 
