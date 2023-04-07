@@ -7,7 +7,6 @@ import (
 	"mopoen-remake/request"
 	ifM "mopoen-remake/service/serviceInterface"
 	"mopoen-remake/service/servicemodel"
-	"net/http"
 	"os"
 	"strconv"
 
@@ -25,39 +24,34 @@ type MonitoringController struct {
 
 var ErrQParam = errors.New("query param tidak valid")
 
-// GetTerdaftar is a function to find all monitoring terdaftar and filter by lokasi_id and sensor_id
-// @lokasi_id is a query param to filter lokasi_id
-// @sensor_id is a query param to filter sensor_id
+// GetTerdaftar is a function to find all monitoring terdaftar
+// query @lokasi_id is to filter lokasi_id
+// query @sensor_id is to filter sensor_id
 func (ctr MonitoringController) GetTerdaftar(ctx *gin.Context) {
 	QLok, okLok := ctx.GetQuery("lokasi_id")
 	QSensor, okSensor := ctx.GetQuery("sensor_id")
 	lok_id, _ := strconv.Atoi(QLok)
 	sensor_id, _ := strconv.Atoi(QSensor)
 	var err error
-
-	if okLok && okSensor && lok_id > 0 && sensor_id > 0 {
-		mtd, qErr := ctr.service.GetMonTerdaftarFilterLokasiAndSensor(ctx, int32(lok_id), int32(sensor_id))
-		if qErr != nil {
-			helper.RespBadRequest(ctx, qErr.Error())
+	if okLok || okSensor {
+		mtd, err := ctr.service.GetMonitoringTerdaftar(ctx, &servicemodel.GetMonitoringTerdaftarFilterOptions{
+			LokasiID:     int32(lok_id),
+			TipeSensorID: int32(sensor_id),
+		})
+		if err != nil {
+			helper.RespCatchSqlErr(ctx, err)
 			return
 		}
-
-		ctx.JSON(http.StatusOK, gin.H{"data": mtd})
-		return
-	}
-
-	if okLok && lok_id > 0 {
-		mtd, qErr := ctr.service.GetMonitoringTerdaftarByLokasi(ctx, int32(lok_id))
-		if qErr != nil {
-			helper.RespBadRequest(ctx, qErr.Error())
-			return
-		}
-
 		helper.RespStatusOk(ctx, mtd)
 		return
 	}
 
-	helper.RespBadRequest(ctx, err.Error())
+	mtd, err := ctr.service.GetMonitoringTerdaftar(ctx, nil)
+	if err != nil {
+		helper.RespCatchSqlErr(ctx, err)
+		return
+	}
+	helper.RespStatusOk(ctx, mtd)
 }
 
 // find monitoring terdaftar by uuid
@@ -68,9 +62,14 @@ func (ctr MonitoringController) GetTerdaftarByUUID(ctx *gin.Context) {
 		return
 	}
 
-	mtd, qErr := ctr.service.GetMonitoringTerdaftar(ctx, uriParam.ID)
-	if qErr != nil {
-		helper.RespBadRequest(ctx, qErr.Error())
+	id, err := uuid.Parse(uriParam.ID)
+	if err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+	}
+
+	mtd, err := ctr.service.GetMonitoringTerdaftarByID(ctx, id)
+	if err != nil {
+		helper.RespCatchSqlErr(ctx, err)
 		return
 	}
 

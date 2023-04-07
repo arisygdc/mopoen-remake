@@ -35,8 +35,19 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 	return ls.repo.CreateMonitoringTerdaftar(ctx, param)
 }
 
-func (ls MonitoringService) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasi_id int32) ([]servicemodel.MonitoringTerdaftar, error) {
-	mtd, err := ls.repo.GetMonitoringTerdaftarByLokasi(ctx, lokasi_id)
+func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.MonitoringTerdaftar, error) {
+	var mtd []postgres.MonitoringTerdaftar
+	var err error
+	if option != nil {
+		mtd, err = ls.repo.GetMonitoringTerdaftarFilter(ctx,
+			postgres.GetMonitoringTerdaftarFilterParams{
+				LokasiID:     option.LokasiID,
+				TipeSensorID: option.TipeSensorID,
+			})
+	} else {
+		mtd, err = ls.repo.GetAllMonitoringTerdaftar(ctx)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -49,34 +60,20 @@ func (ls MonitoringService) GetMonitoringTerdaftarByLokasi(ctx context.Context, 
 	return converted, nil
 }
 
-func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, id string) (servicemodel.DetailMonitoringTerdaftar, error) {
-	idMon, err := uuid.Parse(id)
-	monTdServiceModel := servicemodel.DetailMonitoringTerdaftar{}
-	if err != nil {
-		return servicemodel.DetailMonitoringTerdaftar{}, err
-	}
+func (ls MonitoringService) GetMonitoringTerdaftarByID(ctx context.Context, id uuid.UUID) (servicemodel.DetailMonitoringTerdaftar, error) {
+	var monTdServiceModel servicemodel.DetailMonitoringTerdaftar
 
-	monTd, err := ls.repo.GetMonitoringTerdaftar(ctx, idMon)
-	if err != nil {
-		return monTdServiceModel, err
-	}
-
-	tipeSensor, err := ls.repo.GetTipeSensor(ctx, monTd.TipeSensorID)
-	if err != nil {
-		return monTdServiceModel, err
-	}
-
-	lokasi, err := ls.repo.FetchLokasi(ctx, monTd.LokasiID)
+	monTd, err := ls.repo.GetMonitoringTerdaftar(ctx, id)
 	if err != nil {
 		return monTdServiceModel, err
 	}
 
 	monTdServiceModel = servicemodel.DetailMonitoringTerdaftar{
-		ID:         monTd.ID,
-		TipeSensor: servicemodel.TipeSensor(tipeSensor),
-		LokasiID:   servicemodel.FetchLokasi(lokasi),
-		Nama:       monTd.Nama,
-		Keterangan: monTd.Keterangan,
+		MonitoringID: monTd.MonitoringID,
+		TipeSensorID: monTd.TipeSensorID,
+		Nama:         monTd.Nama,
+		Keterangan:   monTd.Keterangan,
+		Address:      monTd.Address,
 	}
 
 	return monTdServiceModel, err

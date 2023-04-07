@@ -219,28 +219,46 @@ func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uui
 }
 
 const getMonitoringTerdaftar = `-- name: GetMonitoringTerdaftar :one
-SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE id = $1
+SELECT mt.id as monitoring_id, mt.tipe_sensor_id, concat(ts.tipe, ' (', ts.satuan, ')' )::text as tipe_sensor, mt.nama, mt.keterangan, concat(d.nama, ', ', kc.nama, ', ', kb.nama, ', ', pv.nama)::text as address
+FROM monitoring_terdaftar mt left join tipe_sensor ts on mt.tipe_sensor_id = ts.id
+left join desa d on d.id = mt.lokasi_id left join kecamatan kc on d.kecamatan_id = kc.id left join kabupaten kb on kc.kabupaten_id = kb.id left join provinsi pv on kb.provinsi_id = pv.id WHERE mt.id = $1
 `
 
-func (q *Queries) GetMonitoringTerdaftar(ctx context.Context, id uuid.UUID) (MonitoringTerdaftar, error) {
+type GetMonitoringTerdaftarRow struct {
+	MonitoringID uuid.UUID `json:"monitoring_id"`
+	TipeSensorID int32     `json:"tipe_sensor_id"`
+	TipeSensor   string    `json:"tipe_sensor"`
+	Nama         string    `json:"nama"`
+	Keterangan   string    `json:"keterangan"`
+	Address      string    `json:"address"`
+}
+
+func (q *Queries) GetMonitoringTerdaftar(ctx context.Context, id uuid.UUID) (GetMonitoringTerdaftarRow, error) {
 	row := q.db.QueryRowContext(ctx, getMonitoringTerdaftar, id)
-	var i MonitoringTerdaftar
+	var i GetMonitoringTerdaftarRow
 	err := row.Scan(
-		&i.ID,
+		&i.MonitoringID,
 		&i.TipeSensorID,
-		&i.LokasiID,
+		&i.TipeSensor,
 		&i.Nama,
 		&i.Keterangan,
+		&i.Address,
 	)
 	return i, err
 }
 
-const getMonitoringTerdaftarByLokasi = `-- name: GetMonitoringTerdaftarByLokasi :many
-SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE lokasi_id = $1
+const getMonitoringTerdaftarFilter = `-- name: GetMonitoringTerdaftarFilter :many
+SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar
+WHERE lokasi_id = $1 OR tipe_sensor_id = $2
 `
 
-func (q *Queries) GetMonitoringTerdaftarByLokasi(ctx context.Context, lokasiID int32) ([]MonitoringTerdaftar, error) {
-	rows, err := q.db.QueryContext(ctx, getMonitoringTerdaftarByLokasi, lokasiID)
+type GetMonitoringTerdaftarFilterParams struct {
+	LokasiID     int32 `json:"lokasi_id"`
+	TipeSensorID int32 `json:"tipe_sensor_id"`
+}
+
+func (q *Queries) GetMonitoringTerdaftarFilter(ctx context.Context, arg GetMonitoringTerdaftarFilterParams) ([]MonitoringTerdaftar, error) {
+	rows, err := q.db.QueryContext(ctx, getMonitoringTerdaftarFilter, arg.LokasiID, arg.TipeSensorID)
 	if err != nil {
 		return nil, err
 	}

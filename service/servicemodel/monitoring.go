@@ -13,6 +13,11 @@ type DaftarMonitoring struct {
 	Keterangan  string `json:"keterangan"`
 }
 
+type GetMonitoringTerdaftarFilterOptions struct {
+	LokasiID     int32 `json:"lokasi_id"`
+	TipeSensorID int32 `json:"tipe_sensor_id"`
+}
+
 type MonitoringTerdaftar struct {
 	ID           uuid.UUID `json:"id"`
 	TipeSensorID int32     `json:"tipe_sensor_id"`
@@ -22,11 +27,12 @@ type MonitoringTerdaftar struct {
 }
 
 type DetailMonitoringTerdaftar struct {
-	ID         uuid.UUID   `json:"id"`
-	TipeSensor TipeSensor  `json:"tipe_sensor"`
-	LokasiID   FetchLokasi `json:"lokasi"`
-	Nama       string      `json:"nama"`
-	Keterangan string      `json:"keterangan"`
+	MonitoringID uuid.UUID `json:"monitoring_id"`
+	TipeSensorID int32     `json:"tipe_sensor_id"`
+	TipeSensor   string    `json:"tipe_sensor"`
+	Nama         string    `json:"nama"`
+	Keterangan   string    `json:"keterangan"`
+	Address      string    `json:"address"`
 }
 
 type MonitoringData struct {
