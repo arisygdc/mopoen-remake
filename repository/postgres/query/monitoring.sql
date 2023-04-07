@@ -7,6 +7,9 @@ INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES ($1, $2);
 -- name: GetMonitoringTerdaftarByLokasi :many
 SELECT * FROM monitoring_terdaftar WHERE lokasi_id = $1;
 
+-- name: GetAllMonitoringTerdaftar :many
+SELECT * FROM monitoring_terdaftar;
+
 -- name: GetMonitoringData :many
 SELECT value, dibuat_pada FROM monitoring_data WHERE monitoring_terdaftar = $1;
 
