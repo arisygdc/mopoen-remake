@@ -39,9 +39,17 @@ func RespNotFound(ctx *gin.Context, msg string) {
 		})
 }
 
+func RespNoContent(ctx *gin.Context, msg string) {
+	RestPonse(ctx,
+		http.StatusNoContent,
+		gin.H{
+			"message": msg,
+		})
+}
+
 func RespInternalErr(ctx *gin.Context, msg string) {
 	RestPonse(ctx,
-		http.StatusNotFound,
+		http.StatusInternalServerError,
 		gin.H{
 			"message": msg,
 		})
@@ -62,8 +70,8 @@ func RestPonse(ctx *gin.Context, code int, param interface{}) {
 func RespCatchSqlErr(ctx *gin.Context, err error) {
 	switch err {
 	case sql.ErrNoRows:
-		RespNotFound(ctx, err.Error())
-	case sql.ErrConnDone:
+		RespNoContent(ctx, err.Error())
+	default:
 		RespInternalErr(ctx, err.Error())
 	}
 }
