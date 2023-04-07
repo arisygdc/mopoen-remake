@@ -107,7 +107,7 @@ func (ls LokasiService) DeleteLokasi(ctx context.Context, tipe servicemodel.Loka
 func (ls LokasiService) GetLokasiBy(ctx context.Context, tipe servicemodel.LokasiType, depends int32) ([]servicemodel.Lokasi, error) {
 	var locationBy []servicemodel.Lokasi
 	switch tipe {
-	case "kabupaten":
+	case servicemodel.LokKabupaten:
 		val, Qerr := ls.repo.GetKabupatenBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
@@ -121,7 +121,7 @@ func (ls LokasiService) GetLokasiBy(ctx context.Context, tipe servicemodel.Lokas
 			}
 		}
 
-	case "kecamatan":
+	case servicemodel.LokKecamatan:
 		val, Qerr := ls.repo.GetKecamatanBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
@@ -135,7 +135,7 @@ func (ls LokasiService) GetLokasiBy(ctx context.Context, tipe servicemodel.Lokas
 			}
 		}
 
-	case "desa":
+	case servicemodel.LokDesa:
 		val, Qerr := ls.repo.GetDesaBy(ctx, depends)
 		if Qerr != nil {
 			return nil, Qerr
