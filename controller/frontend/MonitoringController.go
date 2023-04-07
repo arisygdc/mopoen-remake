@@ -4,7 +4,7 @@ import (
 	"errors"
 	"io"
 	"mopoen-remake/controller/helper"
-	"mopoen-remake/controller/request"
+	"mopoen-remake/request"
 	ifM "mopoen-remake/service/serviceInterface"
 	"mopoen-remake/service/servicemodel"
 	"net/http"
