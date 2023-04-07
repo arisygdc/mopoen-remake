@@ -40,19 +40,33 @@ func (svr Server) ExposeRoute(repo repository.Repository) error {
 	monitoringController := frontend.NewMonitoringController(monitoringSvc)
 
 	ruoterApiV1 := router.Group("/api/v1").Use(middleware.Bearear())
+	// request PostSensor
 	ruoterApiV1.POST("/sensor", sensorController.CreateNewTipeSensor)
+	// request DeleteSensor
 	ruoterApiV1.DELETE("/sensor", sensorController.DeleteTipeSensor)
+	// request GetSensor
 	ruoterApiV1.GET("/sensor/:id", sensorController.GetTipeSensorByID)
+	// no request
 	ruoterApiV1.GET("/sensors", sensorController.GetAllTipeSensor)
+	// request PostNamaLokasi
 	ruoterApiV1.POST("/lokasi/provinsi", lokasiController.CreateLokasiProvinsi)
+	// request UriParamLokasiDepends, PostNamaLokasi
 	ruoterApiV1.POST("/lokasi/:tipe/:depends", lokasiController.CreateLokasiDepends)
+	// request UriParamTipeLokasi, DeleteLokasi
 	ruoterApiV1.DELETE("/lokasi/:tipe", lokasiController.DeleteLokasi)
+	// request UriParamTipeLokasi
 	ruoterApiV1.GET("/lokasi/:tipe", lokasiController.GetAllLokasiWithType)
+	// request PostDaftarMonitoring
 	ruoterApiV1.POST("/monitoring/daftar", monitoringController.DaftarMonitoring)
+	// request query lokasi_id, sensor_id
 	ruoterApiV1.GET("/monitoring/terdaftar", monitoringController.GetTerdaftar)
+	// request GetUUID
 	ruoterApiV1.GET("/monitoring/terdaftar/:uuid", monitoringController.GetTerdaftarByUUID)
+	// request GetUUID
 	ruoterApiV1.GET("/monitoring/value/:uuid", monitoringController.GetData)
+	// request GetUUID
 	ruoterApiV1.GET("/monitoring/analisa/:uuid", monitoringController.GetAnalisa)
+	// request GetUUID
 	ruoterApiV1.GET("/monitoring/csv/:uuid", monitoringController.ExportAndDownload)
 
 	sensorGSvc := svc.NewSensorGatewayService(repo)
