@@ -1,2 +1,5 @@
 config.env
 .vscode
+
+/wasm-frontend/bin
+/wasm-frontend/obj
