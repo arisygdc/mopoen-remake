@@ -39,7 +39,7 @@ func (svr Server) ExposeRoute(repo repository.Repository) error {
 	monitoringSvc := svc.NewMonitoringService(repo)
 	monitoringController := frontend.NewMonitoringController(monitoringSvc)
 
-	ruoterApiV1 := router.Group("/api/v1").Use(middleware.Bearear())
+	ruoterApiV1 := router.Group("/api/v1")
 	// request PostSensor
 	ruoterApiV1.POST("/sensor", sensorController.CreateNewTipeSensor)
 	// request DeleteSensor
