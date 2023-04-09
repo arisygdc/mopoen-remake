@@ -1,4 +1,4 @@
-﻿@page "/monitoring"
+﻿@page "/terdaftar"
 @inject HttpClient Http
 
 <PageTitle>Weather forecast</PageTitle>
@@ -26,7 +26,7 @@ else
             @foreach (var forecast in forecasts["data"])
             {
                 <tr>
-                    <td><RadzenLink Path=@PathToAnalysis(@forecast.Id) Text=@forecast.Nama /></td>
+                    <td><RadzenLink Path=@PathToAnalysis(@forecast.Monitoring_id) Text=@forecast.Nama /></td>
                     <td>@forecast.Tipe_sensor</td>
                     <td>@forecast.Keterangan</td>
                     <td>@forecast.Address</td>
@@ -39,7 +39,7 @@ else
 @code {
     private string path = "http://localhost:8080/api/v1";
     private Dictionary<string, MonitoringTerdaftar[]>? forecasts;
-
+    
     protected override async Task OnInitializedAsync()
     {
         forecasts = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"{path}/monitoring/terdaftar");
@@ -47,12 +47,12 @@ else
 
     public string PathToAnalysis(string id)
     {
-        return $"{path}/monitoring/terdaftar/{id}";
+        return $"monitoring?id={id}";
     }
 
     public class MonitoringTerdaftar
     {
-        public string Id { get; set; } = string.Empty;
+        public string Monitoring_id { get; set; } = string.Empty;
         public int Tipe_sensor_id { get; set; }
         public string Tipe_sensor { get; set;} = string.Empty;
         public string Nama { get; set;} = string.Empty;

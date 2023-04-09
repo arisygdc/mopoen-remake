@@ -1,0 +1,74 @@
+@page "/monitoring"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (Forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div Class="rz-p-0 rz-p-md-12">
+        <RadzenChart>
+            <RadzenColumnSeries Data="@Forecasts" CategoryProperty="Time" ValueProperty="Average" />
+        </RadzenChart>
+    </div>
+}
+
+@code {
+    private string path = "http://localhost:8080/api/v1";
+    
+    private DataItem[]? Forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        if (!query.ContainsKey("id")) return;
+        Id = query["id"];
+
+        var data = await Http.GetFromJsonAsync<Dictionary<string, AnalisaMonitoring>?>($"{path}/monitoring/analisa/{Id}");
+        if (data != null) {
+            if (data.ContainsKey("data")) {
+                Forecasts = new DataItem[]
+                {
+                    new DataItem { Time = "Morning", Average = data["data"].Morning?.Average ?? 0 },
+                    new DataItem { Time = "Noon", Average = data["data"].Noon?.Average ?? 0 },
+                    new DataItem { Time = "Afternoon", Average = data["data"].Afternoon?.Average ?? 0 },
+                    new DataItem { Time = "Night", Average = data["data"].Night?.Average ?? 0 },
+                };
+            }
+        }
+    }
+
+
+    public class AnalisaMonitoring
+    {
+        public ResultMonitoring? Overall { get; set; }
+        public ResultMonitoring? Morning { get; set; }
+        public ResultMonitoring? Noon { get; set;}
+        public ResultMonitoring? Afternoon { get; set;}
+        public ResultMonitoring? Night { get; set;}
+    }
+
+    public class ResultMonitoring
+    {
+        public int Total { get; set; }
+        public float Average { get; set; }
+    }
+
+    public class DataItem
+    {
+      public string Time { get; set; } = string.Empty;
+      public float Average { get; set; }
+    }
+
+    @* [Parameter] *@
+    public string Id { get; set; } = string.Empty;
+}
