@@ -110,16 +110,18 @@ query param: sensor_id, lokasi_id
         {
             "id": "d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5",
             "tipe_sensor_id": 1,
-            "lokasi_id": 1,
+            "tipe_sensor": "angin (m/s)",
             "nama": "analisa angin torong rejo",
-            "keterangan": "untuk melakukan penelitian skripsi"
+            "keterangan": "untuk melakukan penelitian skripsi",
+            "address":	"jawa timur, batu, junrejo, Torongrejo"
         },
         {
             "id": "d7b8caf5-f3f0-41d8-9506-4e10f947a742",
             "tipe_sensor_id": 2,
-            "lokasi_id": 1,
+            "tipe_sensor": "air (m/s)",
             "nama": "analisa air torong rejo",
-            "keterangan": "untuk melakukan penelitian skripsi"
+            "keterangan": "untuk melakukan penelitian skripsi",
+            "address":	"jawa timur, batu, junrejo, Torongrejo"
         }
     ]
 }

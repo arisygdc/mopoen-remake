@@ -35,28 +35,46 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 	return ls.repo.CreateMonitoringTerdaftar(ctx, param)
 }
 
-func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.MonitoringTerdaftar, error) {
-	var mtd []postgres.MonitoringTerdaftar
-	var err error
+func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.DetailMonitoringTerdaftar, error) {
+	var converted []servicemodel.DetailMonitoringTerdaftar
 	if option != nil {
-		mtd, err = ls.repo.GetMonitoringTerdaftarFilter(ctx,
+		mtd, err := ls.repo.GetMonitoringTerdaftarFilter(ctx,
 			postgres.GetMonitoringTerdaftarFilterParams{
-				LokasiID:     option.LokasiID,
-				TipeSensorID: option.TipeSensorID,
+				// tipe sensor
+				Column1: option.TipeSensorID,
+				Column2: option.LokasiID,
 			})
-	} else {
-		mtd, err = ls.repo.GetAllMonitoringTerdaftar(ctx)
-	}
 
+		if err != nil {
+			return converted, err
+		}
+		converted = make([]servicemodel.DetailMonitoringTerdaftar, len(mtd))
+		for v := range mtd {
+			converted[v] = servicemodel.DetailMonitoringTerdaftar{
+				MonitoringID: mtd[v].MonitoringID,
+				TipeSensorID: mtd[v].TipeSensorID,
+				TipeSensor:   mtd[v].TipeSensor,
+				Nama:         mtd[v].Nama,
+				Keterangan:   mtd[v].Keterangan,
+				Address:      mtd[v].Provinsi.String + ", " + mtd[v].Kabupaten.String + ", " + mtd[v].Kecamatan.String + ", " + mtd[v].Desa.String,
+			}
+		}
+	}
+	mtd, err := ls.repo.GetAllMonitoringTerdaftar(ctx)
 	if err != nil {
-		return nil, err
+		return converted, err
 	}
-
-	converted := make([]servicemodel.MonitoringTerdaftar, len(mtd))
-	for i, v := range mtd {
-		converted[i] = servicemodel.MonitoringTerdaftar(v)
+	converted = make([]servicemodel.DetailMonitoringTerdaftar, len(mtd))
+	for v := range mtd {
+		converted[v] = servicemodel.DetailMonitoringTerdaftar{
+			MonitoringID: mtd[v].MonitoringID,
+			TipeSensorID: mtd[v].TipeSensorID,
+			TipeSensor:   mtd[v].TipeSensor,
+			Nama:         mtd[v].Nama,
+			Keterangan:   mtd[v].Keterangan,
+			Address:      mtd[v].Provinsi.String + ", " + mtd[v].Kabupaten.String + ", " + mtd[v].Kecamatan.String + ", " + mtd[v].Desa.String,
+		}
 	}
-
 	return converted, nil
 }
 
