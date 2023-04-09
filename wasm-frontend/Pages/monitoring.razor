@@ -1,0 +1,60 @@
+﻿@page "/monitoring"
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>tipe_sensor</th>
+                <th>nama</th>
+                <th>keterangan</th>
+                <th>address</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts["data"])
+            {
+                <tr>
+                    <td>@forecast.nama</td>
+                    <td>@forecast.tipe_sensor</td>
+                    <td>@forecast.keterangan</td>
+                    <td>@forecast.address</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string path = "http://localhost:8080/api/v1";
+    private Dictionary<string, MonitoringTerdaftar[]>? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"{path}/monitoring/terdaftar");
+    }
+
+
+    public class MonitoringTerdaftar
+    {
+        public string Id { get; set; } = string.Empty;
+        public int tipe_sensor_id { get; set; }
+        public string tipe_sensor { get; set;} = string.Empty;
+        public string nama { get; set;} = string.Empty;
+        public string keterangan { get; set;} = string.Empty;
+        public string address { get; set;} = string.Empty;
+    }
+
+    
+}
