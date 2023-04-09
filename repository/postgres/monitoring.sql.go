@@ -15,11 +15,10 @@ import (
 
 const averageDataMonitoring = `-- name: AverageDataMonitoring :one
 SELECT COALESCE(AVG(value), 0)::FLOAT AS all,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00' AND '11:59'), 0)::FLOAT AS morning,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00' AND '14:59'), 0)::FLOAT AS noon,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00' AND '17:59'), 0)::FLOAT AS afternoon,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00' AND '23:59'), 0)::FLOAT AS night,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00' AND '05:59'), 0)::FLOAT AS midnight
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00' AND '10:59'), 0)::FLOAT AS morning,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '10:00' AND '14:59'), 0)::FLOAT AS noon,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00' AND '17:59'), 0)::FLOAT AS afternoon,
+COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00' AND '05:59'), 0)::FLOAT AS night
 FROM monitoring_data WHERE monitoring_terdaftar = $1
 `
 
@@ -29,7 +28,6 @@ type AverageDataMonitoringRow struct {
 	Noon      float64 `json:"noon"`
 	Afternoon float64 `json:"afternoon"`
 	Night     float64 `json:"night"`
-	Midnight  float64 `json:"midnight"`
 }
 
 func (q *Queries) AverageDataMonitoring(ctx context.Context, monitoringTerdaftar uuid.UUID) (AverageDataMonitoringRow, error) {
@@ -41,14 +39,13 @@ func (q *Queries) AverageDataMonitoring(ctx context.Context, monitoringTerdaftar
 		&i.Noon,
 		&i.Afternoon,
 		&i.Night,
-		&i.Midnight,
 	)
 	return i, err
 }
 
 const countDataMonitoring = `-- name: CountDataMonitoring :one
 SELECT COUNT(1) AS all, 
-COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00' AND '11:59') AS morning,
+COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00' AND '09:59') AS morning,
 COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00' AND '14:59') AS noon,
 COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00' AND '17:59') AS afternoon,
 COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00' AND '23:59') AS night,
@@ -119,7 +116,7 @@ func (q *Queries) CreateMonitoringValue(ctx context.Context, arg CreateMonitorin
 const getAllMonitoringTerdaftar = `-- name: GetAllMonitoringTerdaftar :many
 SELECT 
     mt.id as monitoring_id, 
-    mt.tipe_sensor_id, 
+    mt.tipe_sensor_id,
     concat(ts.tipe, ' (', ts.satuan, ')' )::text as tipe_sensor, 
     mt.nama, 
     mt.keterangan, 

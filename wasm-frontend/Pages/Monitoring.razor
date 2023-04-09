@@ -26,10 +26,10 @@ else
             @foreach (var forecast in forecasts["data"])
             {
                 <tr>
-                    <td>@forecast.nama</td>
-                    <td>@forecast.tipe_sensor</td>
-                    <td>@forecast.keterangan</td>
-                    <td>@forecast.address</td>
+                    <td><RadzenLink Path=@PathToAnalysis(@forecast.Id) Text=@forecast.Nama /></td>
+                    <td>@forecast.Tipe_sensor</td>
+                    <td>@forecast.Keterangan</td>
+                    <td>@forecast.Address</td>
                 </tr>
             }
         </tbody>
@@ -45,15 +45,19 @@ else
         forecasts = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"{path}/monitoring/terdaftar");
     }
 
+    public string PathToAnalysis(string id)
+    {
+        return $"{path}/monitoring/terdaftar/{id}";
+    }
 
     public class MonitoringTerdaftar
     {
         public string Id { get; set; } = string.Empty;
-        public int tipe_sensor_id { get; set; }
-        public string tipe_sensor { get; set;} = string.Empty;
-        public string nama { get; set;} = string.Empty;
-        public string keterangan { get; set;} = string.Empty;
-        public string address { get; set;} = string.Empty;
+        public int Tipe_sensor_id { get; set; }
+        public string Tipe_sensor { get; set;} = string.Empty;
+        public string Nama { get; set;} = string.Empty;
+        public string Keterangan { get; set;} = string.Empty;
+        public string Address { get; set;} = string.Empty;
     }
 
     

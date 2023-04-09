@@ -165,10 +165,6 @@ func (ls MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servi
 			Total:   total.Night,
 			Average: average.Night,
 		},
-		Midnight: servicemodel.ResultMonitoring{
-			Total:   total.Midnight,
-			Average: average.Midnight,
-		},
 	}
 	return analisa, nil
 }

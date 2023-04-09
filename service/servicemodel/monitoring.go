@@ -48,8 +48,7 @@ type ResultMonitoring struct {
 type AnalisaMonitoring struct {
 	Overall   ResultMonitoring `json:"overall"`
 	Morning   ResultMonitoring `json:"morning"`
-	Afternoon ResultMonitoring `json:"afternoon"`
 	Noon      ResultMonitoring `json:"noon"`
+	Afternoon ResultMonitoring `json:"afternoon"`
 	Night     ResultMonitoring `json:"night"`
-	Midnight  ResultMonitoring `json:"midnight"`
 }
