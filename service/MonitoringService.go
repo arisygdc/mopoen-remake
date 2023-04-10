@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"encoding/csv"
 	"fmt"
@@ -168,6 +169,15 @@ func (ls MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servi
 		},
 	}
 	return analisa, nil
+}
+
+func (ls MonitoringService) GetCsvBuffer(ctx context.Context, id uuid.UUID) (*bytes.Buffer, error) {
+	var buf bytes.Buffer
+	err := ls.EncodeToCsv(ctx, id, &buf)
+	if err != nil {
+		return nil, err
+	}
+	return &buf, nil
 }
 
 func (ls MonitoringService) EncodeToCsv(ctx context.Context, id uuid.UUID, writer io.Writer) error {

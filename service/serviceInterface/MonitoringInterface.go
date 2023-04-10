@@ -1,6 +1,7 @@
 package serviceinterface
 
 import (
+	"bytes"
 	"context"
 	"mopoen-remake/service/servicemodel"
 
@@ -23,7 +24,11 @@ type MonitoringInterface interface {
 	// return: AnalisaMonitoring
 	GetAnalisa(context.Context, uuid.UUID) (servicemodel.AnalisaMonitoring, error)
 	// param: context context.Context, id uuid.UUID
-	// extract monitoring data to csv file
+	// extract monitoring data to csv and save to disk
 	// return: string path file
 	SaveToCSV(context.Context, uuid.UUID) (string, error)
+	// param: context context.Context, id uuid.UUID
+	// extract monitoring data to csv
+	// return as buffer wihout save to disk
+	GetCsvBuffer(context.Context, uuid.UUID) (*bytes.Buffer, error)
 }

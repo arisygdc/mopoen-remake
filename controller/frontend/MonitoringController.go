@@ -7,7 +7,6 @@ import (
 	"mopoen-remake/request"
 	ifM "mopoen-remake/service/serviceInterface"
 	"mopoen-remake/service/servicemodel"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -127,24 +126,19 @@ func (ctr MonitoringController) ExportAndDownload(ctx *gin.Context) {
 		return
 	}
 
-	filename, err := ctr.service.SaveToCSV(ctx, id)
-	if err != nil {
-		helper.RespBadRequest(ctx, err.Error())
-		return
-	}
-
-	file, err := os.Open(filename)
+	filebuffer, err := ctr.service.GetCsvBuffer(ctx, id)
 	if err != nil {
 		helper.RespInternalErr(ctx, err.Error())
 		return
 	}
 
-	defer file.Close()
-	data, err := ioutil.ReadAll(file)
+	data, err := ioutil.ReadAll(filebuffer)
 	if err != nil {
 		helper.RespInternalErr(ctx, err.Error())
 		return
 	}
+
+	filename := uriParam.ID + ".csv"
 
 	ctx.Data(200, "text/csv", data)
 	ctx.Request.Header.Add("Content-Disposition", "attachment; filename="+filename)
