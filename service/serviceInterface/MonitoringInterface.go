@@ -25,5 +25,5 @@ type MonitoringInterface interface {
 	// param: context context.Context, id uuid.UUID
 	// extract monitoring data to csv file
 	// return: string path file
-	ExtractToCSV(context.Context, uuid.UUID) (string, error)
+	SaveToCSV(context.Context, uuid.UUID) (string, error)
 }

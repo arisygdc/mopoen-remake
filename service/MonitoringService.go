@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
-	"crypto/sha1"
 	"encoding/csv"
 	"fmt"
+	"io"
 	"mopoen-remake/repository"
 	"mopoen-remake/repository/postgres"
 	"mopoen-remake/service/servicemodel"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -169,48 +170,42 @@ func (ls MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servi
 	return analisa, nil
 }
 
-func (ls MonitoringService) ExtractToCSV(ctx context.Context, id uuid.UUID) (string, error) {
+func (ls MonitoringService) EncodeToCsv(ctx context.Context, id uuid.UUID, writer io.Writer) error {
 	row, err := ls.repo.GetMonitoringData(ctx, id)
-
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	hParam1 := []byte(row[len(row)].DibuatPada.String())
-	hParam2 := []byte(row[0].DibuatPada.String())
+	w := csv.NewWriter(writer)
+	w.Write([]string{"Value", "Time"})
+	for _, v := range row {
+		value := fmt.Sprintf("%f", v.Value)
+		w.Write([]string{value, v.DibuatPada.GoString()})
+	}
+	w.Flush()
+	return nil
+}
 
-	hParam := append(hParam1, hParam2...)
-
-	hClass := sha1.New()
-	hClass.Write(hParam)
-
-	hSum := hClass.Sum(nil)
-
+func (ls MonitoringService) SaveToCSV(ctx context.Context, id uuid.UUID) (string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 
-	filename := fmt.Sprintf("%s/generated_files/%s-%s.csv", pwd, id.String(), string(hSum))
+	filename := fmt.Sprintf("%s/generated_files/%s-%s.csv", pwd, id.String(), time.Now().Format("2006-01-02-15-04-05"))
 	file, err := os.Open(filename)
 
-	switch err {
-	case os.ErrNotExist:
+	if err != nil {
+		if err == os.ErrPermission {
+			panic(err)
+		}
+
 		file, err = os.Create(filename)
 		if err != nil {
 			return "", err
 		}
 
-		writer := csv.NewWriter(file)
-
-		for _, v := range row {
-			value := fmt.Sprintf("%f", v.Value)
-			convert := []string{v.DibuatPada.String(), value}
-			writer.Write(convert)
-		}
-		writer.Flush()
-	case os.ErrPermission:
-		panic(err)
+		ls.EncodeToCsv(ctx, id, file)
 	}
 
 	defer file.Close()

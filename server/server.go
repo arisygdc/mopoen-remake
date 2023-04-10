@@ -66,8 +66,10 @@ func (svr Server) ExposeRoute(repo repository.Repository) error {
 	ruoterApiV1.GET("/monitoring/value/:uuid", monitoringController.GetData)
 	// request GetUUID
 	ruoterApiV1.GET("/monitoring/analisa/:uuid", monitoringController.GetAnalisa)
+
 	// request GetUUID
-	ruoterApiV1.GET("/monitoring/csv/:uuid", monitoringController.ExportAndDownload)
+	// download
+	router.GET("/download/csv/:uuid", monitoringController.ExportAndDownload)
 
 	sensorGSvc := svc.NewSensorGatewayService(repo)
 	sensorG := sensorgateway.NewSensorGatewayController(sensorGSvc)

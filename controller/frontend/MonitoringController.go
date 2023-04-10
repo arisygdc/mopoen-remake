@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"errors"
-	"io"
+	"io/ioutil"
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/request"
 	ifM "mopoen-remake/service/serviceInterface"
@@ -127,7 +127,7 @@ func (ctr MonitoringController) ExportAndDownload(ctx *gin.Context) {
 		return
 	}
 
-	filename, err := ctr.service.ExtractToCSV(ctx, id)
+	filename, err := ctr.service.SaveToCSV(ctx, id)
 	if err != nil {
 		helper.RespBadRequest(ctx, err.Error())
 		return
@@ -140,7 +140,14 @@ func (ctr MonitoringController) ExportAndDownload(ctx *gin.Context) {
 	}
 
 	defer file.Close()
-	io.Copy(file, ctx.Request.Body)
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		helper.RespInternalErr(ctx, err.Error())
+		return
+	}
+
+	ctx.Data(200, "text/csv", data)
+	ctx.Request.Header.Add("Content-Disposition", "attachment; filename="+filename)
 }
 
 func (ctr MonitoringController) DaftarMonitoring(ctx *gin.Context) {
