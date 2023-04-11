@@ -1,5 +1,6 @@
 ﻿@page "/counter"
 @inject HttpClient Http
+@inject NotificationService NotificationService
 
 <PageTitle>Counter</PageTitle>
 
@@ -7,11 +8,10 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 @* <RadzenTemplateForm Data="@order" Submit="@((Order args) => { Submit(args); })"> *@
 @if (init)
 {
-<RadzenTemplateForm Data="@montd" Submit="@((MonitoringTerdaftar args) => { Submit(args); })">
+<RadzenTemplateForm Data="@montd" Submit="@( async(MonitoringTerdaftar args) => { await OnSubmit(args); })">
     <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenStack>
@@ -25,10 +25,18 @@
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
                     <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Tipe Sensor" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="montd.lokasi_id" AllowClear="true" Placeholder="Lokasi" Data="@LLokasi" Style="width: 100%;" TextProperty="Nama" ValueProperty="Id" Name="lokasi_id"></RadzenDropDown>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
                         <RadzenLabel Text="Nama" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox Style="width: 100%;" Name="nama" />
+                        <RadzenTextBox @bind-Value="montd.nama" Style="width: 100%;" Name="nama" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
@@ -36,12 +44,16 @@
                         <RadzenLabel Text="Keterangan" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox Style="width: 100%;" Name="keterangan" />
+                        <RadzenTextBox @bind-Value="montd.keterangan" Style="width: 100%;" Name="keterangan" />
                     </RadzenColumn>
                 </RadzenRow>
             </RadzenStack>
         </RadzenColumn>
     </RadzenRow>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
+    </RadzenStack>
 </RadzenTemplateForm>
 }
 
@@ -51,6 +63,10 @@
     private bool init = false;
     private MonitoringTerdaftar montd = new MonitoringTerdaftar();
     private TipeSensor[]? tipe_sensors;
+
+    @* List Lokasi *@
+    private Lokasi[]? LLokasi;
+
     protected override async Task OnInitializedAsync()
     {
         var data = await Http.GetFromJsonAsync<Dictionary<string, TipeSensor[]>?>($"{path}/sensors");
@@ -62,6 +78,17 @@
             var dd = data["data"];
             tipe_sensors = dd;
         }
+
+        var dataProvinsi = await Http.GetFromJsonAsync<Dictionary<string, Lokasi[]>?>($"{path}/lokasi/parent");
+        if (dataProvinsi == null) {
+            return;
+        }
+
+        if (dataProvinsi.ContainsKey("data")) {
+            var dd = dataProvinsi["data"];
+            LLokasi = dd;
+        }
+
         init = true;
     }
 
@@ -95,14 +122,35 @@
         }
     }
 
-    public void Submit(MonitoringTerdaftar args)
+    protected async Task OnSubmit(MonitoringTerdaftar args)
     {
         Console.WriteLine(args);
-        var postForm = Http.PostAsJsonAsync<MonitoringTerdaftar>($"{path}/monitoring/daftar", args);
+        var postForm = await Http.PostAsJsonAsync<MonitoringTerdaftar>($"{path}/monitoring/daftar", args);
+        if (postForm.IsSuccessStatusCode) {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = args.nama, Detail = "Pendaftaran berhasil" });
+        } else {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = args.nama, Detail = "Pendaftaran gagal" });
+        }
     }
 
-    private void IncrementCount()
+    public void Cancel()
     {
-        currentCount++;
+        montd = new MonitoringTerdaftar();
+    }
+
+    public class Lokasi
+    {
+        public int Id { get; }
+        public string? Nama { get; }
+
+        public Lokasi(int id, string? nama)
+        {
+            Id = id;
+            if (nama == null) {
+                Nama = string.Empty;
+            } else {
+                Nama = nama;
+            }
+        }
     }
 }
