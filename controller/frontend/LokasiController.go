@@ -92,6 +92,15 @@ func (ctr LokasiController) DeleteLokasi(ctx *gin.Context) {
 	helper.RespStatusOk(ctx, fmt.Sprintf("%s %s deleted", uriParam.Tipe, nama))
 }
 
+func (ctr LokasiController) GetParentLokasi(ctx *gin.Context) {
+	lok, err := ctr.service.GetParentLokasi(ctx)
+	if err != nil {
+		helper.RespBadRequest(ctx, err.Error())
+		return
+	}
+	helper.RespStatusOk(ctx, lok)
+}
+
 // GetAllLokasi get all lokasi filtered by tipe
 func (ctr LokasiController) GetAllLokasiWithType(ctx *gin.Context) {
 	var uriParam request.UriParamTipeLokasi

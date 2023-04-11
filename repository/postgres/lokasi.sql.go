@@ -320,3 +320,41 @@ func (q *Queries) GetKecamatanBy(ctx context.Context, kabupatenID int32) ([]Keca
 	}
 	return items, nil
 }
+
+const getParentLokasi = `-- name: GetParentLokasi :many
+SELECT 
+    d.id AS id, 
+    concat(d.nama, ', ', kc.nama, ', ', kb.nama, ', ', pv.nama) AS nama
+FROM desa d 
+    left join kecamatan kc on d.kecamatan_id = kc.id 
+    left join kabupaten kb on kc.kabupaten_id = kb.id 
+    left join provinsi pv on kb.provinsi_id = pv.id
+`
+
+type GetParentLokasiRow struct {
+	ID   int32       `json:"id"`
+	Nama interface{} `json:"nama"`
+}
+
+func (q *Queries) GetParentLokasi(ctx context.Context) ([]GetParentLokasiRow, error) {
+	rows, err := q.db.QueryContext(ctx, getParentLokasi)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetParentLokasiRow
+	for rows.Next() {
+		var i GetParentLokasiRow
+		if err := rows.Scan(&i.ID, &i.Nama); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

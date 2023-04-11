@@ -16,6 +16,10 @@ func NewLokasiService(repo repository.Repository) LokasiService {
 	return LokasiService{repo: repo}
 }
 
+func (ls LokasiService) GetParentLokasi(ctx context.Context) ([]postgres.GetParentLokasiRow, error) {
+	return ls.repo.GetParentLokasi(ctx)
+}
+
 func (ls LokasiService) GetAllProvinsi(ctx context.Context) ([]servicemodel.Provinsi, error) {
 	prov, err := ls.repo.GetAllProvinsi(ctx)
 	if err != nil {

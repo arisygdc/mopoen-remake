@@ -45,6 +45,19 @@ tipe can be provinsi | kabupaten | kecamatan | desa
 }
 ```
 
+### Get lokasi parent
+/api/v1/lokasi/parent
+```JSON
+{
+    "data": [
+        {
+            "id": 1,
+            "nama": "Torongrejo, junrejo, batu, jawa timur"
+        }
+    ]
+}
+```
+
 ### Get tipe sensor request
 /api/v1/sensors
 ```JSON

@@ -156,5 +156,5 @@ func (ctr MonitoringController) DaftarMonitoring(ctx *gin.Context) {
 		return
 	}
 
-	helper.RespStatusOkWithMessage(ctx, req.Nama+" created")
+	helper.RespCreated(ctx, req.Nama+" created")
 }

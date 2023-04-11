@@ -50,3 +50,12 @@ INNER JOIN kecamatan kc ON d.kecamatan_id = kc.id
 INNER JOIN kabupaten kb ON kc.kabupaten_id = kb.id
 INNER JOIN provinsi p ON kb.provinsi_id = p.id
 WHERE d.id = $1;
+
+-- name: GetParentLokasi :many
+SELECT 
+    d.id AS id, 
+    concat(d.nama, ', ', kc.nama, ', ', kb.nama, ', ', pv.nama) AS nama
+FROM desa d 
+    left join kecamatan kc on d.kecamatan_id = kc.id 
+    left join kabupaten kb on kc.kabupaten_id = kb.id 
+    left join provinsi pv on kb.provinsi_id = pv.id;

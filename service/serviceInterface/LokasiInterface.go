@@ -2,6 +2,7 @@ package serviceinterface
 
 import (
 	"context"
+	"mopoen-remake/repository/postgres"
 	"mopoen-remake/service/servicemodel"
 )
 
@@ -11,6 +12,7 @@ type LokasiInterface interface {
 	GetAllProvinsi(context.Context) ([]servicemodel.Provinsi, error)
 	GetAllKabupaten(context.Context) ([]servicemodel.Kabupaten, error)
 	GetAllKecamatan(context.Context) ([]servicemodel.Kecamatan, error)
+	GetParentLokasi(ctx context.Context) ([]postgres.GetParentLokasiRow, error)
 	GetAllDesa(context.Context) ([]servicemodel.Desa, error)
 	// param: context, tipe_lokasi servicemodel.LokasiType, nama string, depends ...int32
 	CreateLokasi(context.Context, servicemodel.LokasiType, string, ...int32) error

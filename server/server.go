@@ -56,6 +56,8 @@ func (svr Server) ExposeRoute(repo repository.Repository) error {
 	ruoterApiV1.DELETE("/lokasi/:tipe", lokasiController.DeleteLokasi)
 	// request UriParamTipeLokasi
 	ruoterApiV1.GET("/lokasi/:tipe", lokasiController.GetAllLokasiWithType)
+
+	ruoterApiV1.GET("/lokasi/parent", lokasiController.GetParentLokasi)
 	// request PostDaftarMonitoring
 	ruoterApiV1.POST("/monitoring/daftar", monitoringController.DaftarMonitoring)
 	// request query lokasi_id, sensor_id
