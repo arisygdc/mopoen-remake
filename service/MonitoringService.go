@@ -28,7 +28,7 @@ func NewMonitoringService(repo repository.Repository) MonitoringService {
 func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitoringParam servicemodel.DaftarMonitoring) error {
 	param := postgres.CreateMonitoringTerdaftarParams{
 		ID:           uuid.New(),
-		TipeSensorID: daftarMonitoringParam.TipeSensor,
+		TipeSensorID: daftarMonitoringParam.TipeSensor_id,
 		LokasiID:     daftarMonitoringParam.Location_id,
 		Nama:         daftarMonitoringParam.Nama,
 		Keterangan:   daftarMonitoringParam.Keterangan,

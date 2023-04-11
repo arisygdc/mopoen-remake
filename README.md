@@ -82,7 +82,7 @@ Response 200 if success and 204 not found
 Request body
 ```JSON
 {
-    "tipe_sensor": 1,
+    "tipe_sensor_id": 1,
     "lokasi_id": 1,
     "nama": "analisa angin torong rejo",
     "keterangan": "untuk melakukan penelitian skripsi"
