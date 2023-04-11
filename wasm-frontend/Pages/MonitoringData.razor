@@ -1,6 +1,7 @@
 @page "/monitoring"
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -14,6 +15,7 @@
 }
 else
 {
+    <button class="btn-primary" onclick="window.location('@downloadPath()');">download csv</button>
     <div Class="rz-p-0 rz-p-md-12">
         <RadzenChart>
             <RadzenColumnSeries Data="@Forecasts" CategoryProperty="Time" ValueProperty="Average" />
@@ -23,7 +25,6 @@ else
 
 @code {
     private string path = "http://localhost:8080/api/v1";
-    
     private DataItem[]? Forecasts;
 
     protected override async Task OnInitializedAsync()
@@ -34,19 +35,52 @@ else
         Id = query["id"];
 
         var data = await Http.GetFromJsonAsync<Dictionary<string, AnalisaMonitoring>?>($"{path}/monitoring/analisa/{Id}");
-        if (data != null) {
-            if (data.ContainsKey("data")) {
-                Forecasts = new DataItem[]
-                {
-                    new DataItem { Time = "Morning", Average = data["data"].Morning?.Average ?? 0 },
-                    new DataItem { Time = "Noon", Average = data["data"].Noon?.Average ?? 0 },
-                    new DataItem { Time = "Afternoon", Average = data["data"].Afternoon?.Average ?? 0 },
-                    new DataItem { Time = "Night", Average = data["data"].Night?.Average ?? 0 },
-                };
-            }
+        if (data == null) {
+            return;
+        }
+
+        if (data.ContainsKey("data")) {
+            Forecasts = new DataItem[]
+            {
+                new DataItem { Time = "Morning", Average = data["data"].Morning?.Average ?? 0 },
+                new DataItem { Time = "Noon", Average = data["data"].Noon?.Average ?? 0 },
+                new DataItem { Time = "Afternoon", Average = data["data"].Afternoon?.Average ?? 0 },
+                new DataItem { Time = "Night", Average = data["data"].Night?.Average ?? 0 },
+            };
         }
     }
 
+    private string downloadPath()
+    {
+        return $"localhost:8080/download/csv/{Id}";
+    }
+
+    private Stream GetFileStream()
+    {
+        var randomBinaryData = new byte[50 * 1024];
+        var fileStream = new MemoryStream(randomBinaryData);
+
+        return fileStream;
+    }
+
+    private async Task DownloadFile()
+    {
+        var fileURL = $"http://localhost:8080/download/csv/{Id}";
+        var fileName = Id+".csv";
+        var response = await Http.GetAsync(fileURL);
+        if (!response.IsSuccessStatusCode)
+        {
+            await JS.InvokeVoidAsync("alert", "Failed to download file");
+            Console.WriteLine("failed");
+        }
+        else
+        {
+            var filestream = response.Content.ReadAsStream();
+            Console.WriteLine(response);
+            using var streamRef = new DotNetStreamReference(stream: filestream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, fileURL);
+        }
+    }
 
     public class AnalisaMonitoring
     {
@@ -69,6 +103,5 @@ else
       public float Average { get; set; }
     }
 
-    @* [Parameter] *@
     public string Id { get; set; } = string.Empty;
 }
