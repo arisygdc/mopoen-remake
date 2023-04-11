@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@inject HttpClient Http
 
 <PageTitle>Counter</PageTitle>
 
@@ -7,9 +8,98 @@
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+@* <RadzenTemplateForm Data="@order" Submit="@((Order args) => { Submit(args); })"> *@
+@if (init)
+{
+<RadzenTemplateForm Data="@montd" Submit="@((MonitoringTerdaftar args) => { Submit(args); })">
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack>
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Tipe Sensor" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="montd.tipe_sensor_id" AllowClear="true" Placeholder="Tipe Sensor" Data="@tipe_sensors" Style="width: 100%;" TextProperty="Tipe" ValueProperty="Id" Name="tipe_sensor_id"></RadzenDropDown>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Nama" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox Style="width: 100%;" Name="nama" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Keterangan" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox Style="width: 100%;" Name="keterangan" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenTemplateForm>
+}
 
 @code {
+    private string path = "http://localhost:8080/api/v1";
     private int currentCount = 0;
+    private bool init = false;
+    private MonitoringTerdaftar montd = new MonitoringTerdaftar();
+    private TipeSensor[]? tipe_sensors;
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await Http.GetFromJsonAsync<Dictionary<string, TipeSensor[]>?>($"{path}/sensors");
+        if (data == null) {
+            return;
+        }
+
+        if (data.ContainsKey("data")) {
+            var dd = data["data"];
+            tipe_sensors = dd;
+        }
+        init = true;
+    }
+
+    public class MonitoringTerdaftar
+    {
+        public int tipe_sensor_id { get; set; }
+        public int lokasi_id { get; set; }
+        public string nama { get; set; } = string.Empty;
+        public string keterangan { get; set; } = string.Empty;
+    }
+
+    public class TipeSensor
+    {
+        public int Id { get; }
+        public string? Tipe { get; }
+        public string? Satuan { get; }
+
+        public TipeSensor(int id, string? tipe, string? satuan)
+        {
+            Id = id;
+            if (tipe == null) {
+                Tipe = string.Empty;
+            } else {
+                Tipe = tipe;
+            }
+            if (satuan == null) {
+                Satuan = string.Empty;
+            } else {
+                Satuan = satuan;
+            }
+        }
+    }
+
+    public void Submit(MonitoringTerdaftar args)
+    {
+        Console.WriteLine(args);
+        var postForm = Http.PostAsJsonAsync<MonitoringTerdaftar>($"{path}/monitoring/daftar", args);
+    }
 
     private void IncrementCount()
     {
