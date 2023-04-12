@@ -104,6 +104,7 @@ func (ls MonitoringService) GetMonitoringTerdaftarByID(ctx context.Context, id u
 	monTdServiceModel = servicemodel.DetailMonitoringTerdaftar{
 		MonitoringID: monTd.MonitoringID,
 		TipeSensorID: monTd.TipeSensorID,
+		TipeSensor:   monTd.TipeSensor,
 		Nama:         monTd.Nama,
 		Keterangan:   monTd.Keterangan,
 		Address:      monTd.Address,

@@ -36,7 +36,7 @@ type DetailMonitoringTerdaftar struct {
 	TipeSensor   string    `json:"tipe_sensor"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
-	Address      string    `json:"address"`
+	Address      string    `json:"alamat"`
 }
 
 type MonitoringData struct {

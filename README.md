@@ -195,10 +195,12 @@ To retrieve information about a specific monitoring registration, you can make a
 Here's an example response for the `/api/v1/monitoring/terdaftar/d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5` endpoint:
 ```JSON
 {
-    "tipe_sensor": 2,
-    "lokasi_id": 1,
+    "monitoring_id": "fb56e3dc-b767-4970-a663-c45c7a3e76fe",
+    "tipe_sensor_id": 2,
+    "tipe_sensor": "air (m/s)",
     "nama": "analisa air torong rejo",
-    "keterangan": "untuk melakukan penelitian skripsi"
+    "keterangan": "untuk melakukan penelitian skripsi",
+    "alamat": "Torongrejo, junrejo, batu, jawa timur",
 }
 ```
 

@@ -72,7 +72,7 @@ func (ctr MonitoringController) GetTerdaftarByUUID(ctx *gin.Context) {
 		return
 	}
 
-	helper.RespStatusOk(ctx, mtd)
+	ctx.JSON(200, mtd)
 }
 
 func (ctr MonitoringController) GetData(ctx *gin.Context) {
