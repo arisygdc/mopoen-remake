@@ -132,6 +132,7 @@ The request body must be a JSON object with the following fields:
 |author	        |string| Yes| The author of the monitoring.|
 |nama	        |string| Yes| The name of the monitoring.|
 |keterangan     |string| No | Additional information about the monitoring.|
+
 **Responses**
 
 - 201 Created if the monitoring registration was successful.
