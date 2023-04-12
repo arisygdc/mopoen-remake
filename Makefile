@@ -16,7 +16,7 @@ stoppg:
 	docker stop mopoen-remake-db
 
 execpg:
-	docker exec -it mopoen-remake-db psql -U postgres
+	docker exec -it mopoen-remake-db psql -U postgres -d mopoen
 
 createmigrate:
 	migrate create -ext sql -dir repository/postgres/migration -seq init_schema
