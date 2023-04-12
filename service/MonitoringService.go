@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"mopoen-remake/pkg/mail"
 	"mopoen-remake/repository"
 	"mopoen-remake/repository/postgres"
 	"mopoen-remake/service/servicemodel"
@@ -16,12 +17,14 @@ import (
 )
 
 type MonitoringService struct {
-	repo repository.Repository
+	repo       repository.Repository
+	mailSender mail.MailSender
 }
 
-func NewMonitoringService(repo repository.Repository) MonitoringService {
+func NewMonitoringService(repo repository.Repository, mailSender mail.MailSender) MonitoringService {
 	return MonitoringService{
-		repo: repo,
+		repo:       repo,
+		mailSender: mailSender,
 	}
 }
 
@@ -30,11 +33,19 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 		ID:           uuid.New(),
 		TipeSensorID: daftarMonitoringParam.TipeSensor_id,
 		LokasiID:     daftarMonitoringParam.Location_id,
+		Email:        daftarMonitoringParam.Email,
+		Author:       daftarMonitoringParam.Author,
 		Nama:         daftarMonitoringParam.Nama,
 		Keterangan:   daftarMonitoringParam.Keterangan,
 	}
 
-	return ls.repo.CreateMonitoringTerdaftar(ctx, param)
+	created, err := ls.repo.CreateMonitoringTerdaftar(ctx, param)
+
+	if err != nil {
+		return err
+	}
+
+	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author)
 }
 
 func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.DetailMonitoringTerdaftar, error) {

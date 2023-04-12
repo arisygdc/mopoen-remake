@@ -9,6 +9,8 @@ type Environment struct {
 	DBSource      string `mapstructure:"DATABASE_SOURCE"`
 	ServerEnv     string `mapstructure:"SERVER_ENVIRONMENT"`
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	GmailUser     string `mapstructure:"GMAIL_USER"`
+	GmailPass     string `mapstructure:"GMAIL_PASS"`
 }
 
 func New(path string) (env Environment, err error) {
