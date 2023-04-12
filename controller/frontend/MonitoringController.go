@@ -108,8 +108,7 @@ func (ctr MonitoringController) GetAnalisa(ctx *gin.Context) {
 		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
-
-	helper.RespStatusOk(ctx, rowAnalisa)
+	ctx.JSON(200, rowAnalisa)
 }
 
 // ExportAndDownload is a function to export monitoring data to csv and download it

@@ -34,20 +34,17 @@ else
         if (!query.ContainsKey("id")) return;
         Id = query["id"];
 
-        var data = await Http.GetFromJsonAsync<Dictionary<string, AnalisaMonitoring>?>($"{path}/monitoring/analisa/{Id}");
+        var data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"{path}/monitoring/analisa/{Id}");
         if (data == null) {
             return;
         }
-
-        if (data.ContainsKey("data")) {
-            Forecasts = new DataItem[]
-            {
-                new DataItem { Time = "Morning", Average = data["data"].Morning?.Average ?? 0 },
-                new DataItem { Time = "Noon", Average = data["data"].Noon?.Average ?? 0 },
-                new DataItem { Time = "Afternoon", Average = data["data"].Afternoon?.Average ?? 0 },
-                new DataItem { Time = "Night", Average = data["data"].Night?.Average ?? 0 },
-            };
-        }
+        Forecasts = new DataItem[]
+        {
+            new DataItem { Time = "Pagi", Average = data.Pagi?.Average ?? 0 },
+            new DataItem { Time = "Siang", Average = data.Siang?.Average ?? 0 },
+            new DataItem { Time = "Sore", Average = data.Sore?.Average ?? 0 },
+            new DataItem { Time = "Malam", Average = data.Malam?.Average ?? 0 },
+        };
     }
 
     private string downloadPath()
@@ -58,10 +55,10 @@ else
     public class AnalisaMonitoring
     {
         public ResultMonitoring? Overall { get; set; }
-        public ResultMonitoring? Morning { get; set; }
-        public ResultMonitoring? Noon { get; set;}
-        public ResultMonitoring? Afternoon { get; set;}
-        public ResultMonitoring? Night { get; set;}
+        public ResultMonitoring? Pagi { get; set; }
+        public ResultMonitoring? Siang { get; set;}
+        public ResultMonitoring? Sore { get; set;}
+        public ResultMonitoring? Malam { get; set;}
     }
 
     public class ResultMonitoring

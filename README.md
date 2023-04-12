@@ -238,27 +238,25 @@ Here's an example response for the `/api/v1/monitoring/value/d7e6ec83-1549-46bf-
 **Response**
 ```JSON
 {
-    "data": {
-        "overall": {
-            "total": 253,
-            "average": 20.75
-        },
-        "morning": {
-            "total": 56,
-            "average": 20.6
-        },
-        "noon": {
-            "total": 50,
-            "average": 22
-        },
-        "afternoon": {
-            "total": 52,
-            "average": 21.4
-        },
-        "night": {
-            "total": 77,
-            "average": 20
-        }
+    "keseluruhan": {
+        "total": 253,
+        "average": 20.75
+    },
+    "pagi": {
+        "total": 56,
+        "average": 20.6
+    },
+    "siang": {
+        "total": 50,
+        "average": 22
+    },
+    "sore": {
+        "total": 52,
+        "average": 21.4
+    },
+    "malam": {
+        "total": 77,
+        "average": 20
     }
 }
 ```
