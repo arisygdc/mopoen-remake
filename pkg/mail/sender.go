@@ -8,6 +8,9 @@ import (
 	"github.com/jordan-wright/email"
 )
 
+const SMPT_AUTH = "smtp.gmail.com"
+const SMTP_SERVER = SMPT_AUTH + ":587"
+
 type MailSender struct {
 	smtpUser     string
 	smtpPassword string
@@ -39,9 +42,9 @@ func (s MailSender) Send(to string, subject string, body string) error {
 		Subject: subject,
 	}
 	e.HTML = []byte(body)
-	return e.Send("smtp.gmail.com:587", s.plainAuth())
+	return e.Send(SMTP_SERVER, s.plainAuth())
 }
 
 func (s MailSender) plainAuth() smtp.Auth {
-	return smtp.PlainAuth("", s.smtpUser, s.smtpPassword, "smtp.gmail.com")
+	return smtp.PlainAuth("", s.smtpUser, s.smtpPassword, SMPT_AUTH)
 }
