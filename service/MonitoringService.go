@@ -39,6 +39,8 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 		Keterangan:   daftarMonitoringParam.Keterangan,
 	}
 
+	// TODO
+	// Transaction between create monitoring and send email
 	created, err := ls.repo.CreateMonitoringTerdaftar(ctx, param)
 
 	if err != nil {
