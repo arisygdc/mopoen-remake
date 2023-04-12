@@ -39,6 +39,8 @@ type MonitoringTerdaftar struct {
 	ID           uuid.UUID `json:"id"`
 	TipeSensorID int32     `json:"tipe_sensor_id"`
 	LokasiID     int32     `json:"lokasi_id"`
+	Email        string    `json:"email"`
+	Author       string    `json:"author"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
 }

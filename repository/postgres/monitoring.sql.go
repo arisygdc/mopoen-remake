@@ -76,27 +76,42 @@ func (q *Queries) CountDataMonitoring(ctx context.Context, monitoringTerdaftar u
 	return i, err
 }
 
-const createMonitoringTerdaftar = `-- name: CreateMonitoringTerdaftar :exec
-INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, nama, keterangan) VALUES ($1, $2, $3, $4, $5)
+const createMonitoringTerdaftar = `-- name: CreateMonitoringTerdaftar :one
+INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan) 
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan
 `
 
 type CreateMonitoringTerdaftarParams struct {
 	ID           uuid.UUID `json:"id"`
 	TipeSensorID int32     `json:"tipe_sensor_id"`
 	LokasiID     int32     `json:"lokasi_id"`
+	Email        string    `json:"email"`
+	Author       string    `json:"author"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
 }
 
-func (q *Queries) CreateMonitoringTerdaftar(ctx context.Context, arg CreateMonitoringTerdaftarParams) error {
-	_, err := q.db.ExecContext(ctx, createMonitoringTerdaftar,
+func (q *Queries) CreateMonitoringTerdaftar(ctx context.Context, arg CreateMonitoringTerdaftarParams) (MonitoringTerdaftar, error) {
+	row := q.db.QueryRowContext(ctx, createMonitoringTerdaftar,
 		arg.ID,
 		arg.TipeSensorID,
 		arg.LokasiID,
+		arg.Email,
+		arg.Author,
 		arg.Nama,
 		arg.Keterangan,
 	)
-	return err
+	var i MonitoringTerdaftar
+	err := row.Scan(
+		&i.ID,
+		&i.TipeSensorID,
+		&i.LokasiID,
+		&i.Email,
+		&i.Author,
+		&i.Nama,
+		&i.Keterangan,
+	)
+	return i, err
 }
 
 const createMonitoringValue = `-- name: CreateMonitoringValue :exec
@@ -178,7 +193,7 @@ func (q *Queries) GetAllMonitoringTerdaftar(ctx context.Context) ([]GetAllMonito
 }
 
 const getMonTerdaftarFilterLokAndSensor = `-- name: GetMonTerdaftarFilterLokAndSensor :many
-SELECT id, tipe_sensor_id, lokasi_id, nama, keterangan FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2
+SELECT id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2
 `
 
 type GetMonTerdaftarFilterLokAndSensorParams struct {
@@ -199,6 +214,8 @@ func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg Get
 			&i.ID,
 			&i.TipeSensorID,
 			&i.LokasiID,
+			&i.Email,
+			&i.Author,
 			&i.Nama,
 			&i.Keterangan,
 		); err != nil {

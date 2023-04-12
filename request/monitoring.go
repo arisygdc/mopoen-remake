@@ -3,6 +3,8 @@ package request
 type PostDaftarMonitoring struct {
 	TipeSensor_id int32  `json:"tipe_sensor_id" binding:"required,min=1"`
 	Location_id   int32  `json:"lokasi_id" binding:"required,min=1"`
+	Email         string `json:"email" binding:"required,email"`
+	Author        string `json:"author" binding:"required,min=4"`
 	Nama          string `json:"nama" binding:"required,min=4"`
 	Keterangan    string `json:"keterangan"`
 }
