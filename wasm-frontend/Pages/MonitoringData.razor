@@ -15,7 +15,7 @@
 }
 else
 {
-    <button class="btn-primary" onclick="window.location('@downloadPath()');">download csv</button>
+    <button class="btn-primary" onclick="window.open('@downloadPath()');">download csv</button>
     <div Class="rz-p-0 rz-p-md-12">
         <RadzenChart>
             <RadzenColumnSeries Data="@Forecasts" CategoryProperty="Time" ValueProperty="Average" />
@@ -53,33 +53,6 @@ else
     private string downloadPath()
     {
         return $"localhost:8080/download/csv/{Id}";
-    }
-
-    private Stream GetFileStream()
-    {
-        var randomBinaryData = new byte[50 * 1024];
-        var fileStream = new MemoryStream(randomBinaryData);
-
-        return fileStream;
-    }
-
-    private async Task DownloadFile()
-    {
-        var fileURL = $"http://localhost:8080/download/csv/{Id}";
-        var fileName = Id+".csv";
-        var response = await Http.GetAsync(fileURL);
-        if (!response.IsSuccessStatusCode)
-        {
-            await JS.InvokeVoidAsync("alert", "Failed to download file");
-            Console.WriteLine("failed");
-        }
-        else
-        {
-            var filestream = response.Content.ReadAsStream();
-            Console.WriteLine(response);
-            using var streamRef = new DotNetStreamReference(stream: filestream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, fileURL);
-        }
     }
 
     public class AnalisaMonitoring
