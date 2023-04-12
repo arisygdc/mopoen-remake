@@ -97,6 +97,8 @@ Request body
 {
     "tipe_sensor_id": 1,
     "lokasi_id": 1,
+    "email": "somemail@mail.com",
+    "author": "author",
     "nama": "analisa angin torong rejo",
     "keterangan": "untuk melakukan penelitian skripsi"
 }

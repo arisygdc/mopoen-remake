@@ -4,6 +4,7 @@ import (
 	"mopoen-remake/config"
 	"mopoen-remake/controller/frontend"
 	"mopoen-remake/controller/sensorgateway"
+	"mopoen-remake/pkg/mail"
 	"mopoen-remake/repository"
 	"mopoen-remake/server/middleware"
 	svc "mopoen-remake/service"
@@ -32,11 +33,15 @@ func New(env config.Environment) (server Server) {
 func (svr Server) ExposeRoute(repo repository.Repository) error {
 
 	router := svr.Engine
+
+	// Mail library
+	mailSvc := mail.NewMailSender(svr.env.GmailUser, svr.env.GmailPass)
+
 	lokasiSvc := svc.NewLokasiService(repo)
 	lokasiController := frontend.NewLokasiController(lokasiSvc)
 	sensorSvc := svc.NewSensorService(repo)
 	sensorController := frontend.NewSensorController(sensorSvc)
-	monitoringSvc := svc.NewMonitoringService(repo)
+	monitoringSvc := svc.NewMonitoringService(repo, mailSvc)
 	monitoringController := frontend.NewMonitoringController(monitoringSvc)
 
 	ruoterApiV1 := router.Group("/api/v1")
