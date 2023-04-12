@@ -1,14 +1,9 @@
-﻿@page "/counter"
+﻿@page "/daftar"
 @inject HttpClient Http
 @inject NotificationService NotificationService
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>Pendaftaran Mopoen</PageTitle>
 
-<h1>Counter</h1>
-
-<p role="status">Current count: @currentCount</p>
-
-@* <RadzenTemplateForm Data="@order" Submit="@((Order args) => { Submit(args); })"> *@
 @if (init)
 {
 <RadzenTemplateForm Data="@montd" Submit="@(async (MonitoringTerdaftar args) => { await OnSubmit(args); })">
@@ -75,7 +70,6 @@
 
 @code {
     private string path = "http://localhost:8080/api/v1";
-    private int currentCount = 0;
     private bool init = false;
     private MonitoringTerdaftar montd = new MonitoringTerdaftar();
     private TipeSensor[]? tipe_sensors;
