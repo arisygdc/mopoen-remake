@@ -11,7 +11,7 @@
 @* <RadzenTemplateForm Data="@order" Submit="@((Order args) => { Submit(args); })"> *@
 @if (init)
 {
-<RadzenTemplateForm Data="@montd" Submit="@( async(MonitoringTerdaftar args) => { await OnSubmit(args); })">
+<RadzenTemplateForm Data="@montd" Submit="@(async (MonitoringTerdaftar args) => { await OnSubmit(args); })">
     <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenStack>
@@ -29,6 +29,22 @@
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
                         <RadzenDropDown @bind-Value="montd.lokasi_id" AllowClear="true" Placeholder="Lokasi" Data="@LLokasi" Style="width: 100%;" TextProperty="Nama" ValueProperty="Id" Name="lokasi_id"></RadzenDropDown>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Author" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox @bind-Value="montd.author" Style="width: 100%;" Name="author" />
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Email" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox @bind-Value="montd.email" Style="width: 100%;" Name="email" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
@@ -96,6 +112,8 @@
     {
         public int tipe_sensor_id { get; set; }
         public int lokasi_id { get; set; }
+        public string author { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
         public string nama { get; set; } = string.Empty;
         public string keterangan { get; set; } = string.Empty;
     }
@@ -124,7 +142,6 @@
 
     protected async Task OnSubmit(MonitoringTerdaftar args)
     {
-        Console.WriteLine(args);
         var postForm = await Http.PostAsJsonAsync<MonitoringTerdaftar>($"{path}/monitoring/daftar", args);
         if (postForm.IsSuccessStatusCode) {
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = args.nama, Detail = "Pendaftaran berhasil" });
