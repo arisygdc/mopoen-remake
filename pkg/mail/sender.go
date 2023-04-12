@@ -22,7 +22,12 @@ func NewMailSender(smtpUser string, smtpPassword string) MailSender {
 
 func (s MailSender) SendRegisteredMonitoring(to string, id uuid.UUID, author string) error {
 	// send email to registered mopoen
-	body := "<h1>Registered mopoen ID" + id.String() + "</h1>"
+	body := fmt.Sprintf(
+		"<h1>Berhasil daftar mopoen atas nama %s </h1>"+
+			"Gunakan id berikut sebagai id monitoring mopoen: <b>%s</b>",
+		author,
+		id.String(),
+	)
 	return s.Send(to, "Registered mopoen", body)
 }
 
