@@ -74,18 +74,29 @@ WHERE
 SELECT * FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2;
 
 -- name: CountDataMonitoring :one
-SELECT COUNT(1) AS all, 
-COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00:00' AND '09:59') AS morning,
-COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '12:00:00' AND '14:59') AS noon,
-COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00:00' AND '17:59') AS afternoon,
-COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00:00' AND '23:59') AS night,
-COUNT(1) FILTER (WHERE dibuat_pada::TIME BETWEEN '00:00:00' AND '05:59') AS midnight
-FROM monitoring_data WHERE monitoring_terdaftar = $1;
+SELECT 
+    COUNT(1) AS all, 
+    COUNT(1) FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) BETWEEN 6 AND 10) AS morning,
+    COUNT(1) FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) BETWEEN 11 AND 14) AS noon,
+    COUNT(1) FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) BETWEEN 15 AND 17) AS afternoon,
+    COUNT(1) FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) >= 18 OR EXTRACT(HOUR FROM dibuat_pada) < 6) AS night
+FROM 
+    monitoring_data
+WHERE 
+    monitoring_terdaftar = $1;
 
 -- name: AverageDataMonitoring :one
-SELECT COALESCE(AVG(value), 0)::FLOAT AS all,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '06:00' AND '10:59'), 0)::FLOAT AS morning,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '10:00' AND '14:59'), 0)::FLOAT AS noon,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '15:00' AND '17:59'), 0)::FLOAT AS afternoon,
-COALESCE(AVG(value) FILTER (WHERE dibuat_pada::TIME BETWEEN '18:00' AND '05:59'), 0)::FLOAT AS night
-FROM monitoring_data WHERE monitoring_terdaftar = $1;
+SELECT 
+    COALESCE(AVG(value), 0)::FLOAT AS all,
+    COALESCE(AVG(value) 
+        FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) BETWEEN 6 AND 10), 0)::FLOAT AS morning,
+    COALESCE(AVG(value) 
+        FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) BETWEEN 11 AND 14), 0)::FLOAT AS noon,
+    COALESCE(AVG(value) 
+        FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) BETWEEN 15 AND 17), 0)::FLOAT AS afternoon,
+    COALESCE(AVG(value) 
+        FILTER (WHERE EXTRACT(HOUR FROM dibuat_pada) >= 18 OR EXTRACT(HOUR FROM dibuat_pada) < 6), 0)::FLOAT AS night
+FROM 
+    monitoring_data 
+WHERE 
+    monitoring_terdaftar = $1;
