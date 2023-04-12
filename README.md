@@ -1,6 +1,12 @@
 # MONITORING POTENSI ENERGI REMAKE
 This project is remake version of [mopoen](https://github.com/arisygdc/mopoen-remake), trying to explore my knowlege about golang, postgresql, and coding style.
 
+This API documentation describes the endpoints and request/response formats for the Mopoen Remake application. The API allows users to manage and monitor various sensors in different locations and retrieve their data.
+
+The API includes endpoints for registering and updating sensors, posting sensor values, retrieving registered sensors by ID, and retrieving historical sensor data. In addition, a new feature has been added to the API which allows users to retrieve average sensor values grouped by time of day (morning, afternoon, evening, and night).
+
+The API is designed to be used by software developers and other technical users who want to integrate Mopoen Remake's sensor management and monitoring functionality into their own applications.
+
 
 ## API Documentation
 Welcome to the API documentation for our sensing value endpoint. Here, you can learn how to interact with our API.
@@ -26,10 +32,10 @@ Upon successful submission, the API will return a 201 status code along with an 
 
 ### GET lokasi request
 To request location data, you can make a GET request to the endpoint `/api/v1/lokasi/:tipe`.
-<!-- list -->
+
 - Type can be filled with values `provinsi`, `kabupaten`, `kecamatan`, or `desa`.
 - Example: `/api/v1/lokasi/provinsi`
-<!-- end of the list -->
+
 Here are the examples of response for each type:
 
 **Provinsi**
@@ -157,6 +163,7 @@ This endpoint allows you to retrieve a list of registered monitoring.
 |--------------|--------|-----------|--------------|
 |sensor_id|	number|	No|	Filter the monitoring by sensor type ID.|
 |lokasi_id|	number|	No|	Filter the monitoring by location ID.|
+
 **Response**
 ```JSON
 {
@@ -225,17 +232,55 @@ Here's an example response for the `/api/v1/monitoring/value/d7e6ec83-1549-46bf-
     ]
 }
 ```
+### GET Analisa Monitoring
+`/api/v1/monitoring/analisa/:id` will return the average monitoring data for a monitoring location with a certain ID. You can specify the ID of the monitoring location that you want to analyze by replacing `:id` in the endpoint path.
+
+**Response**
+```JSON
+{
+    "data": {
+        "overall": {
+            "total": 253,
+            "average": 20.75
+        },
+        "morning": {
+            "total": 56,
+            "average": 20.6
+        },
+        "noon": {
+            "total": 50,
+            "average": 22
+        },
+        "afternoon": {
+            "total": 52,
+            "average": 21.4
+        },
+        "night": {
+            "total": 77,
+            "average": 20
+        }
+    }
+}
+```
+To calculate the average values for each time of day, we can group the monitoring data by the hour of the day, and then calculate the average value for each group. We can define the time ranges for each group as follows:
+
+- Morning: 5:00 AM - 11:59 AM
+- Afternoon: 12:00 PM - 5:59 PM
+- Evening: 6:00 PM - 11:59 PM
+- Night: 12:00 AM - 4:59 AM
+
+With this feature, users can easily see the average value of a monitoring device during different times of day, which can be useful for analyzing patterns and trends in the data.
+
 ## How to run in your local machine
 The following instructions explain how to run the Mopoen Remake application using `Docker`:
 
 - Run a PostgreSQL database container with the following command:
 ```bash
 $ docker run -d --name mopoen-remake-db \
-	-p 5432:5432 \
+	-p 5432:5432 --network mopoen \
 	-e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=qwer1234 \
 	-e TZ=Asia/Jakarta -e PGTZ=Asia/Jakarta \
 	-e POSTGRES_DB=mopoen \
-    --network mopoen \
 	postgres:12-alpine3.14
 ```
 
