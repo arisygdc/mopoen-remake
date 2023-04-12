@@ -3,23 +3,37 @@ This project is remake version of [mopoen](https://github.com/arisygdc/mopoen-re
 
 
 ## API Documentation
+Welcome to the API documentation for our sensing value endpoint. Here, you can learn how to interact with our API.
 
-### Post sensing value
-/api/sensor/value <br>
-Request body
+### POST sensing value
+To post sensing values, you can make a POST request to the `/api/sensor/value` endpoint.
+
+**Request Body**
+
+The request body must be a JSON object with the following fields:
+|Field Name     | Type  | Required|Description|
+|---------------|-------|---------|-----------|
+|kode_monitoring| string|	Yes   |	The ID of the monitoring.|
+|value          | number|	Yes   |	The sensing value.|
+
+**Responses**
+
+- 201 Created if the sensing value submission was successful.
 ```JSON
-// Response 201 with empty json
-{
-    "kode_monitoring": "d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5",
-    "value": 23
-}
+{}
 ```
+Upon successful submission, the API will return a 201 status code along with an empty JSON response.
 
-### Get lokasi request
-/api/v1/lokasi/:tipe <br />
-tipe can be provinsi | kabupaten | kecamatan | desa
+### GET lokasi request
+To request location data, you can make a GET request to the endpoint `/api/v1/lokasi/:tipe`.
+<!-- list -->
+- Type can be filled with values `provinsi`, `kabupaten`, `kecamatan`, or `desa`.
+- Example: `/api/v1/lokasi/provinsi`
+<!-- end of the list -->
+Here are the examples of response for each type:
+
+**Provinsi**
 ```JSON
-// Provinsi
 {
     "data": [
         {
@@ -28,7 +42,10 @@ tipe can be provinsi | kabupaten | kecamatan | desa
         }
     ]
 }
-// Kabupaten
+```
+**Kabupaten**
+```JSON
+
 {
     "data": [
         {
@@ -45,8 +62,12 @@ tipe can be provinsi | kabupaten | kecamatan | desa
 }
 ```
 
-### Get lokasi parent
-/api/v1/lokasi/parent
+### GET lokasi parent
+To request parent location data, you can make a GET request to the endpoint `/api/v1/lokasi/parent`.
+
+This API generates the parent location data of the selected location. For example, if the selected location is a village, then this API will generate the data of the province, district, and sub-district from that village.
+
+Here is an example response:
 ```JSON
 {
     "data": [
@@ -58,8 +79,12 @@ tipe can be provinsi | kabupaten | kecamatan | desa
 }
 ```
 
-### Get tipe sensor request
-/api/v1/sensors
+### GET Available Sensor Types Request
+To request available sensor type data, you can make a GET request to the endpoint `/api/v1/sensors`.
+
+This API generates the available sensor types and their units of measurement.
+
+Here is an example response:
 ```JSON
 {
     "data": [
@@ -77,9 +102,12 @@ tipe can be provinsi | kabupaten | kecamatan | desa
 }
 ```
 
-### Get tipe sensor by id request
-/api/v1/sensor/:id <br>
-Response 200 if success and 204 not found
+### GET Sensor Type by ID Request
+To get the sensor type by ID, you can make a GET request to the endpoint `/api/v1/sensor/:id`. The `:id` parameter should be replaced with the ID of the desired sensor type.
+
+If the sensor ID is available, the API will return a JSON response with a status code of 200, and the details of the sensor type. If the ID is not found, the API will return a status code of 204 with an empty response body.
+
+Here is an example response for a valid sensor ID:
 ```JSON
 {
     "data": {
@@ -90,35 +118,45 @@ Response 200 if success and 204 not found
 }
 ```
 
-### Post daftar monitoring
-/api/v1/monitoring/daftar
-Request body
-```JSON
-{
-    "tipe_sensor_id": 1,
-    "lokasi_id": 1,
-    "email": "somemail@mail.com",
-    "author": "author",
-    "nama": "analisa angin torong rejo",
-    "keterangan": "untuk melakukan penelitian skripsi"
-}
-```
-Response 201 if success
+### POST daftar monitoring
+`/api/v1/monitoring/daftar` This endpoint registers a user for monitoring, and send information to email.
+
+**Request Body**
+
+The request body must be a JSON object with the following fields:
+|Field Name     | Type | Required | Description |
+|---------------|------|----------|-------------|
+|tipe_sensor_id |uuid  | Yes| The ID of the sensor type.|
+|lokasi_id      |uuid  | Yes| The ID of the location.|
+|email	        |string| Yes| The user's email address.|
+|author	        |string| Yes| The author of the monitoring.|
+|nama	        |string| Yes| The name of the monitoring.|
+|keterangan     |string| No | Additional information about the monitoring.|
+**Responses**
+
+- 201 Created if the monitoring registration was successful.
 ```JSON
 {
     "message": "analisa angin torong rejo created"
 }
 ```
-Response 400 when validation error
+- 400 Bad Request if the request body is missing required fields or contains invalid data.
 ```JSON
 {
     "message": "invalid character"
 }
 ```
 ### Get monitoring terdaftar
-/api/v1/monitoring/terdaftar <br>
-Response 200 <br>
-query param: sensor_id, lokasi_id
+`/api/v1/monitoring/terdaftar`
+
+This endpoint allows you to retrieve a list of registered monitoring.
+
+**Query Parameters**
+|Parameter Name|	Type|	Required|	Description|
+|--------------|--------|-----------|--------------|
+|sensor_id|	number|	No|	Filter the monitoring by sensor type ID.|
+|lokasi_id|	number|	No|	Filter the monitoring by location ID.|
+**Response**
 ```JSON
 {
     "data": [
@@ -142,11 +180,12 @@ query param: sensor_id, lokasi_id
 }
 ```
 
-### Get monitoring terdaftar by id
-/api/v1/monitoring/terdaftar/:id <br>
-Response 200
+### GET monitoring terdaftar by id
+To retrieve information about a specific monitoring registration, you can make a GET request to the `/api/v1/monitoring/terdaftar/:id` endpoint, where `:id` should be replaced with the ID of the monitoring registration you want to retrieve. The API will respond with a 200 status code and return the details of the monitoring registration in JSON format, including the sensor type, location ID, name, and description.
+
+
+Here's an example response for the `/api/v1/monitoring/terdaftar/d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5` endpoint:
 ```JSON
-// example /api/v1/monitoring/terdaftar/d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5
 {
     "tipe_sensor": 2,
     "lokasi_id": 1,
@@ -155,11 +194,11 @@ Response 200
 }
 ```
 
-### Get value monitoring
-monitoring/value/:uuid <br>
-Response 200
+### GET value monitoring
+To retrieve all the monitoring values associated with a specific monitoring registration, you can make a GET request to the `/api/v1/monitoring/value/:uuid` endpoint, where `:uuid` should be replaced with the UUID of the monitoring registration. The API will respond with a 200 status code and return the sensing values in JSON format, including the value and timestamp.
+
+Here's an example response for the `/api/v1/monitoring/value/d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5` endpoint:
 ```JSON
-// example /api/v1/monitoring/value/d7e6ec83-1549-46bf-bdc0-0f7f1d3e23c5
 {
     "data": [
         {
@@ -185,7 +224,10 @@ Response 200
     ]
 }
 ```
-## How to run
+## How to run in your local machine
+The following instructions explain how to run the Mopoen Remake application using `Docker`:
+
+- Run a PostgreSQL database container with the following command:
 ```bash
 $ docker run -d --name mopoen-remake-db \
 	-p 5432:5432 \
@@ -194,6 +236,14 @@ $ docker run -d --name mopoen-remake-db \
 	-e POSTGRES_DB=mopoen \
     --network mopoen \
 	postgres:12-alpine3.14
-
-$ docker run -d --name mopoen-s1 -p 8081:8080 --network mopoen -e DATABASE_SOURCE=postgresql://postgres:qwer1234@mopoen-db-release:5432/mopoen?sslmode=disable bf27107e9ea4
 ```
+
+Create a Docker container named **mopoen-remake-db** running PostgreSQL version 12. The container will be connected to a Docker network named **mopoen**. You can change the PostgreSQL username, password, and database name by modifying the environment variables.
+
+- Run the Mopoen Remake application container with the following command:
+```bash
+$ docker run -d --name mopoen-s1 -p 8080:8080 --network mopoen -e DATABASE_SOURCE=postgresql://postgres:qwer1234@mopoen-db-release:5432/mopoen?sslmode=disable
+```
+Create a Docker container named **mopoen-s1** running the Mopoen Remake application. The container will be connected to the mopoen Docker network. The environment variable `DATABASE_SOURCE` specifies the PostgreSQL database connection string. You can modify this value to match your PostgreSQL database configuration. The container will expose the Mopoen Remake application on port **8080**, which you can access from your host machine.
+
+That's it! You should now be able to access the Mopoen Remake API by using http://localhost:8080.
