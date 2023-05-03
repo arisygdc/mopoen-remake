@@ -4,6 +4,8 @@ import (
 	"context"
 	"mopoen-remake/repository"
 	"mopoen-remake/repository/postgres"
+	"mopoen-remake/service/servicemodel"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -16,11 +18,19 @@ func NewSensorGatewayService(repo repository.Repository) SensorGatewayService {
 	return SensorGatewayService{repo: repo}
 }
 
-func (sgs SensorGatewayService) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64) error {
+func (sgs SensorGatewayService) CreateMonitoringValue(ctx context.Context, monitoring_id uuid.UUID, value float64, secret string) error {
 	param := postgres.CreateMonitoringValueParams{
-		MonitoringTerdaftar: monitoring_id,
-		Value:               value,
+		ID:     monitoring_id,
+		Value:  value,
+		Secret: secret,
 	}
-
-	return sgs.repo.CreateMonitoringValue(ctx, param)
+	err := sgs.repo.CreateMonitoringValue(ctx, param)
+	if err != nil {
+		strErr := err.Error()
+		if strings.Contains(strErr, "violates not-null constraint") {
+			return servicemodel.ErrWrongSecret
+		}
+		return err
+	}
+	return nil
 }

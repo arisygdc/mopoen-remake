@@ -4,6 +4,7 @@ import (
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/request"
 	ifSG "mopoen-remake/service/serviceInterface"
+	"mopoen-remake/service/servicemodel"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,8 +33,10 @@ func (ctr SensorGatewayController) SaveDataFromSensor(ctx *gin.Context) {
 		return
 	}
 
-	if err := ctr.service.CreateMonitoringValue(ctx, id, req.Value); err != nil {
-		helper.RespCatchSqlErr(ctx, err)
+	if err := ctr.service.CreateMonitoringValue(ctx, id, req.Value, req.Secret); err != nil {
+		if err == servicemodel.ErrWrongSecret {
+			helper.RespBadRequest(ctx, err.Error())
+		}
 		return
 	}
 
