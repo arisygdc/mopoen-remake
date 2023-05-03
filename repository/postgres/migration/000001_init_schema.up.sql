@@ -33,6 +33,7 @@ CREATE TABLE monitoring_terdaftar (
     lokasi_id INT NOT NULL,
     email VARCHAR(50) NOT NULL,
     author VARCHAR(50) NOT NULL,
+    secret VARCHAR(16) NOT NULL,
     nama VARCHAR(70) NOT NULL,
     keterangan VARCHAR(200) NOT NULL
 );

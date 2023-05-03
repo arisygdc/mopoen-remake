@@ -86,8 +86,8 @@ func (q *Queries) CountDataMonitoring(ctx context.Context, monitoringTerdaftar u
 }
 
 const createMonitoringTerdaftar = `-- name: CreateMonitoringTerdaftar :one
-INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan) 
-VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan
+INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, email, secret, author, nama, keterangan) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, tipe_sensor_id, lokasi_id, email, author, secret, nama, keterangan
 `
 
 type CreateMonitoringTerdaftarParams struct {
@@ -95,6 +95,7 @@ type CreateMonitoringTerdaftarParams struct {
 	TipeSensorID int32     `json:"tipe_sensor_id"`
 	LokasiID     int32     `json:"lokasi_id"`
 	Email        string    `json:"email"`
+	Secret       string    `json:"secret"`
 	Author       string    `json:"author"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
@@ -106,6 +107,7 @@ func (q *Queries) CreateMonitoringTerdaftar(ctx context.Context, arg CreateMonit
 		arg.TipeSensorID,
 		arg.LokasiID,
 		arg.Email,
+		arg.Secret,
 		arg.Author,
 		arg.Nama,
 		arg.Keterangan,
@@ -117,6 +119,7 @@ func (q *Queries) CreateMonitoringTerdaftar(ctx context.Context, arg CreateMonit
 		&i.LokasiID,
 		&i.Email,
 		&i.Author,
+		&i.Secret,
 		&i.Nama,
 		&i.Keterangan,
 	)
@@ -210,15 +213,25 @@ type GetMonTerdaftarFilterLokAndSensorParams struct {
 	LokasiID     int32 `json:"lokasi_id"`
 }
 
-func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg GetMonTerdaftarFilterLokAndSensorParams) ([]MonitoringTerdaftar, error) {
+type GetMonTerdaftarFilterLokAndSensorRow struct {
+	ID           uuid.UUID `json:"id"`
+	TipeSensorID int32     `json:"tipe_sensor_id"`
+	LokasiID     int32     `json:"lokasi_id"`
+	Email        string    `json:"email"`
+	Author       string    `json:"author"`
+	Nama         string    `json:"nama"`
+	Keterangan   string    `json:"keterangan"`
+}
+
+func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg GetMonTerdaftarFilterLokAndSensorParams) ([]GetMonTerdaftarFilterLokAndSensorRow, error) {
 	rows, err := q.db.QueryContext(ctx, getMonTerdaftarFilterLokAndSensor, arg.TipeSensorID, arg.LokasiID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []MonitoringTerdaftar
+	var items []GetMonTerdaftarFilterLokAndSensorRow
 	for rows.Next() {
-		var i MonitoringTerdaftar
+		var i GetMonTerdaftarFilterLokAndSensorRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.TipeSensorID,

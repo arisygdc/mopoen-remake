@@ -1,6 +1,6 @@
 -- name: CreateMonitoringTerdaftar :one
-INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan) 
-VALUES (@id, @tipe_sensor_id, @lokasi_id, @email, @author, @nama, @keterangan) RETURNING *;
+INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, email, secret, author, nama, keterangan) 
+VALUES (@id, @tipe_sensor_id, @lokasi_id, @email, @secret, @author, @nama, @keterangan) RETURNING *;
 
 -- name: CreateMonitoringValue :exec
 INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES ($1, $2);
@@ -71,7 +71,7 @@ WHERE
     mt.id = $1;
 
 -- name: GetMonTerdaftarFilterLokAndSensor :many
-SELECT * FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2;
+SELECT id, tipe_sensor_id, lokasi_id, email, author, nama, keterangan FROM monitoring_terdaftar WHERE tipe_sensor_id = $1 AND lokasi_id = $2;
 
 -- name: CountDataMonitoring :one
 SELECT 

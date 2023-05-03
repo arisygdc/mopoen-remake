@@ -43,15 +43,16 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 
 	// TODO
 	// Transaction between create monitoring and send email
+	// Asynchronous
+	key := utility.HKDF16(param.ID.String(), param.Email, param.Author)
+	param.Secret = string(key)
 	created, err := ls.repo.CreateMonitoringTerdaftar(ctx, param)
 
 	if err != nil {
 		return err
 	}
 
-	key := utility.HKDF16(param.ID.String(), param.Email, param.Author)
-
-	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author, string(key))
+	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author, param.Secret)
 }
 
 func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.DetailMonitoringTerdaftar, error) {
