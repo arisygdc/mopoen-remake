@@ -13,6 +13,8 @@ import (
 	"os"
 	"time"
 
+	"mopoen-remake/pkg/utility"
+
 	"github.com/google/uuid"
 )
 
@@ -47,7 +49,9 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 		return err
 	}
 
-	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author)
+	key := utility.HKDF16(param.ID.String(), param.Email, param.Author)
+
+	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author, string(key))
 }
 
 func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.DetailMonitoringTerdaftar, error) {

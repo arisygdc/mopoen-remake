@@ -23,13 +23,20 @@ func NewMailSender(smtpUser string, smtpPassword string) MailSender {
 	}
 }
 
-func (s MailSender) SendRegisteredMonitoring(to string, id uuid.UUID, author string) error {
+// SendRegisteredMonitoring send email to registered mopoen user
+// @to: email destination
+// @id: mopoen id
+// @author
+// @secret: mopoen secret
+func (s MailSender) SendRegisteredMonitoring(to string, id uuid.UUID, author string, secret string) error {
 	// send email to registered mopoen
 	body := fmt.Sprintf(
 		"<h2>Berhasil daftar mopoen atas nama %s </h2>"+
 			"Gunakan id berikut sebagai id monitoring mopoen: <b>%s</b><br>"+
+			"Gunakan secret berikut sebagai secret monitoring mopoen: <b>%s</b><br>"+
 			"keterangan lebih lanjut kunjungi <a href='https://github.com/arisygdc/mopoen-remake/blob/master/README.md'>API Documentation Mopoen</a>",
 		author,
+		secret,
 		id.String(),
 	)
 	return s.Send(to, "Registered mopoen", body)
