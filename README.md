@@ -20,7 +20,8 @@ The request body must be a JSON object with the following fields:
 |Field Name     | Type  | Required|Description|
 |---------------|-------|---------|-----------|
 |kode_monitoring| string|	Yes   |	The ID of the monitoring.|
-|value          | number|	Yes   |	The sensing value.|
+|value          | number|	Yes   |	ensing value.|
+|secret_key     | string|	Yes   |	Secret key of the monitoring.||
 
 **Responses**
 
