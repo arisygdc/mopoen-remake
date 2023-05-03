@@ -41,6 +41,7 @@ type MonitoringTerdaftar struct {
 	LokasiID     int32     `json:"lokasi_id"`
 	Email        string    `json:"email"`
 	Author       string    `json:"author"`
+	Secret       string    `json:"secret"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
 }

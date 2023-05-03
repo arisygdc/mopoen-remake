@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"mopoen-remake/pkg/mail"
@@ -12,6 +13,8 @@ import (
 	"mopoen-remake/service/servicemodel"
 	"os"
 	"time"
+
+	"mopoen-remake/pkg/utility"
 
 	"github.com/google/uuid"
 )
@@ -41,13 +44,14 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 
 	// TODO
 	// Transaction between create monitoring and send email
+	// Asynchronous
+	key := utility.HKDF16(param.ID.String(), param.Email, param.Author)
+	param.Secret = hex.EncodeToString(key)
 	created, err := ls.repo.CreateMonitoringTerdaftar(ctx, param)
-
 	if err != nil {
 		return err
 	}
-
-	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author)
+	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author, param.Secret)
 }
 
 func (ls MonitoringService) GetMonitoringTerdaftar(ctx context.Context, option *servicemodel.GetMonitoringTerdaftarFilterOptions) ([]servicemodel.DetailMonitoringTerdaftar, error) {

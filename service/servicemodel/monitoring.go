@@ -1,10 +1,13 @@
 package servicemodel
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+var ErrWrongSecret = fmt.Errorf("wrong secret")
 
 type DaftarMonitoring struct {
 	TipeSensor_id int32  `json:"tipe_sensor_id"`
