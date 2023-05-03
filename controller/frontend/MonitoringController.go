@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"mopoen-remake/controller/helper"
 	"mopoen-remake/request"
 	ifM "mopoen-remake/service/serviceInterface"
@@ -131,7 +131,7 @@ func (ctr MonitoringController) ExportAndDownload(ctx *gin.Context) {
 		return
 	}
 
-	data, err := ioutil.ReadAll(filebuffer)
+	data, err := io.ReadAll(filebuffer)
 	if err != nil {
 		helper.RespInternalErr(ctx, err.Error())
 		return
