@@ -36,8 +36,8 @@ func (s MailSender) SendRegisteredMonitoring(to string, id uuid.UUID, author str
 			"Gunakan secret berikut sebagai secret monitoring mopoen: <b>%s</b><br>"+
 			"keterangan lebih lanjut kunjungi <a href='https://github.com/arisygdc/mopoen-remake/blob/master/README.md'>API Documentation Mopoen</a>",
 		author,
-		secret,
 		id.String(),
+		secret,
 	)
 	return s.Send(to, "Registered mopoen", body)
 }
