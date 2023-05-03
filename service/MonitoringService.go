@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"mopoen-remake/pkg/mail"
@@ -45,13 +46,11 @@ func (ls MonitoringService) DaftarMonitoring(ctx context.Context, daftarMonitori
 	// Transaction between create monitoring and send email
 	// Asynchronous
 	key := utility.HKDF16(param.ID.String(), param.Email, param.Author)
-	param.Secret = string(key)
+	param.Secret = hex.EncodeToString(key)
 	created, err := ls.repo.CreateMonitoringTerdaftar(ctx, param)
-
 	if err != nil {
 		return err
 	}
-
 	return ls.mailSender.SendRegisteredMonitoring(created.Email, created.ID, created.Author, param.Secret)
 }
 

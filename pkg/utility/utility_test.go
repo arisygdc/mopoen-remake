@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"encoding/hex"
 	"fmt"
 	"testing"
 
@@ -18,7 +19,7 @@ func TestHkdf(t *testing.T) {
 		newKey := HKDF16(id, "test", "test")
 		assert.Equal(t, key, newKey)
 
-		fmt.Printf("id: %s, key: %x\n", id, key)
-		fmt.Printf("new key: %x\n", newKey)
+		fmt.Printf("id: %s, key: %s\n", id, hex.EncodeToString(key))
+		fmt.Printf("new key: %s\n", hex.EncodeToString(newKey))
 	}
 }
