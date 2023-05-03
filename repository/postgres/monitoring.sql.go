@@ -127,16 +127,26 @@ func (q *Queries) CreateMonitoringTerdaftar(ctx context.Context, arg CreateMonit
 }
 
 const createMonitoringValue = `-- name: CreateMonitoringValue :exec
-INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES ($1, $2)
+INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES 
+(
+    (
+        SELECT monitoring_terdaftar.id 
+        FROM monitoring_terdaftar 
+        WHERE monitoring_terdaftar.id = $1 
+        AND monitoring_terdaftar.secret = $3
+    ), 
+    $2
+)
 `
 
 type CreateMonitoringValueParams struct {
-	MonitoringTerdaftar uuid.UUID `json:"monitoring_terdaftar"`
-	Value               float64   `json:"value"`
+	ID     uuid.UUID `json:"id"`
+	Value  float64   `json:"value"`
+	Secret string    `json:"secret"`
 }
 
 func (q *Queries) CreateMonitoringValue(ctx context.Context, arg CreateMonitoringValueParams) error {
-	_, err := q.db.ExecContext(ctx, createMonitoringValue, arg.MonitoringTerdaftar, arg.Value)
+	_, err := q.db.ExecContext(ctx, createMonitoringValue, arg.ID, arg.Value, arg.Secret)
 	return err
 }
 

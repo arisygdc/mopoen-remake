@@ -3,7 +3,16 @@ INSERT INTO monitoring_terdaftar (id, tipe_sensor_id, lokasi_id, email, secret, 
 VALUES (@id, @tipe_sensor_id, @lokasi_id, @email, @secret, @author, @nama, @keterangan) RETURNING *;
 
 -- name: CreateMonitoringValue :exec
-INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES ($1, $2);
+INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES 
+(
+    (
+        SELECT monitoring_terdaftar.id 
+        FROM monitoring_terdaftar 
+        WHERE monitoring_terdaftar.id=$1 
+        AND monitoring_terdaftar.secret=$3
+    ), 
+    $2
+);
 
 -- name: GetAllMonitoringTerdaftar :many
 SELECT 
