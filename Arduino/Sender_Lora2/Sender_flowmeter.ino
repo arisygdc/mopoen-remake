@@ -17,6 +17,7 @@
 
 // uuidv4 value 36 character
 #define idMonitoring "12c76e75-78f4-4cfd-b3cf-aae81373350e"
+#define secret "133ed92da86d549bf06ed9ef18eef442"
 
 #define timeSecond 1000
 // water flow sensor
@@ -56,8 +57,15 @@ void loop()
   cli(); //disable interrupt
   Calc = (TURBINE * 60 / 7.5); //pulse * 60 / 7.5 
 
+  // {\"id\": \"%s\", \"value\": %s, \"secret\": \"%s\"}
+  String data = "{\"id\"" + idMonitoring;
+  data = data + "\", \"value\":";
+  data = data + String(velocity_ms);
+  data = ", \"secret\": \"";
+  data = data + secret;
+  data = data + "\"}";
+
   //units of measurement L / hour
-  String data = idMonitoring + String(Calc, DEC);
   LoraSend(LoRa, data);
 }
 

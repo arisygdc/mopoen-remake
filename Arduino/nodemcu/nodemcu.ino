@@ -39,7 +39,7 @@ void loop() {
   }
 
   if ((WiFi.status() == WL_CONNECTED)) {
-    String valueSensorJson = "{\"id_sensor\": " + id_sensor + ",\"data\": " + valStr + "}"; //-> test with static value
+    String valueSensorJson = "{\"id\": \"cf3eff4c-e693-4540-bbf9-624750e8bfa5 123\", \"value\": 32, \"secret\": \"c9a9cd5750b44752b8df720715a74108\"}"; //-> test with static value
     HTTP_RESULT getResponse = HTTPsend(METHOD_POST, "http://" SERVER_IP "/api/v1/sensor/data", valueSensorJson);
     Serial.printf("[HTTP] POST SETUP DEVICE... code: %d\n", getResponse.code);
   }

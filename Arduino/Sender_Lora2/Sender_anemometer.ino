@@ -17,6 +17,7 @@
 
 // uuidv4 value 36 character
 #define idMonitoring "12c76e75-78f4-4cfd-b3cf-aae81373350e"
+#define secret "4923296e0e0937f86e0853f9366c1de635b22a3d4675c08a61057aac95a9d7d8"
 float counter = 1;
 
 // anemometer parameters
@@ -83,7 +84,13 @@ void loop()
     if (countThing == (60 * 10)) // Send data per 25 seconds
     {
       Serial.println("Send data to server");
-      String data = idMonitoring + String(velocity_ms);
+      // {\"id\": \"%s\", \"value\": %s, \"secret\": \"%s\"}
+      String data = "{\"id\"" + idMonitoring;
+      data = data + "\", \"value\":";
+      data = data + String(velocity_ms);
+      data = ", \"secret\": \"";
+      data = data + secret;
+      data = data + "\"}";
       LoraSend(LoRa, data);
       countThing = 0;
     }

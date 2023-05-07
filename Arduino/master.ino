@@ -73,8 +73,7 @@ void loop() {
   HTTP_RESULT getResponse;
   if ((WiFi.status() == WL_CONNECTED)) {
     String valueSensorJson = (String)LoRa.read();
-    // String valueSensorJson = "{\"id_sensor\": 4,\"data\": 76}"; -> test with static value
-    getResponse = HTTPsend(METHOD_POST, "http://" SERVER_IP "/api/v1/sensor/data", valueSensorJson);
+    getResponse = HTTPsend(METHOD_POST, "http://" SERVER_IP "/api/sensor/value", valueSensorJson);
     Serial.printf("[HTTP] POST SETUP DEVICE... code: %d\n", getResponse.code);
   }
 
