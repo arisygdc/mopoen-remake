@@ -1,24 +1,15 @@
-/**
-   PostHTTPClient.ino
-
-    Created on: 21.11.2016
-
-*/
-
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
 #include <SPI.h>
-#include <LoRa.h>
 
-#define SERVER_IP "192.168.0.4"
+#define SERVER_IP "147.139.134.200"
 #define METHOD_POST "POST"
 
 #ifndef STASSID
 #define STASSID "ssid"
-#define STAPSK  "44432100"
+#define STAPSK  "pass"
 #endif
-
-int id_sensor = 0;
 
 struct HTTP_RESULT {
   int code;
@@ -26,58 +17,53 @@ struct HTTP_RESULT {
 };
 
 void setup() {
+  // put your setup code here, to run once:
   Serial.begin(9600);
-  Serial.println();
-  Serial.println();
-  Serial.println();
-  // Serial Connected
-
+  delay(2000);
   WiFi.begin(STASSID, STAPSK);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("");
-  Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-  // WiFi Connected
-  
-  if (!LoRa.begin(433E6)) {
-    Serial.println("Starting LoRa failed!");
-    while (1);
-  }
-  // LoRa Connected 
-  
-  delay(2000);
 }
 
 void loop() {
-  // Receive data from Lora
-  int packetSize = LoRa.parsePacket();
-  if (packetSize) {
-    // received a packet
-    Serial.print("Received packet '");
-
-    // read packet
-    while (LoRa.available()) {
-      Serial.print((char)LoRa.read());
-    }
-
-    // print RSSI of packet
-    Serial.print("' with RSSI ");
-    Serial.println(LoRa.packetRssi());
-  }
-  
-  //   wait for WiFi connection
-  HTTP_RESULT getResponse;
-  if ((WiFi.status() == WL_CONNECTED)) {
-    String valueSensorJson = (String)LoRa.read();
-    getResponse = HTTPsend(METHOD_POST, "http://" SERVER_IP "/api/sensor/value", valueSensorJson);
-    Serial.printf("[HTTP] POST SETUP DEVICE... code: %d\n", getResponse.code);
+  // put your main code here, to run repeatedly:
+  String data = "";
+  String id_monitoring = "";
+  String valStr = "";
+  while(Serial.available()>0){
+    data += char(Serial.read());
+    id_monitoring = data.substring(0, 36);
+    valStr = data.substring(36, data.length());
   }
 
-  delay(10000);
+  if (data.length() > 35) {
+    Serial.print("received: ");
+    Serial.println(data);
+
+    DynamicJsonDocument doc(1024);
+    doc["kode_monitoring"] = id_monitoring;
+    doc["value"] = valStr.toFloat();
+
+    String json;
+    serializeJson(doc, json);
+
+    String alamat = "http://" SERVER_IP "/api/sensor/monitoring/value"; 
+    HTTP_RESULT getResponse = HTTPsend(METHOD_POST, alamat, json);
+
+    Serial.println(id_monitoring);
+    Serial.println(valStr.toFloat());
+    Serial.print("[HTTP POST]");
+    Serial.print(alamat);
+    Serial.printf(" code: %d\n", getResponse.code);
+    Serial.print("message: ");
+    Serial.println(getResponse.payload);
+  }
+
+  delay(500); 
 }
 
 HTTP_RESULT HTTPsend(String http_method, String url, String jsonBody) {
