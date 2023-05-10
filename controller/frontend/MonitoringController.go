@@ -8,6 +8,7 @@ import (
 	ifM "mopoen-remake/service/serviceInterface"
 	"mopoen-remake/service/servicemodel"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -113,13 +114,18 @@ func (ctr MonitoringController) GetAnalisa(ctx *gin.Context) {
 
 // ExportAndDownload is a function to export monitoring data to csv and download it
 func (ctr MonitoringController) ExportAndDownload(ctx *gin.Context) {
-	var uriParam request.GetUUID
+	var uriParam request.GetFile
 	if err := ctx.ShouldBindUri(&uriParam); err != nil {
 		helper.RespBadRequest(ctx, err.Error())
 		return
 	}
+	format := ".csv"
 
-	id, err := uuid.Parse(uriParam.ID)
+	if !strings.HasSuffix(uriParam.FileName, format) {
+		helper.RespBadRequest(ctx, "format tidak didukung")
+	}
+
+	id, err := uuid.Parse(uriParam.FileName[:len(uriParam.FileName)-len(format)])
 	if err != nil {
 		helper.RespBadRequest(ctx, err.Error())
 		return
@@ -137,7 +143,7 @@ func (ctr MonitoringController) ExportAndDownload(ctx *gin.Context) {
 		return
 	}
 
-	filename := uriParam.ID + ".csv"
+	filename := uriParam.FileName
 
 	ctx.Data(200, "text/csv", data)
 	ctx.Request.Header.Add("Content-Disposition", "attachment; filename="+filename)

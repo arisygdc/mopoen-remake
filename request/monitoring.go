@@ -22,3 +22,7 @@ type GetMonitoringTerdaftar struct {
 type GetUUID struct {
 	ID string `uri:"uuid" binding:"required,min=36,max=36"`
 }
+
+type GetFile struct {
+	FileName string `uri:"file" binding:"required,min=8,max=255"`
+}

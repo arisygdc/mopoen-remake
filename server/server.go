@@ -76,7 +76,7 @@ func (svr Server) ExposeRoute(repo repository.Repository) error {
 
 	// request GetUUID
 	// download
-	router.GET("/download/csv/:uuid", monitoringController.ExportAndDownload)
+	router.GET("/download/monitoring/:file", monitoringController.ExportAndDownload)
 
 	sensorGSvc := svc.NewSensorGatewayService(repo)
 	sensorG := sensorgateway.NewSensorGatewayController(sensorGSvc)
