@@ -3,3 +3,4 @@ config.env
 
 /wasm-frontend/bin
 /wasm-frontend/obj
+/backups
