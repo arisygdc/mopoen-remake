@@ -3,18 +3,34 @@
 @inject HttpClient Http
 @inject IJSRuntime JS
 
-<PageTitle>Weather forecast</PageTitle>
-
-<h1>Weather forecast</h1>
-
-<p>This component demonstrates fetching data from the server.</p>
-
 @if (Forecasts == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
+    <PageTitle>@data.Monitoring_information?.Nama</PageTitle>
+    <h1>@data.Monitoring_information?.Nama</h1>
+    <table border="0">
+        <tr>
+            <td>Monitoring ID</td>
+            <td>@data.Monitoring_information?.Monitoring_id</td>
+        </tr>
+        <tr>
+            <td>Tipe Sensor</td>
+            <td>@data.Monitoring_information?.Tipe_sensor</td>
+        </tr>
+        <tr>
+            <td>Nama</td>
+            <td>@data.Monitoring_information?.Nama</td>
+        </tr>
+        <tr>
+            <td>Alamat</td>
+            <td>@data.Monitoring_information?.Alamat</td>
+        </tr>
+    </table>
+    <br>
+    <p>@data.Monitoring_information?.Keterangan</p>
     <button class="btn-primary" onclick="window.open('@downloadPath()');">download csv</button>
     <div Class="rz-p-0 rz-p-md-12">
         <RadzenChart>
@@ -25,6 +41,7 @@ else
 
 @code {
     private string path = "http://localhost:8080/api/v1";
+    private AnalisaMonitoring data = new AnalisaMonitoring();
     private DataItem[]? Forecasts;
 
     protected override async Task OnInitializedAsync()
@@ -34,7 +51,7 @@ else
         if (!query.ContainsKey("id")) return;
         Id = query["id"];
 
-        var data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"{path}/monitoring/analisa/{Id}");
+        data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"{path}/monitoring/analisa/{Id}") ?? data;
         if (data == null) {
             return;
         }
@@ -54,11 +71,22 @@ else
 
     public class AnalisaMonitoring
     {
+        public MonitoringInfo? Monitoring_information { get; set; }
         public ResultMonitoring? Overall { get; set; }
         public ResultMonitoring? Pagi { get; set; }
         public ResultMonitoring? Siang { get; set;}
         public ResultMonitoring? Sore { get; set;}
         public ResultMonitoring? Malam { get; set;}
+    }
+
+    public class MonitoringInfo
+    {
+        public string Monitoring_id { get; set; } = string.Empty;
+        public int Tipe_sensor_id { get; set; }
+        public string Tipe_sensor { get; set; } = string.Empty;
+        public string Nama { get; set; } = string.Empty;
+        public string Keterangan { get; set; } = string.Empty;
+        public string Alamat { get; set; } = string.Empty;
     }
 
     public class ResultMonitoring
