@@ -205,10 +205,10 @@ func (ls MonitoringService) EncodeToCsv(ctx context.Context, id uuid.UUID, write
 	}
 
 	w := csv.NewWriter(writer)
-	w.Write([]string{"Value", "Time"})
+	w.Write([]string{"Value", "Date", "Time"})
 	for _, v := range row {
 		value := fmt.Sprintf("%f", v.Value)
-		w.Write([]string{value, v.DibuatPada.GoString()})
+		w.Write([]string{value, v.Date, v.Time})
 	}
 	w.Flush()
 	return nil

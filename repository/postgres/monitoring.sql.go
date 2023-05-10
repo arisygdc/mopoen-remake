@@ -8,7 +8,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -132,8 +131,8 @@ INSERT INTO monitoring_data (monitoring_terdaftar, value) VALUES
     (
         SELECT monitoring_terdaftar.id 
         FROM monitoring_terdaftar 
-        WHERE monitoring_terdaftar.id = $1 
-        AND monitoring_terdaftar.secret = $3
+        WHERE monitoring_terdaftar.id=$1 
+        AND monitoring_terdaftar.secret=$3
     ), 
     $2
 )
@@ -265,12 +264,13 @@ func (q *Queries) GetMonTerdaftarFilterLokAndSensor(ctx context.Context, arg Get
 }
 
 const getMonitoringData = `-- name: GetMonitoringData :many
-SELECT value, dibuat_pada FROM monitoring_data WHERE monitoring_terdaftar = $1
+SELECT value, date(dibuat_pada)::varchar AS date, (dibuat_pada::time)::varchar AS time FROM monitoring_data WHERE monitoring_terdaftar = $1
 `
 
 type GetMonitoringDataRow struct {
-	Value      float64   `json:"value"`
-	DibuatPada time.Time `json:"dibuat_pada"`
+	Value float64 `json:"value"`
+	Date  string  `json:"date"`
+	Time  string  `json:"time"`
 }
 
 func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uuid.UUID) ([]GetMonitoringDataRow, error) {
@@ -282,7 +282,7 @@ func (q *Queries) GetMonitoringData(ctx context.Context, monitoringTerdaftar uui
 	var items []GetMonitoringDataRow
 	for rows.Next() {
 		var i GetMonitoringDataRow
-		if err := rows.Scan(&i.Value, &i.DibuatPada); err != nil {
+		if err := rows.Scan(&i.Value, &i.Date, &i.Time); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
