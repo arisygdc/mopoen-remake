@@ -60,7 +60,7 @@ CASE
 END;
 
 -- name: GetMonitoringData :many
-SELECT value, dibuat_pada FROM monitoring_data WHERE monitoring_terdaftar = $1;
+SELECT value, date(dibuat_pada)::varchar AS date, (dibuat_pada::time)::varchar AS time FROM monitoring_data WHERE monitoring_terdaftar = $1;
 
 -- name: GetMonitoringTerdaftar :one
 SELECT 

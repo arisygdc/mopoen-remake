@@ -2,7 +2,6 @@ package servicemodel
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -43,8 +42,9 @@ type DetailMonitoringTerdaftar struct {
 }
 
 type MonitoringData struct {
-	Value      float64   `json:"value"`
-	DibuatPada time.Time `json:"dibuat_pada"`
+	Value float64 `json:"value"`
+	Date  string  `json:"date"`
+	Time  string  `json:"time"`
 }
 
 type ResultMonitoring struct {
