@@ -164,7 +164,20 @@ func (ls MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servi
 		return analisa, err
 	}
 
+	detail_monitoring, err := ls.repo.GetMonitoringTerdaftar(ctx, id)
+	if err != nil {
+		return analisa, err
+	}
+
 	analisa = servicemodel.AnalisaMonitoring{
+		Monitoring_info: servicemodel.DetailMonitoringTerdaftar{
+			MonitoringID: detail_monitoring.MonitoringID,
+			TipeSensorID: detail_monitoring.TipeSensorID,
+			TipeSensor:   detail_monitoring.TipeSensor,
+			Nama:         detail_monitoring.Nama,
+			Keterangan:   detail_monitoring.Keterangan,
+			Address:      detail_monitoring.Address,
+		},
 		Overall: servicemodel.ResultMonitoring{
 			Total:   total.All,
 			Average: average.All,
