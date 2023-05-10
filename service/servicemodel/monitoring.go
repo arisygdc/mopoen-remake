@@ -53,9 +53,10 @@ type ResultMonitoring struct {
 }
 
 type AnalisaMonitoring struct {
-	Overall   ResultMonitoring `json:"keseluruhan"`
-	Morning   ResultMonitoring `json:"pagi"`
-	Noon      ResultMonitoring `json:"siang"`
-	Afternoon ResultMonitoring `json:"sore"`
-	Night     ResultMonitoring `json:"malam"`
+	Monitoring_info DetailMonitoringTerdaftar `json:"informasi_monitoring"`
+	Overall         ResultMonitoring          `json:"keseluruhan"`
+	Morning         ResultMonitoring          `json:"pagi"`
+	Noon            ResultMonitoring          `json:"siang"`
+	Afternoon       ResultMonitoring          `json:"sore"`
+	Night           ResultMonitoring          `json:"malam"`
 }
