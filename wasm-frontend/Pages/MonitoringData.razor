@@ -1,48 +1,56 @@
 @page "/monitoring"
+@using Radzen
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject IJSRuntime JS
 
-@if (Forecasts == null)
+@if (TotalMetrics == null)
 {
-    <p><em>Loading...</em></p>
+    <div class="rz-m-12">
+        <RadzenProgressBar @bind-Value="@Progress" />
+    </div>
 }
 else
 {
-    <PageTitle>@data.Monitoring_information?.Nama</PageTitle>
-    <h1>@data.Monitoring_information?.Nama</h1>
-    <table border="0">
-        <tr>
-            <td>Monitoring ID</td>
-            <td>@data.Monitoring_information?.Monitoring_id</td>
-        </tr>
-        <tr>
-            <td>Tipe Sensor</td>
-            <td>@data.Monitoring_information?.Tipe_sensor</td>
-        </tr>
-        <tr>
-            <td>Nama</td>
-            <td>@data.Monitoring_information?.Nama</td>
-        </tr>
-        <tr>
-            <td>Alamat</td>
-            <td>@data.Monitoring_information?.Alamat</td>
-        </tr>
-    </table>
-    <br>
-    <p>@data.Monitoring_information?.Keterangan</p>
+    <PageTitle>@data.Informasi_monitoring?.Nama</PageTitle>
+    <h1>@data.Informasi_monitoring?.Nama</h1>
+    <p>
+        Mopoen ID @data.Informasi_monitoring?.Monitoring_id
+        menggunakan sensor @data.Informasi_monitoring?.Tipe_sensor
+        di lokasi @data.Informasi_monitoring?.Alamat.
+    </p>
+    <p>@data.Informasi_monitoring?.Keterangan</p>
     <button class="btn-primary" onclick="window.open('@downloadPath()');">download csv</button>
-    <div Class="rz-p-0 rz-p-md-12">
+    <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
+    <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
         <RadzenChart>
-            <RadzenColumnSeries Data="@Forecasts" CategoryProperty="Time" ValueProperty="Average" />
+            <RadzenColumnSeries Data="@AverageMetrics" CategoryProperty="Time" ValueProperty="Value" />
         </RadzenChart>
-    </div>
+    </RadzenColumn>
+    <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
+    <RadzenChart>
+        <RadzenAreaSeries Data="@TotalMetrics" CategoryProperty="Time" Title="Data Total" ValueProperty="Value" RenderingOrder="1">
+            <RadzenSeriesDataLabels Visible="false" />
+        </RadzenAreaSeries>
+        <RadzenAreaSeries Data="@AverageMetrics" CategoryProperty="Time" Title="Average" LineType="LineType.Dashed" ValueProperty="Value">
+            <RadzenSeriesDataLabels Visible="false" />
+        </RadzenAreaSeries>
+        <RadzenCategoryAxis Padding="1" />
+        <RadzenValueAxis>
+            <RadzenGridLines Visible="true" />
+            <RadzenAxisTitle Text="Average and total comparison" />
+        </RadzenValueAxis>
+    </RadzenChart>
+    </RadzenColumn>
+    </RadzenRow>
 }
 
 @code {
     private string path = "http://localhost:8080/api/v1";
     private AnalisaMonitoring data = new AnalisaMonitoring();
-    private DataItem[]? Forecasts;
+    private DataItem[]? AverageMetrics;
+    private DataItem[]? TotalMetrics;
+    private double Progress = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,18 +58,27 @@ else
         var query = QueryHelpers.ParseQuery(uri.Query);
         if (!query.ContainsKey("id")) return;
         Id = query["id"];
+        Progress = 30;
 
         data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"{path}/monitoring/analisa/{Id}") ?? data;
-        if (data == null) {
-            return;
-        }
-        Forecasts = new DataItem[]
+        Progress = 60;
+
+        AverageMetrics = new DataItem[]
         {
-            new DataItem { Time = "Pagi", Average = data.Pagi?.Average ?? 0 },
-            new DataItem { Time = "Siang", Average = data.Siang?.Average ?? 0 },
-            new DataItem { Time = "Sore", Average = data.Sore?.Average ?? 0 },
-            new DataItem { Time = "Malam", Average = data.Malam?.Average ?? 0 },
+            new DataItem { Time = "Pagi", Value = data.Pagi?.Average ?? 0 },
+            new DataItem { Time = "Siang", Value = data.Siang?.Average ?? 0 },
+            new DataItem { Time = "Sore", Value = data.Sore?.Average ?? 0 },
+            new DataItem { Time = "Malam", Value = data.Malam?.Average ?? 0 },
         };
+        Progress = 80;
+        TotalMetrics = new DataItem[]
+        {
+            new DataItem { Time = "Pagi", Value = data.Pagi?.Total ?? 0 },
+            new DataItem { Time = "Siang", Value = data.Siang?.Total ?? 0 },
+            new DataItem { Time = "Sore", Value = data.Sore?.Total ?? 0 },
+            new DataItem { Time = "Malam", Value = data.Malam?.Total ?? 0 },
+        };
+        Progress = 100;
     }
 
     private string downloadPath()
@@ -71,7 +88,7 @@ else
 
     public class AnalisaMonitoring
     {
-        public MonitoringInfo? Monitoring_information { get; set; }
+        public MonitoringInfo? Informasi_monitoring { get; set; }
         public ResultMonitoring? Overall { get; set; }
         public ResultMonitoring? Pagi { get; set; }
         public ResultMonitoring? Siang { get; set;}
@@ -82,7 +99,6 @@ else
     public class MonitoringInfo
     {
         public string Monitoring_id { get; set; } = string.Empty;
-        public int Tipe_sensor_id { get; set; }
         public string Tipe_sensor { get; set; } = string.Empty;
         public string Nama { get; set; } = string.Empty;
         public string Keterangan { get; set; } = string.Empty;
@@ -98,7 +114,7 @@ else
     public class DataItem
     {
       public string Time { get; set; } = string.Empty;
-      public float Average { get; set; }
+      public float Value { get; set; }
     }
 
     public string Id { get; set; } = string.Empty;
