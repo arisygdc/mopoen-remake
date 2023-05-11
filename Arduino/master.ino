@@ -3,7 +3,7 @@
 #include <ArduinoJson.h>
 #include <SPI.h>
 
-#define SERVER_IP "147.139.134.200"
+#define SERVER_IP "192.168.1.73:8080"
 #define METHOD_POST "POST"
 
 #ifndef STASSID
@@ -32,30 +32,17 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   String data = "";
-  String id_monitoring = "";
-  String valStr = "";
   while(Serial.available()>0){
     data += char(Serial.read());
-    id_monitoring = data.substring(0, 36);
-    valStr = data.substring(36, data.length());
   }
 
   if (data.length() > 35) {
     Serial.print("received: ");
     Serial.println(data);
 
-    DynamicJsonDocument doc(1024);
-    doc["kode_monitoring"] = id_monitoring;
-    doc["value"] = valStr.toFloat();
+    String alamat = "http://" SERVER_IP "/api/sensor/value"; 
+    HTTP_RESULT getResponse = HTTPsend(METHOD_POST, alamat, data);
 
-    String json;
-    serializeJson(doc, json);
-
-    String alamat = "http://" SERVER_IP "/api/sensor/monitoring/value"; 
-    HTTP_RESULT getResponse = HTTPsend(METHOD_POST, alamat, json);
-
-    Serial.println(id_monitoring);
-    Serial.println(valStr.toFloat());
     Serial.print("[HTTP POST]");
     Serial.print(alamat);
     Serial.printf(" code: %d\n", getResponse.code);
