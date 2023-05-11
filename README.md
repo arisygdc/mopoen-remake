@@ -19,9 +19,9 @@ To post sensing values, you can make a POST request to the `/api/sensor/value` e
 The request body must be a JSON object with the following fields:
 |Field Name     | Type  | Required|Description|
 |---------------|-------|---------|-----------|
-|kode_monitoring| string|	Yes   |	The ID of the monitoring.|
+|id             | string|	Yes   |	The ID of the monitoring.|
 |value          | number|	Yes   |	ensing value.|
-|secret_key     | string|	Yes   |	Secret key of the monitoring.||
+|secret         | string|	Yes   |	Secret key of the monitoring.||
 
 **Responses**
 

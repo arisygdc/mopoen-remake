@@ -1,22 +1,14 @@
-//#BOARD MANAGER ESP32 1.0.2
-//LIBRARY MANAGER LORA SANDEEP MISTRY 0.8.0
-//GND   GND
-//3.3V  VCC
-//D5    NSS
-//D23   MOSI
-//D19   MISO
-//D18   SCK
-//D14   RST
-//D2    DIO0
 #include <LoRa.h>
 #include <SPI.h>
+#include <ArduinoJson.h>
  
 #define ss 10
 #define rst 9
 #define dio0 8
 
 // uuidv4 value 36 character
-#define idMonitoring "12c76e75-78f4-4cfd-b3cf-aae81373350e"
+#define IdMonitoring "f601a393-018b-493c-b929-337ab3693916"
+#define Secret "a9a0cd8780b44782g8df720715a74102"
 
 #define timeSecond 1000
 // water flow sensor
@@ -48,8 +40,6 @@ void setup()
  
 void loop() 
 {
-  delay(timeSecond * (60 * 10));
-
   TURBINE = 00;
   sei(); //enable interrupt 
   delay (timeSecond * 1);
@@ -57,8 +47,17 @@ void loop()
   Calc = (TURBINE * 60 / 7.5); //pulse * 60 / 7.5 
 
   //units of measurement L / hour
-  String data = idMonitoring + String(Calc, DEC);
-  LoraSend(LoRa, data);
+  DynamicJsonDocument doc(1024);
+  doc["id"] = IdMonitoring;
+  doc["value"] = Calc;
+  doc["secret"] = Secret;
+
+  String json;
+  serializeJson(doc, json);
+  Serial.println(json);
+
+  // String data = idMonitoring + String(Calc, DEC);
+  LoraSend(LoRa, json);
 }
 
 void speedrpm () 	 //fungsi penghitungan dan interrupt

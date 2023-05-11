@@ -10,7 +10,7 @@ type PostDaftarMonitoring struct {
 }
 
 type PostMonitoringValue struct {
-	KodeMonitoring string  `json:"kode_monitoring" binding:"required,min=36,max=36"`
+	KodeMonitoring string  `json:"id" binding:"required,min=36,max=36"`
 	Secret         string  `json:"secret" binding:"required,min=32,max=33"`
 	Value          float64 `json:"value"`
 }
