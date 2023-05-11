@@ -10,14 +10,15 @@
 //D2    DIO0
 #include <LoRa.h>
 #include <SPI.h>
+#include <ArduinoJson.h>
  
 #define ss 10
 #define rst 9
 #define dio0 8
 
 // uuidv4 value 36 character
-#define idMonitoring "12c76e75-78f4-4cfd-b3cf-aae81373350e"
-#define secret "4923296e0e0937f86e0853f9366c1de635b22a3d4675c08a61057aac95a9d7d8"
+#define IdMonitoring "cf3eff4c-e693-4540-bbf9-624750e8bfa5"
+#define Secret "b2a6cv5750b44752b8df720715a47081"
 float counter = 1;
 
 // anemometer parameters
@@ -35,7 +36,9 @@ float radius = 0.1; // meters - measure of the lenght of each the anemometer win
 float velocity_ms;  //m/s
 float omega = 0;    // rad/s
 float calibration_value = 2.0;
- 
+
+float stackVelocity[71];
+
 void setup() 
 {
   Serial.begin(9600); 
@@ -81,19 +84,32 @@ void loop()
     Serial.print("   velocity_ms=");
     Serial.print(velocity_ms);
     Serial.println("   ");
-    if (countThing == (60 * 10)) // Send data per 25 seconds
+    stackVelocity[countThing-1] = velocity_ms; // input velocity in stack
+
+    if (countThing == 71) // 1775s/30m-25s seconds -> one cycle 25s
     {
-      Serial.println("Send data to server");
-      // {\"id\": \"%s\", \"value\": %s, \"secret\": \"%s\"}
-      String data = "{\"id\"" + idMonitoring;
-      data = data + "\", \"value\":";
-      data = data + String(velocity_ms);
-      data = ", \"secret\": \"";
-      data = data + secret;
-      data = data + "\"}";
-      LoraSend(LoRa, data);
+      float avgVelocity = 0;
+      for (int i = 0; i < countThing; i++) {
+        avgVelocity += stackVelocity[i];
+      }
+
+      if (avgVelocity > 0) {
+        avgVelocity = avgVelocity/countThing;
+      }
+
+      Serial.println(velocity_ms);
+      DynamicJsonDocument doc(1024);
+      doc["kode_monitoring"] = IdMonitoring;
+      doc["value"] = velocity_ms;
+      doc["secret"] = Secret;
+
+      String json;
+      serializeJson(doc, json);
+
+      LoraSend(LoRa, json);
       countThing = 0;
     }
+    
     timeold = millis();
     rpmcount = 0;
     attachInterrupt(digitalPinToInterrupt(GPIO_pulse), rpm_anemometer, RISING); // enable interrupt
