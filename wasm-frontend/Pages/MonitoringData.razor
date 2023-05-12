@@ -22,6 +22,12 @@ else
         di lokasi @data.Informasi_monitoring?.Alamat.
     </p>
     <p>@data.Informasi_monitoring?.Keterangan</p>
+    <h3>Keseluruhan data</h3>
+    <p>
+        Total data: @data.Keseluruhan?.Total
+        <br />
+        Rata-rata: @data.Keseluruhan?.Average
+    </p>
     <button class="btn-primary" onclick="window.open('@downloadPath()');">download csv</button>
     <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
@@ -56,9 +62,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        string value = Environment.GetEnvironmentVariable("VARIABLE_NAME") ?? string.Empty;
-        value = value == string.Empty?cfg["ApiAddress"]:value??addr;
-        addr=value;
+        string value = Environment.GetEnvironmentVariable("ApiAddress") ?? string.Empty;
+        addr = value == string.Empty?cfg["ApiAddress"]:value??addr;
         
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
@@ -95,7 +100,7 @@ else
     public class AnalisaMonitoring
     {
         public MonitoringInfo? Informasi_monitoring { get; set; }
-        public ResultMonitoring? Overall { get; set; }
+        public ResultMonitoring? Keseluruhan { get; set; }
         public ResultMonitoring? Pagi { get; set; }
         public ResultMonitoring? Siang { get; set;}
         public ResultMonitoring? Sore { get; set;}

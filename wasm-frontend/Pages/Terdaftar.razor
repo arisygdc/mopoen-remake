@@ -9,7 +9,7 @@
 
 <p>Halaman Monitoring Terdaftar menampilkan daftar monitoring yang terdaftar dan analisis berdasarkan waktu dengan beberapa grafik yang memudahkan anda.</p>
 
-@if (forecasts == null)
+@if (montd == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -25,7 +25,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts["data"])
+            @foreach (var forecast in montd["data"])
             {
                 <tr>
                     <td><RadzenLink Path=@PathToAnalysis(@forecast.Monitoring_id) Text=@forecast.Nama /></td>
@@ -40,15 +40,14 @@ else
 
 @code {
     private string addr = "localhost:8080";
-    private Dictionary<string, MonitoringTerdaftar[]>? forecasts;
+    private Dictionary<string, MonitoringTerdaftar[]>? montd;
     
     protected override async Task OnInitializedAsync()
     {
-        string value = Environment.GetEnvironmentVariable("VARIABLE_NAME") ?? string.Empty;
-        value = value == string.Empty?cfg["ApiAddress"]:value??addr;
-        addr=value;
+        string value = Environment.GetEnvironmentVariable("ApiAddress") ?? string.Empty;
+        addr = value == string.Empty?cfg["ApiAddress"]:value??addr;
         
-        forecasts = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"http://{addr}/api/v1/monitoring/terdaftar");
+        montd = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"http://{addr}/api/v1/monitoring/terdaftar");
     }
 
     public string PathToAnalysis(string id)
@@ -65,6 +64,4 @@ else
         public string Keterangan { get; set;} = string.Empty;
         public string Alamat { get; set;} = string.Empty;
     }
-
-    
 }

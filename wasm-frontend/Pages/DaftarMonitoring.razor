@@ -81,29 +81,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string value = Environment.GetEnvironmentVariable("VARIABLE_NAME") ?? string.Empty;
-        value = value == string.Empty?cfg["ApiAddress"]:value??addr;
-        addr=value;
+        string value = Environment.GetEnvironmentVariable("ApiAddress") ?? string.Empty;
+        addr = value == string.Empty?cfg["ApiAddress"]:value??addr;
         
         var data = await Http.GetFromJsonAsync<Dictionary<string, TipeSensor[]>?>($"http://{addr}/api/v1/sensors");
-        if (data == null) {
-            return;
-        }
-
-        if (data.ContainsKey("data")) {
-            var dd = data["data"];
-            tipe_sensors = dd;
-        }
+        if (data == null) return;
+        tipe_sensors = data.ContainsKey("data") ? data["data"] : tipe_sensors;
+        
 
         var dataProvinsi = await Http.GetFromJsonAsync<Dictionary<string, Lokasi[]>?>($"http://{addr}/api/v1/lokasi/parent");
-        if (dataProvinsi == null) {
-            return;
-        }
-
-        if (dataProvinsi.ContainsKey("data")) {
-            var dd = dataProvinsi["data"];
-            LLokasi = dd;
-        }
+        if (dataProvinsi == null) return;
+        LLokasi = dataProvinsi.ContainsKey("data") ? dataProvinsi["data"] : LLokasi;
 
         init = true;
     }
