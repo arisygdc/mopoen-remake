@@ -126,17 +126,9 @@
 
         public TipeSensor(int id, string? tipe, string? satuan)
         {
-            Id = id;
-            if (tipe == null) {
-                Tipe = string.Empty;
-            } else {
-                Tipe = tipe;
-            }
-            if (satuan == null) {
-                Satuan = string.Empty;
-            } else {
-                Satuan = satuan;
-            }
+            this.Id = id;
+            this.Tipe = tipe ?? string.Empty;
+            this.Satuan = satuan ?? string.Empty;
         }
     }
 
@@ -162,12 +154,8 @@
 
         public Lokasi(int id, string? nama)
         {
-            Id = id;
-            if (nama == null) {
-                Nama = string.Empty;
-            } else {
-                Nama = nama;
-            }
+            this.Id = id;
+            this.Nama = nama ?? string.Empty;
         }
     }
 }
