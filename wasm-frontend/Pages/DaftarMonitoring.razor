@@ -1,6 +1,8 @@
 ﻿@page "/daftar"
 @inject HttpClient Http
 @inject NotificationService NotificationService
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration cfg
 
 <PageTitle>Pendaftaran Mopoen</PageTitle>
 
@@ -69,7 +71,7 @@
 }
 
 @code {
-    private string path = "http://localhost:8080/api/v1";
+    private string addr = "localhost:8080";
     private bool init = false;
     private MonitoringTerdaftar montd = new MonitoringTerdaftar();
     private TipeSensor[]? tipe_sensors;
@@ -79,7 +81,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await Http.GetFromJsonAsync<Dictionary<string, TipeSensor[]>?>($"{path}/sensors");
+        string value = Environment.GetEnvironmentVariable("VARIABLE_NAME") ?? string.Empty;
+        value = value == string.Empty?cfg["ApiAddress"]:value??addr;
+        addr=value;
+        
+        var data = await Http.GetFromJsonAsync<Dictionary<string, TipeSensor[]>?>($"http://{addr}/api/v1/sensors");
         if (data == null) {
             return;
         }
@@ -89,7 +95,7 @@
             tipe_sensors = dd;
         }
 
-        var dataProvinsi = await Http.GetFromJsonAsync<Dictionary<string, Lokasi[]>?>($"{path}/lokasi/parent");
+        var dataProvinsi = await Http.GetFromJsonAsync<Dictionary<string, Lokasi[]>?>($"http://{addr}/api/v1/lokasi/parent");
         if (dataProvinsi == null) {
             return;
         }
@@ -136,7 +142,7 @@
 
     protected async Task OnSubmit(MonitoringTerdaftar args)
     {
-        var postForm = await Http.PostAsJsonAsync<MonitoringTerdaftar>($"{path}/monitoring/daftar", args);
+        var postForm = await Http.PostAsJsonAsync<MonitoringTerdaftar>($"http://{addr}/api/v1/monitoring/daftar", args);
         if (postForm.IsSuccessStatusCode) {
             NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = args.nama, Detail = "Pendaftaran berhasil" });
         } else {

@@ -1,11 +1,13 @@
 ﻿@page "/terdaftar"
 @inject HttpClient Http
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration cfg
 
-<PageTitle>Weather forecast</PageTitle>
+<PageTitle>Monitoring Terdaftar</PageTitle>
 
-<h1>Weather forecast</h1>
+<h1>Monitoring Terdaftar</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
+<p>Halaman Monitoring Terdaftar menampilkan daftar monitoring yang terdaftar dan analisis berdasarkan waktu dengan beberapa grafik yang memudahkan anda.</p>
 
 @if (forecasts == null)
 {
@@ -37,12 +39,16 @@ else
 }
 
 @code {
-    private string path = "http://localhost:8080/api/v1";
+    private string addr = "localhost:8080";
     private Dictionary<string, MonitoringTerdaftar[]>? forecasts;
     
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"{path}/monitoring/terdaftar");
+        string value = Environment.GetEnvironmentVariable("VARIABLE_NAME") ?? string.Empty;
+        value = value == string.Empty?cfg["ApiAddress"]:value??addr;
+        addr=value;
+        
+        forecasts = await Http.GetFromJsonAsync<Dictionary<string, MonitoringTerdaftar[]>>($"http://{addr}/api/v1/monitoring/terdaftar");
     }
 
     public string PathToAnalysis(string id)
