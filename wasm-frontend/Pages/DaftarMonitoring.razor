@@ -22,7 +22,7 @@
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
                     <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Tipe Sensor" />
+                        <RadzenLabel Text="Lokasi" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
                         <RadzenDropDown @bind-Value="montd.lokasi_id" AllowClear="true" Placeholder="Lokasi" Data="@LLokasi" Style="width: 100%;" TextProperty="Nama" ValueProperty="Id" Name="lokasi_id"></RadzenDropDown>
@@ -30,10 +30,10 @@
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
                     <RadzenColumn Size="12" SizeMD="4">
-                        <RadzenLabel Text="Author" />
+                        <RadzenLabel Text="Pencipta" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox @bind-Value="montd.author" Style="width: 100%;" Name="author" />
+                        <RadzenTextBox @bind-Value="montd.author" Placeholder="Pemilik monitoring" Style="width: 100%;" Name="author" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
@@ -41,7 +41,7 @@
                         <RadzenLabel Text="Email" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox @bind-Value="montd.email" Style="width: 100%;" Name="email" />
+                        <RadzenTextBox @bind-Value="montd.email" Placeholder="Email pemilik" Style="width: 100%;" Name="email" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
@@ -49,7 +49,7 @@
                         <RadzenLabel Text="Nama" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox @bind-Value="montd.nama" Style="width: 100%;" Name="nama" />
+                        <RadzenTextBox @bind-Value="montd.nama" Placeholder="Nama monitoring" Style="width: 100%;" Name="nama" />
                     </RadzenColumn>
                 </RadzenRow>
                 <RadzenRow AlignItems="AlignItems.Center">
@@ -57,7 +57,7 @@
                         <RadzenLabel Text="Keterangan" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="8">
-                        <RadzenTextBox @bind-Value="montd.keterangan" Style="width: 100%;" Name="keterangan" />
+                        <RadzenTextBox @bind-Value="montd.keterangan" Placeholder="Keterangan monitoring" Style="width: 100%;" Name="keterangan" />
                     </RadzenColumn>
                 </RadzenRow>
             </RadzenStack>
