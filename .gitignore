@@ -4,3 +4,4 @@ config.env
 /wasm-frontend/bin
 /wasm-frontend/obj
 /backups
+/wasm-frontend/wwwroot/appsettings.json
