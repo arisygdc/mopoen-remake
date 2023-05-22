@@ -3,8 +3,10 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject IJSRuntime JS
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration cfg
 
-@if (TotalMetrics == null)
+@if (Progress < 100)
 {
     <div class="rz-m-12">
         <RadzenProgressBar @bind-Value="@Progress" />
@@ -20,6 +22,12 @@ else
         di lokasi @data.Informasi_monitoring?.Alamat.
     </p>
     <p>@data.Informasi_monitoring?.Keterangan</p>
+    <h3>Keseluruhan data</h3>
+    <p>
+        Total data: @data.Keseluruhan?.Total
+        <br />
+        Rata-rata: @data.Keseluruhan?.Average
+    </p>
     <button class="btn-primary" onclick="window.open('@downloadPath()');">download csv</button>
     <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
@@ -46,7 +54,7 @@ else
 }
 
 @code {
-    private string path = "http://localhost:8080/api/v1";
+    private string addr = "localhost:8080";
     private AnalisaMonitoring data = new AnalisaMonitoring();
     private DataItem[]? AverageMetrics;
     private DataItem[]? TotalMetrics;
@@ -54,13 +62,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        string value = Environment.GetEnvironmentVariable("ApiAddress") ?? string.Empty;
+        addr = value == string.Empty?cfg["ApiAddress"]:value??addr;
+        
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
         if (!query.ContainsKey("id")) return;
         Id = query["id"];
         Progress = 30;
 
-        data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"{path}/monitoring/analisa/{Id}") ?? data;
+        data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"http://{addr}/api/v1/monitoring/analisa/{Id}") ?? data;
         Progress = 60;
 
         AverageMetrics = new DataItem[]
@@ -83,13 +94,13 @@ else
 
     private string downloadPath()
     {
-        return $"localhost:8080/download/monitoring/{Id}.csv";
+        return $"http://{addr}/download/monitoring/{Id}.csv";
     }
 
     public class AnalisaMonitoring
     {
         public MonitoringInfo? Informasi_monitoring { get; set; }
-        public ResultMonitoring? Overall { get; set; }
+        public ResultMonitoring? Keseluruhan { get; set; }
         public ResultMonitoring? Pagi { get; set; }
         public ResultMonitoring? Siang { get; set;}
         public ResultMonitoring? Sore { get; set;}
