@@ -36,6 +36,7 @@ type DetailMonitoringTerdaftar struct {
 	MonitoringID uuid.UUID `json:"monitoring_id"`
 	TipeSensorID int32     `json:"tipe_sensor_id"`
 	TipeSensor   string    `json:"tipe_sensor"`
+	Satuan       string    `json:"satuan_sensor"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
 	Address      string    `json:"alamat"`

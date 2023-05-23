@@ -108,7 +108,8 @@ func (ls MonitoringService) GetMonitoringTerdaftarByID(ctx context.Context, id u
 	monTdServiceModel = servicemodel.DetailMonitoringTerdaftar{
 		MonitoringID: monTd.MonitoringID,
 		TipeSensorID: monTd.TipeSensorID,
-		TipeSensor:   monTd.TipeSensor,
+		TipeSensor:   monTd.TsSatuan,
+		Satuan:       monTd.TsSatuan,
 		Nama:         monTd.Nama,
 		Keterangan:   monTd.Keterangan,
 		Address:      monTd.Address,
@@ -173,7 +174,8 @@ func (ls MonitoringService) GetAnalisa(ctx context.Context, id uuid.UUID) (servi
 		Monitoring_info: servicemodel.DetailMonitoringTerdaftar{
 			MonitoringID: detail_monitoring.MonitoringID,
 			TipeSensorID: detail_monitoring.TipeSensorID,
-			TipeSensor:   detail_monitoring.TipeSensor,
+			TipeSensor:   detail_monitoring.TsTipe,
+			Satuan:       detail_monitoring.TsSatuan,
 			Nama:         detail_monitoring.Nama,
 			Keterangan:   detail_monitoring.Keterangan,
 			Address:      detail_monitoring.Address,
