@@ -47,9 +47,12 @@ void loop()
   Calc = (TURBINE * 60 / 7.5); //pulse * 60 / 7.5 
 
   //units of measurement L / hour
+  // convert to m3/s
+  float debit = Calc/1000;
+  
   DynamicJsonDocument doc(1024);
   doc["id"] = IdMonitoring;
-  doc["value"] = Calc;
+  doc["value"] = debit;
   doc["secret"] = Secret;
 
   String json;
