@@ -120,13 +120,24 @@ else
     <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
         <RadzenChart>
-            <RadzenColumnSeries Data="@AverageMetrics" Title="rata rata (m/s)" CategoryProperty="Time" ValueProperty="Value" />
+            @if (Watt != null){
+            <RadzenColumnSeries Data="@WattMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value">
+                <RadzenSeriesDataLabels Visible="false" />
+            </RadzenColumnSeries>}
+            <RadzenColumnSeries Data="@AverageMetrics" CategoryProperty="Time" Title="rata rata (m/s)" LineType="LineType.Dashed" ValueProperty="Value">
+                <RadzenSeriesDataLabels Visible="false" />
+            </RadzenColumnSeries>
+            <RadzenColumnOptions Radius="5" />
+            <RadzenValueAxis>
+                <RadzenGridLines Visible="true" />
+                <RadzenAxisTitle Text="Average and given watt prediction" />
+            </RadzenValueAxis>
         </RadzenChart>
     </RadzenColumn>
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
     <RadzenChart>
         @if (Watt != null){
-        <RadzenAreaSeries Data="@TotalMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value" RenderingOrder="1">
+        <RadzenAreaSeries Data="@WattMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value" RenderingOrder="1">
             <RadzenSeriesDataLabels Visible="false" />
         </RadzenAreaSeries>}
         <RadzenAreaSeries Data="@AverageMetrics" CategoryProperty="Time" Title="rata rata (m/s)" LineType="LineType.Dashed" ValueProperty="Value">
@@ -135,7 +146,7 @@ else
         <RadzenCategoryAxis Padding="1" />
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
-            <RadzenAxisTitle Text="Average and total comparison" />
+            <RadzenAxisTitle Text="Average and given watt prediction" />
         </RadzenValueAxis>
     </RadzenChart>
     </RadzenColumn>
@@ -192,7 +203,6 @@ else
                 break;
         }
 
-        WattMetrics = CreateMetrics(0,0,0,0);
         Progress = 100;
     }
 
@@ -237,23 +247,42 @@ else
     }
 
     protected void calculateWatt(WindWattPredict wind) {
-        if (wind != null)  {
-            Watt = toFloat(wind.A) * wind.V * toFloat(wind.p);
+        if (wind == null) return;
+        if (AverageMetrics == null) return;
+        Watt = toFloat(wind.A) * wind.V * toFloat(wind.p);
+        WattMetrics = new DataItem[AverageMetrics.Length];
+        for (int i = 0; i < AverageMetrics.Length; i++)
+        {
+            WattMetrics[i] = new DataItem { Time = AverageMetrics[i].Time, 
+            Value = toFloat(wind.A) * AverageMetrics[i].Value * toFloat(wind.p)};
         }
     }
 
     protected void calculateWatt(WaterWattPredict water) {
-        if (water != null) {
-            @* (P) = gravity x Q x H x ɳp x ɳt x ɳg *@
-            @* ɳp : pipe ecfficiency *@
-            @* ɳt : tourbine ecfficiency *@
-            @* ɳg : generator ecfficiency *@
-            
-            float gravity = 9.81f;
-            Watt = gravity * water.Debit 
-            * toFloat(water.FallHeight) * toFloat(water.ɳp)
-            * toFloat(water.ɳt) * toFloat(water.ɳg);
+        if (water == null) return;
+        if (AverageMetrics == null) return;
+        Watt = WaterEnergyPrediction(water.Debit, toFloat(water.FallHeight), toFloat(water.ɳp), toFloat(water.ɳt), toFloat(water.ɳg));
+        WattMetrics = new DataItem[AverageMetrics.Length];
+        for (int i = 0; i < AverageMetrics.Length; i++)
+        {
+            WattMetrics[i] = new DataItem { Time = AverageMetrics[i].Time, 
+            Value = WaterEnergyPrediction(
+                AverageMetrics[i].Value, 
+                toFloat(water.FallHeight ?? "0"), 
+                toFloat(water.ɳp), 
+                toFloat(water.ɳt), 
+                toFloat(water.ɳg)
+            )};
         }
+    }
+
+    protected float WaterEnergyPrediction(float debit, float fallHeight, float ɳp, float ɳt, float ɳg) {
+        @* (P) = gravity x Q x H x ɳp x ɳt x ɳg *@
+        @* ɳp : pipe ecfficiency *@
+        @* ɳt : tourbine ecfficiency *@
+        @* ɳg : generator ecfficiency *@
+        float gravity = 9.81f;
+        return gravity * debit * fallHeight * ɳp * ɳt * ɳg;
     }
 
     public class AnalisaMonitoring
