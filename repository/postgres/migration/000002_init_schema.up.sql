@@ -1,7 +1,7 @@
 INSERT INTO tipe_sensor (tipe, satuan) 
 VALUES
 ('angin', 'm/s'),
-('air', 'm/s');
+('air', 'm3/s');
 
 INSERT INTO provinsi (nama) 
 VALUES 
