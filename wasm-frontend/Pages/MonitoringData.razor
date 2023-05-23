@@ -1,5 +1,6 @@
 @page "/monitoring"
 @using Radzen
+@using System.Globalization;
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject IJSRuntime JS
@@ -16,6 +17,8 @@ else
 {
     <PageTitle>@data.Informasi_monitoring?.Nama</PageTitle>
     <h1>@data.Informasi_monitoring?.Nama</h1>
+    <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
+    <RadzenColumn Size="6" class="rz-p-2">
     <p>
         Mopoen ID @data.Informasi_monitoring?.Monitoring_id
         menggunakan sensor @data.Informasi_monitoring?.Tipe_sensor
@@ -23,24 +26,110 @@ else
     </p>
     <p>@data.Informasi_monitoring?.Keterangan</p>
     <h3>Keseluruhan data</h3>
-    <p>
-        Total data: @data.Keseluruhan?.Total
-        <br />
-        Rata-rata: @data.Keseluruhan?.Average
-    </p>
+
+    Total data: @data.Keseluruhan?.Total
+    <br />
+    Rata-rata: @data.Keseluruhan?.Average
+    <br />
+    @if (Watt != null) {
+        <p>
+        Perkiraan daya yang dihasilkan: @Watt W
+        </p>
+    }
+    
     <button class="btn-primary" onclick="window.open('@downloadPath()');">download csv</button>
+    </RadzenColumn>
+    <RadzenColumn Size="6" class="rz-p-2">
+    @if (wind != null)
+    {
+        <RadzenTemplateForm Data="@wind" Submit="@((WindWattPredict args) => calculateWatt(args))">
+        <RadzenRow Gap="1rem" Class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenStack>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="7">
+                            <RadzenLabel Text="Luas penampang turbin" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="5">
+                            <RadzenTextBox @bind-Value="@wind.A" Placeholder="A (m2)" Style="width: 100%;" Name="Luas penampang turbin" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="7">
+                            <RadzenLabel Text="kerapatan udara" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="5">
+                            <RadzenTextBox @bind-Value="@wind.p" Placeholder="p (kg/m2)" Style="width: 100%;" Name="kerapatan udara" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Calculate" />
+        </RadzenStack>
+        </RadzenTemplateForm>   
+    } else if(water != null) {
+        <RadzenTemplateForm Data="@water" Submit="@((WaterWattPredict args) => calculateWatt(args))">
+        <RadzenRow Gap="1rem" Class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="6">
+                <RadzenStack>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="7">
+                            <RadzenLabel Text="Tinggi jatuh ke generator" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="5">
+                            <RadzenTextBox @bind-Value="@water.FallHeight" Placeholder="H (m)" Style="width: 100%;" Name="Tinggi jatuh ke generator" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="7">
+                            <RadzenLabel Text="Efisiensi pipa" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="5">
+                            <RadzenTextBox @bind-Value="@water.ɳp" Placeholder="ɳp" Style="width: 100%;" Name="Efisiensi pipa" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="7">
+                            <RadzenLabel Text="Efisiensi turbin" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="5">
+                            <RadzenTextBox @bind-Value="@water.ɳt" Placeholder="ɳt" Style="width: 100%;" Name="Efisiensi turbin" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="7">
+                            <RadzenLabel Text="Efisiensi generator" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="5">
+                            <RadzenTextBox @bind-Value="@water.ɳg" Placeholder="ɳg" Style="width: 100%;" Name="Efisiensi generator" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Calculate" />
+        </RadzenStack>
+        </RadzenTemplateForm>
+    }
+    </RadzenColumn>
+    </RadzenRow>
+
     <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
         <RadzenChart>
-            <RadzenColumnSeries Data="@AverageMetrics" CategoryProperty="Time" ValueProperty="Value" />
+            <RadzenColumnSeries Data="@AverageMetrics" Title="rata rata (m/s)" CategoryProperty="Time" ValueProperty="Value" />
         </RadzenChart>
     </RadzenColumn>
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
     <RadzenChart>
-        <RadzenAreaSeries Data="@TotalMetrics" CategoryProperty="Time" Title="Data Total" ValueProperty="Value" RenderingOrder="1">
+        @if (Watt != null){
+        <RadzenAreaSeries Data="@TotalMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value" RenderingOrder="1">
             <RadzenSeriesDataLabels Visible="false" />
-        </RadzenAreaSeries>
-        <RadzenAreaSeries Data="@AverageMetrics" CategoryProperty="Time" Title="Average" LineType="LineType.Dashed" ValueProperty="Value">
+        </RadzenAreaSeries>}
+        <RadzenAreaSeries Data="@AverageMetrics" CategoryProperty="Time" Title="rata rata (m/s)" LineType="LineType.Dashed" ValueProperty="Value">
             <RadzenSeriesDataLabels Visible="false" />
         </RadzenAreaSeries>
         <RadzenCategoryAxis Padding="1" />
@@ -56,8 +145,12 @@ else
 @code {
     private string addr = "localhost:8080";
     private AnalisaMonitoring data = new AnalisaMonitoring();
+    private WindWattPredict? wind;
+    private float? Watt;
+    private WaterWattPredict? water; 
     private DataItem[]? AverageMetrics;
     private DataItem[]? TotalMetrics;
+    private DataItem[]? WattMetrics;
     private double Progress = 0;
 
     protected override async Task OnInitializedAsync()
@@ -69,32 +162,98 @@ else
         var query = QueryHelpers.ParseQuery(uri.Query);
         if (!query.ContainsKey("id")) return;
         Id = query["id"];
-        Progress = 30;
+        Progress = 50;
 
         data = await Http.GetFromJsonAsync<AnalisaMonitoring>($"http://{addr}/api/v1/monitoring/analisa/{Id}") ?? data;
-        Progress = 60;
+        Progress = 99;
 
-        AverageMetrics = new DataItem[]
+        AverageMetrics = CreateMetrics(
+            data.Pagi?.Average ?? 0,
+            data.Siang?.Average ?? 0,
+            data.Sore?.Average ?? 0,
+            data.Malam?.Average ?? 0
+        );
+        TotalMetrics = CreateMetrics(
+            data.Pagi?.Total ?? 0,
+            data.Siang?.Total ?? 0,
+            data.Sore?.Total ?? 0,
+            data.Malam?.Total ?? 0
+        );
+
+        switch (data.Informasi_monitoring?.Tipe_sensor)
         {
-            new DataItem { Time = "Pagi", Value = data.Pagi?.Average ?? 0 },
-            new DataItem { Time = "Siang", Value = data.Siang?.Average ?? 0 },
-            new DataItem { Time = "Sore", Value = data.Sore?.Average ?? 0 },
-            new DataItem { Time = "Malam", Value = data.Malam?.Average ?? 0 },
-        };
-        Progress = 80;
-        TotalMetrics = new DataItem[]
-        {
-            new DataItem { Time = "Pagi", Value = data.Pagi?.Total ?? 0 },
-            new DataItem { Time = "Siang", Value = data.Siang?.Total ?? 0 },
-            new DataItem { Time = "Sore", Value = data.Sore?.Total ?? 0 },
-            new DataItem { Time = "Malam", Value = data.Malam?.Total ?? 0 },
-        };
+            case "angin (m/s)":
+                wind = new WindWattPredict();
+                wind.V = data.Keseluruhan?.Average ?? 0;
+                break;
+            case "air (m/s)":
+                water = new WaterWattPredict();
+                water.Debit = data.Keseluruhan?.Average ?? 0;
+                break;
+        }
+
+        WattMetrics = CreateMetrics(0,0,0,0);
         Progress = 100;
+    }
+
+    private DataItem[] CreateMetrics(float pagi, float siang, float sore, float malam)
+    {
+        return new DataItem[]
+        {
+            new DataItem { Time = "Pagi", Value = pagi },
+            new DataItem { Time = "Siang", Value = siang },
+            new DataItem { Time = "Sore", Value = sore },
+            new DataItem { Time = "Malam", Value = malam },
+        };
     }
 
     private string downloadPath()
     {
         return $"http://{addr}/download/monitoring/{Id}.csv";
+    }
+
+    public class WaterWattPredict
+    {
+        public float Debit { get; set; }
+        public string FallHeight { get; set; } = string.Empty;
+        public string ɳp { get; set; } = "0.9";
+        public string ɳt { get; set; } = "0.7";
+        public string ɳg { get; set; } = "0.8";
+    }
+
+    public class WindWattPredict
+    {
+        public string A { get; set; } = string.Empty;
+        public float V { get; set; }
+        public string p { get; set; } = string.Empty;
+    }
+
+    protected double toDouble(string str_double) {
+        return double.Parse(str_double, System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    protected float toFloat(string str_float) {
+        return float.Parse(str_float, CultureInfo.InvariantCulture.NumberFormat);
+    }
+
+    protected void calculateWatt(WindWattPredict wind) {
+        if (wind != null)  {
+            Watt = toFloat(wind.A) * wind.V * toFloat(wind.p);
+        }
+    }
+
+    protected void calculateWatt(WaterWattPredict water) {
+        if (water != null) {
+            @* (P) = gravity x Q x H x ɳp x ɳt x ɳg *@
+            @* ɳp : pipe ecfficiency *@
+            @* ɳt : tourbine ecfficiency *@
+            @* ɳg : generator ecfficiency *@
+            
+            float gravity = 9.81f;
+            Watt = gravity * water.Debit 
+            * toFloat(water.FallHeight) * toFloat(water.ɳp)
+            * toFloat(water.ɳt) * toFloat(water.ɳg);
+        }
     }
 
     public class AnalisaMonitoring
