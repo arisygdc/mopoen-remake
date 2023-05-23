@@ -21,7 +21,7 @@ else
     <RadzenColumn Size="6" class="rz-p-2">
     <p>
         Mopoen ID @data.Informasi_monitoring?.Monitoring_id
-        menggunakan sensor @data.Informasi_monitoring?.Tipe_sensor
+        menggunakan sensor @data.Informasi_monitoring?.Tipe_sensor @data.Informasi_monitoring?.Satuan_sensor
         di lokasi @data.Informasi_monitoring?.Alamat.
     </p>
     <p>@data.Informasi_monitoring?.Keterangan</p>
@@ -29,7 +29,7 @@ else
 
     Total data: @data.Keseluruhan?.Total
     <br />
-    Rata-rata: @data.Keseluruhan?.Average
+    Rata-rata: @data.Keseluruhan?.Average @data.Informasi_monitoring?.Satuan_sensor
     <br />
     @if (Watt != null) {
         <p>
@@ -182,11 +182,11 @@ else
 
         switch (data.Informasi_monitoring?.Tipe_sensor)
         {
-            case "angin (m/s)":
+            case "angin":
                 wind = new WindWattPredict();
                 wind.V = data.Keseluruhan?.Average ?? 0;
                 break;
-            case "air (m/s)":
+            case "air":
                 water = new WaterWattPredict();
                 water.Debit = data.Keseluruhan?.Average ?? 0;
                 break;
@@ -270,6 +270,7 @@ else
     {
         public string Monitoring_id { get; set; } = string.Empty;
         public string Tipe_sensor { get; set; } = string.Empty;
+        public string Satuan_sensor { get; set; } = string.Empty;
         public string Nama { get; set; } = string.Empty;
         public string Keterangan { get; set; } = string.Empty;
         public string Alamat { get; set; } = string.Empty;
