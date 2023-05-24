@@ -249,12 +249,12 @@ else
     protected void calculateWatt(WindWattPredict wind) {
         if (wind == null) return;
         if (AverageMetrics == null) return;
-        Watt = toFloat(wind.A) * wind.V * toFloat(wind.p);
+        Watt = WindEnergyPrediction(toFloat(wind.A), wind.V, toFloat(wind.p));
         WattMetrics = new DataItem[AverageMetrics.Length];
         for (int i = 0; i < AverageMetrics.Length; i++)
         {
             WattMetrics[i] = new DataItem { Time = AverageMetrics[i].Time, 
-            Value = toFloat(wind.A) * AverageMetrics[i].Value * toFloat(wind.p)};
+            Value = WindEnergyPrediction(toFloat(wind.A), AverageMetrics[i].Value, toFloat(wind.p))};
         }
     }
 
@@ -283,6 +283,14 @@ else
         @* ɳg : generator ecfficiency *@
         float gravity = 9.81f;
         return gravity * debit * fallHeight * ɳp * ɳt * ɳg;
+    }
+
+    protected float WindEnergyPrediction(float A, float V, float p) {
+        @* (P) = 0.5 x A x V^3 x p *@
+        @* A : area of turbine *@
+        @* V : wind speed *@
+        @* p : air density *@
+        return 0.5f * A * V * V * V * p;
     }
 
     public class AnalisaMonitoring
