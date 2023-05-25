@@ -22,7 +22,7 @@ backuppg:
 	docker exec -it mopoen-remake-db pg_dump -U postgres mopoen > backups/mopoen.sql
 
 restorepg:
-	docker exec -i mopoen-remake-db psql -U postgres mopoen < backups/mopoen-23mei2023_debitconvert.sql
+	docker exec -i mopoen-remake-db psql -U postgres mopoen < backups/mopoen.sql
 
 createmigrate:
 	migrate create -ext sql -dir repository/postgres/migration -seq init_schema
