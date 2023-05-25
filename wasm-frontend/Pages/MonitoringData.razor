@@ -238,10 +238,6 @@ else
         public string p { get; set; } = string.Empty;
     }
 
-    protected double toDouble(string str_double) {
-        return double.Parse(str_double, System.Globalization.CultureInfo.InvariantCulture);
-    }
-
     protected float toFloat(string str_float) {
         return float.Parse(str_float, CultureInfo.InvariantCulture.NumberFormat);
     }
@@ -290,7 +286,7 @@ else
         @* A : area of turbine *@
         @* V : wind speed *@
         @* p : air density *@
-        return 0.5f * A * V * V * V * p;
+        return 0.5f * A * (V * V * V) * p;
     }
 
     public class AnalisaMonitoring
