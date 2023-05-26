@@ -300,7 +300,8 @@ const getMonitoringTerdaftar = `-- name: GetMonitoringTerdaftar :one
 SELECT 
     mt.id as monitoring_id, 
     mt.tipe_sensor_id, 
-    concat(ts.tipe, ' (', ts.satuan, ')' )::text as tipe_sensor, 
+    ts.tipe::varchar,
+    ts.satuan::varchar, 
     mt.nama, 
     mt.keterangan, 
     concat(d.nama, ', ', kc.nama, ', ', kb.nama, ', ', pv.nama)::varchar as address
@@ -317,7 +318,8 @@ WHERE
 type GetMonitoringTerdaftarRow struct {
 	MonitoringID uuid.UUID `json:"monitoring_id"`
 	TipeSensorID int32     `json:"tipe_sensor_id"`
-	TipeSensor   string    `json:"tipe_sensor"`
+	TsTipe       string    `json:"ts_tipe"`
+	TsSatuan     string    `json:"ts_satuan"`
 	Nama         string    `json:"nama"`
 	Keterangan   string    `json:"keterangan"`
 	Address      string    `json:"address"`
@@ -329,7 +331,8 @@ func (q *Queries) GetMonitoringTerdaftar(ctx context.Context, id uuid.UUID) (Get
 	err := row.Scan(
 		&i.MonitoringID,
 		&i.TipeSensorID,
-		&i.TipeSensor,
+		&i.TsTipe,
+		&i.TsSatuan,
 		&i.Nama,
 		&i.Keterangan,
 		&i.Address,

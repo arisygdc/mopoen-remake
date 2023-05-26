@@ -244,7 +244,8 @@ Here's an example response for the `/api/v1/monitoring/value/d7e6ec83-1549-46bf-
     "informasi_monitoring": {
         "monitoring_id": "fb56e3dc-b767-4970-a663-c45c7a3e76fe",
         "tipe_sensor_id": 2,
-        "tipe_sensor": "air (m/s)",
+        "tipe_sensor": "air",
+        "satuan_sensor": "m/s",
         "nama": "analisa air torong rejo",
         "keterangan": "untuk melakukan penelitian skripsi",
         "alamat": "Torongrejo, junrejo, batu, jawa timur",

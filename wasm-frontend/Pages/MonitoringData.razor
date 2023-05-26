@@ -21,7 +21,7 @@ else
     <RadzenColumn Size="6" class="rz-p-2">
     <p>
         Mopoen ID @data.Informasi_monitoring?.Monitoring_id
-        menggunakan sensor @data.Informasi_monitoring?.Tipe_sensor
+        menggunakan sensor @data.Informasi_monitoring?.Tipe_sensor @data.Informasi_monitoring?.Satuan_sensor
         di lokasi @data.Informasi_monitoring?.Alamat.
     </p>
     <p>@data.Informasi_monitoring?.Keterangan</p>
@@ -29,7 +29,7 @@ else
 
     Total data: @data.Keseluruhan?.Total
     <br />
-    Rata-rata: @data.Keseluruhan?.Average
+    Rata-rata: @data.Keseluruhan?.Average @data.Informasi_monitoring?.Satuan_sensor
     <br />
     @if (Watt != null) {
         <p>
@@ -66,7 +66,7 @@ else
             </RadzenColumn>
         </RadzenRow>
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Calculate" />
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" Icon="save" Text="Calculate" />
         </RadzenStack>
         </RadzenTemplateForm>   
     } else if(water != null) {
@@ -110,7 +110,7 @@ else
             </RadzenColumn>
         </RadzenRow>
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Calculate" />
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Medium" Icon="save" Text="Calculate" />
         </RadzenStack>
         </RadzenTemplateForm>
     }
@@ -120,13 +120,24 @@ else
     <RadzenRow JustifyContent="@JustifyContent.Normal" AlignItems="@AlignItems.Normal" Gap="1rem">
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
         <RadzenChart>
-            <RadzenColumnSeries Data="@AverageMetrics" Title="rata rata (m/s)" CategoryProperty="Time" ValueProperty="Value" />
+            @if (Watt != null){
+            <RadzenColumnSeries Data="@WattMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value">
+                <RadzenSeriesDataLabels Visible="false" />
+            </RadzenColumnSeries>}
+            <RadzenColumnSeries Data="@AverageMetrics" CategoryProperty="Time" Title="rata rata (m/s)" LineType="LineType.Dashed" ValueProperty="Value">
+                <RadzenSeriesDataLabels Visible="false" />
+            </RadzenColumnSeries>
+            <RadzenColumnOptions Radius="5" />
+            <RadzenValueAxis>
+                <RadzenGridLines Visible="true" />
+                <RadzenAxisTitle Text="Average and given watt prediction" />
+            </RadzenValueAxis>
         </RadzenChart>
     </RadzenColumn>
     <RadzenColumn Size="6" class="rz-color-info-dark rz-text-align-center rz-p-2">
     <RadzenChart>
         @if (Watt != null){
-        <RadzenAreaSeries Data="@TotalMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value" RenderingOrder="1">
+        <RadzenAreaSeries Data="@WattMetrics" CategoryProperty="Time" Title="Perkiraan daya (w)" ValueProperty="Value" RenderingOrder="1">
             <RadzenSeriesDataLabels Visible="false" />
         </RadzenAreaSeries>}
         <RadzenAreaSeries Data="@AverageMetrics" CategoryProperty="Time" Title="rata rata (m/s)" LineType="LineType.Dashed" ValueProperty="Value">
@@ -135,7 +146,7 @@ else
         <RadzenCategoryAxis Padding="1" />
         <RadzenValueAxis>
             <RadzenGridLines Visible="true" />
-            <RadzenAxisTitle Text="Average and total comparison" />
+            <RadzenAxisTitle Text="Average and given watt prediction" />
         </RadzenValueAxis>
     </RadzenChart>
     </RadzenColumn>
@@ -182,17 +193,16 @@ else
 
         switch (data.Informasi_monitoring?.Tipe_sensor)
         {
-            case "angin (m/s)":
+            case "angin":
                 wind = new WindWattPredict();
                 wind.V = data.Keseluruhan?.Average ?? 0;
                 break;
-            case "air (m/s)":
+            case "air":
                 water = new WaterWattPredict();
                 water.Debit = data.Keseluruhan?.Average ?? 0;
                 break;
         }
 
-        WattMetrics = CreateMetrics(0,0,0,0);
         Progress = 100;
     }
 
@@ -228,32 +238,55 @@ else
         public string p { get; set; } = string.Empty;
     }
 
-    protected double toDouble(string str_double) {
-        return double.Parse(str_double, System.Globalization.CultureInfo.InvariantCulture);
-    }
-
     protected float toFloat(string str_float) {
         return float.Parse(str_float, CultureInfo.InvariantCulture.NumberFormat);
     }
 
     protected void calculateWatt(WindWattPredict wind) {
-        if (wind != null)  {
-            Watt = toFloat(wind.A) * wind.V * toFloat(wind.p);
+        if (wind == null) return;
+        if (AverageMetrics == null) return;
+        Watt = WindEnergyPrediction(toFloat(wind.A), wind.V, toFloat(wind.p));
+        WattMetrics = new DataItem[AverageMetrics.Length];
+        for (int i = 0; i < AverageMetrics.Length; i++)
+        {
+            WattMetrics[i] = new DataItem { Time = AverageMetrics[i].Time, 
+            Value = WindEnergyPrediction(toFloat(wind.A), AverageMetrics[i].Value, toFloat(wind.p))};
         }
     }
 
     protected void calculateWatt(WaterWattPredict water) {
-        if (water != null) {
-            @* (P) = gravity x Q x H x ɳp x ɳt x ɳg *@
-            @* ɳp : pipe ecfficiency *@
-            @* ɳt : tourbine ecfficiency *@
-            @* ɳg : generator ecfficiency *@
-            
-            float gravity = 9.81f;
-            Watt = gravity * water.Debit 
-            * toFloat(water.FallHeight) * toFloat(water.ɳp)
-            * toFloat(water.ɳt) * toFloat(water.ɳg);
+        if (water == null) return;
+        if (AverageMetrics == null) return;
+        Watt = WaterEnergyPrediction(water.Debit, toFloat(water.FallHeight), toFloat(water.ɳp), toFloat(water.ɳt), toFloat(water.ɳg));
+        WattMetrics = new DataItem[AverageMetrics.Length];
+        for (int i = 0; i < AverageMetrics.Length; i++)
+        {
+            WattMetrics[i] = new DataItem { Time = AverageMetrics[i].Time, 
+            Value = WaterEnergyPrediction(
+                AverageMetrics[i].Value, 
+                toFloat(water.FallHeight ?? "0"), 
+                toFloat(water.ɳp), 
+                toFloat(water.ɳt), 
+                toFloat(water.ɳg)
+            )};
         }
+    }
+
+    protected float WaterEnergyPrediction(float debit, float fallHeight, float ɳp, float ɳt, float ɳg) {
+        @* (P) = gravity x Q x H x ɳp x ɳt x ɳg *@
+        @* ɳp : pipe ecfficiency *@
+        @* ɳt : tourbine ecfficiency *@
+        @* ɳg : generator ecfficiency *@
+        float gravity = 9.81f;
+        return gravity * debit * fallHeight * ɳp * ɳt * ɳg;
+    }
+
+    protected float WindEnergyPrediction(float A, float V, float p) {
+        @* (P) = 0.5 x A x V^3 x p *@
+        @* A : area of turbine *@
+        @* V : wind speed *@
+        @* p : air density *@
+        return 0.5f * A * (V * V * V) * p;
     }
 
     public class AnalisaMonitoring
@@ -270,6 +303,7 @@ else
     {
         public string Monitoring_id { get; set; } = string.Empty;
         public string Tipe_sensor { get; set; } = string.Empty;
+        public string Satuan_sensor { get; set; } = string.Empty;
         public string Nama { get; set; } = string.Empty;
         public string Keterangan { get; set; } = string.Empty;
         public string Alamat { get; set; } = string.Empty;

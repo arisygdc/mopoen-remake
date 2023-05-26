@@ -66,7 +66,8 @@ SELECT value, date(dibuat_pada)::varchar AS date, (dibuat_pada::time)::varchar A
 SELECT 
     mt.id as monitoring_id, 
     mt.tipe_sensor_id, 
-    concat(ts.tipe, ' (', ts.satuan, ')' )::text as tipe_sensor, 
+    ts.tipe::varchar,
+    ts.satuan::varchar, 
     mt.nama, 
     mt.keterangan, 
     concat(d.nama, ', ', kc.nama, ', ', kb.nama, ', ', pv.nama)::varchar as address

@@ -29,7 +29,7 @@ else
             {
                 <tr>
                     <td><RadzenLink Path=@PathToAnalysis(@forecast.Monitoring_id) Text=@forecast.Nama /></td>
-                    <td>@forecast.Tipe_sensor</td>
+                    <td>@forecast.Tipe_sensor @forecast.Satuan_sensor</td>
                     <td>@forecast.Keterangan</td>
                     <td>@forecast.Alamat</td>
                 </tr>
@@ -60,6 +60,7 @@ else
         public string Monitoring_id { get; set; } = string.Empty;
         public int Tipe_sensor_id { get; set; }
         public string Tipe_sensor { get; set;} = string.Empty;
+        public string Satuan_sensor { get; set; } = string.Empty;
         public string Nama { get; set;} = string.Empty;
         public string Keterangan { get; set;} = string.Empty;
         public string Alamat { get; set;} = string.Empty;
